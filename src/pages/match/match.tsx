@@ -2,16 +2,16 @@ import { View, Text } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import CustomTabBar from "@/customTabBar";
 import { setSelected } from "@/customTabBar/tabBarStore";
-import styles from "./mine.module.scss";
+import styles from "./match.module.scss";
 
-export default function Mine() {
+export default function Match() {
     useLoad(() => {
-        setSelected(4);
+        setSelected(3);
     });
 
     return (
-        <View className={styles.mine}>
-            <Text className={styles.title}>我的</Text>
+        <View className={styles.match}>
+            <Text className={styles.title}>匹配</Text>
             <CustomTabBar />
         </View>
     );

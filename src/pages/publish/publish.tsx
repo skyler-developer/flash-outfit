@@ -2,16 +2,16 @@ import { View, Text } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import CustomTabBar from "@/customTabBar";
 import { setSelected } from "@/customTabBar/tabBarStore";
-import styles from "./mine.module.scss";
+import styles from "./publish.module.scss";
 
-export default function Mine() {
+export default function Publish() {
     useLoad(() => {
-        setSelected(4);
+        setSelected(2);
     });
 
     return (
-        <View className={styles.mine}>
-            <Text className={styles.title}>我的</Text>
+        <View className={styles.publish}>
+            <Text className={styles.title}>发布</Text>
             <CustomTabBar />
         </View>
     );

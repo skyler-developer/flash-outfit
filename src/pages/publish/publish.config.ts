@@ -1,3 +1,3 @@
 export default definePageConfig({
-    navigationBarTitleText: "创建",
+    navigationBarTitleText: "发布",
 });
