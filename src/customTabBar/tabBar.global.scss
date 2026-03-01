@@ -1,0 +1,93 @@
+/* 自定义 TabBar 全局样式（在 app 中引入，确保小程序各页都能生效） */
+.custom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 999;
+}
+
+.custom-tab-bar__inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 100px;
+  padding: 0 20px;
+}
+
+.custom-tab-bar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 16px;
+  transition: color 0.2s;
+
+  &.selected .custom-tab-bar__label {
+    color: #3cc51f;
+  }
+}
+
+.custom-tab-bar__item--center {
+  margin-top: -40px;
+  padding-bottom: 56px;
+
+  .custom-tab-bar__icon-wrap {
+    margin-bottom: 4px;
+  }
+
+  .custom-tab-bar__label {
+    color: #3cc51f;
+    font-weight: 500;
+  }
+}
+
+.custom-tab-bar__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-tab-bar__normal-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f5f5f5;
+
+  .custom-tab-bar__icon-text {
+    font-size: 20px;
+    color: #7a7e83;
+  }
+}
+
+.custom-tab-bar__center-icon {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3cc51f 0%, #2da818 100%);
+  box-shadow: 0 8px 24px rgba(60, 197, 31, 0.4);
+  position: relative;
+  transform: translateY(-8px);
+}
+
+.custom-tab-bar__center-text {
+  font-size: 48px;
+  color: #fff;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.custom-tab-bar__label {
+  font-size: 22px;
+  color: #7a7e83;
+}
