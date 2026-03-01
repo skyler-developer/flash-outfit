@@ -12,10 +12,10 @@
 
 .custom-tab-bar__inner {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 100px;
-  padding: 0 20px;
+  align-items: center;
+  justify-content: space-between;
+  height: 160px;
+  padding: 0 40px;
 }
 
 .custom-tab-bar__item {
@@ -24,11 +24,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: 16px;
   transition: color 0.2s;
 
   &.selected .custom-tab-bar__label {
-    color: #3cc51f;
+    color: #F49D25;
   }
 }
 
@@ -44,12 +43,6 @@
     color: #3cc51f;
     font-weight: 500;
   }
-}
-
-.custom-tab-bar__icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .custom-tab-bar__normal-icon {
@@ -88,6 +81,6 @@
 }
 
 .custom-tab-bar__label {
-  font-size: 22px;
-  color: #7a7e83;
+  font-size: 24px;
+  margin-top: 4px;
 }

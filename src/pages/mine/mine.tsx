@@ -1,12 +1,13 @@
 import { View, Text } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import CustomTabBar from "@/customTabBar";
-import { setSelected } from "@/customTabBar/tabBarStore";
+import { useTabsStore } from "@/stores/tabsStore/useTabsStore";
 import styles from "./mine.module.scss";
 
 export default function Mine() {
+    const { setSelectedTab } = useTabsStore();
     useLoad(() => {
-        setSelected(4);
+        setSelectedTab(4);
     });
 
     return (

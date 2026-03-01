@@ -1,13 +1,14 @@
 import { View } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import CustomTabBar from "@/customTabBar";
-import { setSelected } from "@/customTabBar/tabBarStore";
+import { useTabsStore } from "@/stores/tabsStore/useTabsStore";
 import Card from "@/components/card";
 import styles from "./home.module.scss";
 
 export default function Home() {
+    const { setSelectedTab } = useTabsStore();
     useLoad(() => {
-        setSelected(0);
+        setSelectedTab(0);
     });
 
     return (

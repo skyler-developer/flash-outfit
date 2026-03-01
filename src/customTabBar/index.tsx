@@ -1,6 +1,6 @@
 import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
-import { TAB_LIST } from "./config/tabList";
+import { TAB_LIST_COMPLETED } from "./config/tabList";
 import { useTabsStore } from "@/stores/tabsStore/useTabsStore";
 
 const CN = {
@@ -18,33 +18,38 @@ const CN = {
 };
 
 export default function CustomTabBar() {
-  const selected = useTabsStore((s) => s.selectedTab);
+  const { selectedTab, setSelectedTab } = useTabsStore();
 
-  const handleSwitch = (item: (typeof TAB_LIST)[0]) => {
+  const handleSwitch = (item: (typeof TAB_LIST_COMPLETED)[0]) => {
     Taro.switchTab({ url: `/${item.pagePath}` });
+    setSelectedTab(item.index);
   };
 
   return (
     <View className={CN.root}>
       <View className={CN.inner}>
-        {TAB_LIST.map((item) => (
+        {TAB_LIST_COMPLETED.map((item) => (
           <View
             key={item.pagePath}
-            className={`${CN.item} ${item.index === 2 ? CN.itemCenter : ""} ${selected === item.index ? CN.selected : ""}`}
+            className={`${CN.item} ${selectedTab === item.index ? CN.selected : ""}`}
             onClick={() => handleSwitch(item)}
           >
-            <View className={CN.iconWrap}>
-              {item.index === 2 ? (
-                <View className={CN.centerIcon}>
-                  <Text className={CN.centerText}>+</Text>
-                </View>
-              ) : (
-                <View className={CN.normalIcon}>
-                  <Text className={CN.iconText}>{item.text.charAt(0)}</Text>
-                </View>
-              )}
-            </View>
-            <Text className={CN.label}>{item.text}</Text>
+            <View
+              className={`iconfont ${item.className}`}
+              style={{
+                fontSize: "24px",
+                color: selectedTab === item.index ? "#F49D25" : "#94A3B8",
+              }}
+            ></View>
+            <Text
+              className={CN.label}
+              style={{
+                color: selectedTab === item.index ? "#F49D25" : "#94A3B8",
+                fontWeight: selectedTab === item.index ? 500 : 400,
+              }}
+            >
+              {item.text}
+            </Text>
           </View>
         ))}
       </View>
