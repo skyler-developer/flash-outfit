@@ -1,0 +1,86 @@
+@import '@/styles/variables.scss';
+
+.container {
+  // 容器样式
+}
+
+.locationItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border-color-light;
+  }
+}
+
+.locationLabel {
+  display: flex;
+  align-items: center;
+  width: 160px;
+}
+
+.labelIcon {
+  font-size: 28px;
+  margin-right: $spacing-sm;
+}
+
+.labelText {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+}
+
+.locationValue {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+  background-color: $bg-input;
+  border-radius: $border-radius-sm;
+}
+
+.valueText {
+  font-size: $font-size-md;
+  color: $text-primary;
+}
+
+.refreshIcon {
+  font-size: $font-size-lg;
+  color: $primary-color;
+}
+
+.destinationInput {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: $bg-input;
+  border-radius: $border-radius-sm;
+  padding-right: $spacing-sm;
+}
+
+.input {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-md;
+  color: $text-primary;
+}
+
+.placeholder {
+  color: $text-placeholder;
+}
+
+.clearBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+}
+
+.clearIcon {
+  font-size: 24px;
+  color: $text-light;
+}

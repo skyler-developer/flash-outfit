@@ -1,0 +1,74 @@
+@import '@/styles/variables.scss';
+
+.container {
+  // 容器样式
+}
+
+.quickOptions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.quickOption {
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-sm;
+  background-color: $bg-card;
+  transition: all 0.2s ease;
+
+  &.active {
+    border-color: $primary-color;
+    background-color: rgba($primary-color, 0.08);
+  }
+}
+
+.quickOptionText {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+
+  .active & {
+    color: $primary-color;
+  }
+}
+
+.dateTimePicker {
+  display: flex;
+  background-color: $bg-input;
+  border-radius: $border-radius-sm;
+  overflow: hidden;
+}
+
+.pickerItem {
+  flex: 1;
+  padding: $spacing-md;
+}
+
+.pickerLabel {
+  font-size: $font-size-xs;
+  color: $text-placeholder;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.pickerValue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pickerValueText {
+  font-size: $font-size-md;
+  color: $text-primary;
+}
+
+.pickerArrow {
+  font-size: $font-size-lg;
+  color: $text-light;
+}
+
+.divider {
+  width: 1px;
+  background-color: $border-color;
+  margin: $spacing-sm 0;
+}

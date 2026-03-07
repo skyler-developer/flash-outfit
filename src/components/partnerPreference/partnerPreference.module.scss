@@ -1,0 +1,87 @@
+@import '@/styles/variables.scss';
+
+.container {
+  // 容器样式
+}
+
+.section {
+  &:not(:last-child) {
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $border-color-light;
+  }
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.genderTabs {
+  display: flex;
+  background-color: $bg-input;
+  border-radius: $border-radius-sm;
+  padding: 4px;
+}
+
+.genderTab {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  text-align: center;
+  border-radius: $border-radius-sm;
+  transition: all 0.2s ease;
+
+  &.active {
+    background-color: $bg-card;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.genderTabText {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+
+  .active & {
+    color: $text-primary;
+    font-weight: 600;
+  }
+}
+
+.ageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.ageValue {
+  font-size: $font-size-sm;
+  color: $primary-color;
+  font-weight: 600;
+}
+
+.sliderContainer {
+  // 容器样式
+}
+
+.sliderItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sliderLabel {
+  font-size: $font-size-xs;
+  color: $text-placeholder;
+  width: 60px;
+}
+
+.slider {
+  flex: 1;
+}

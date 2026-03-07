@@ -1,0 +1,35 @@
+@import '@/styles/variables.scss';
+
+.formSection {
+  background-color: $bg-card;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.icon {
+  font-size: 32px;
+  margin-right: $spacing-sm;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.required {
+  color: $color-error;
+  margin-left: 4px;
+}
+
+.content {
+  // 内容区域样式
+}
