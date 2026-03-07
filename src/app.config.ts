@@ -3,6 +3,7 @@ import { TAB_LIST } from "@/customTabBar/config/tabList";
 export default defineAppConfig({
   pages: ["pages/home/home", "pages/message/message", "pages/publish/publish", "pages/match/match", "pages/mine/mine"],
   window: {
+    navigationStyle: "custom",
     backgroundTextStyle: "light",
     navigationBarBackgroundColor: "#fff",
     navigationBarTitleText: "闪搭",
