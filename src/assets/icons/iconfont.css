@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 5131044 */
-  src: url('iconfont.woff2?t=1772348840522') format('woff2'),
-       url('iconfont.woff?t=1772348840522') format('woff'),
-       url('iconfont.ttf?t=1772348840522') format('truetype'),
-       url('iconfont.svg?t=1772348840522#iconfont') format('svg');
+  src: url('iconfont.woff2?t=1772902545466') format('woff2'),
+       url('iconfont.woff?t=1772902545466') format('woff'),
+       url('iconfont.ttf?t=1772902545466') format('truetype'),
+       url('iconfont.svg?t=1772902545466#iconfont') format('svg');
 }
 
 .iconfont {
@@ -12,6 +12,62 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-flash-outfitPartnerPreference:before {
+  content: "\e613";
+}
+
+.icon-flash-outfitPositionIcon:before {
+  content: "\e612";
+}
+
+.icon-flash-outfitActivityType:before {
+  content: "\e606";
+}
+
+.icon-flash-outfitdestination:before {
+  content: "\e607";
+}
+
+.icon-flash-outfitcalendar:before {
+  content: "\e608";
+}
+
+.icon-flash-outfitbasketball:before {
+  content: "\e609";
+}
+
+.icon-flash-outfitposition:before {
+  content: "\e60a";
+}
+
+.icon-flash-outfitphotography:before {
+  content: "\e60b";
+}
+
+.icon-flash-outfitdescription:before {
+  content: "\e60c";
+}
+
+.icon-flash-outfitTwin:before {
+  content: "\e60d";
+}
+
+.icon-flash-outfitUploadPhotoPlusSign:before {
+  content: "\e60e";
+}
+
+.icon-flash-outfitUploadPhoto:before {
+  content: "\e60f";
+}
+
+.icon-flash-outfitLittleRocket:before {
+  content: "\e610";
+}
+
+.icon-flash-outfitpicture:before {
+  content: "\e611";
 }
 
 .icon-flash-outfithome:before {

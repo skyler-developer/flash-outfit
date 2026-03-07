@@ -1,32 +1,33 @@
 @import '@/styles/variables.scss';
 
 .formSection {
-  background-color: $bg-page;
-  margin-bottom: $spacing-md;
+    background-color: $bg-page;
+    margin-bottom: $spacing-md;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  margin-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    margin-bottom: $spacing-md;
 }
 
 .icon {
-  font-size: 32px;
-  margin-right: $spacing-sm;
+    font-size: 32px;
+    margin-right: $spacing-md;
+    color: $primary-color;
 }
 
 .title {
-  font-size: $font-size-md;
-  font-weight: 600;
-  color: $text-primary;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $text-primary;
 }
 
 .required {
-  color: $color-error;
-  margin-left: 4px;
+    color: $color-error;
+    margin-left: 4px;
 }
 
 .content {
-  // 内容区域样式
+    // 内容区域样式
 }

@@ -6,6 +6,104 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "47018729",
+      "name": "伙伴偏好icon",
+      "font_class": "PartnerPreference",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "47018728",
+      "name": "位置图标",
+      "font_class": "PositionIcon",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "47018606",
+      "name": "活动类悉",
+      "font_class": "ActivityType",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "47018608",
+      "name": "目的地",
+      "font_class": "destination",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "47018609",
+      "name": "日历",
+      "font_class": "calendar",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "47018613",
+      "name": "篮球",
+      "font_class": "basketball",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "47018615",
+      "name": "位置",
+      "font_class": "position",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "47018616",
+      "name": "摄影",
+      "font_class": "photography",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "47018617",
+      "name": "描述",
+      "font_class": "description",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "47018618",
+      "name": "双人",
+      "font_class": "Twin",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "47018619",
+      "name": "上传照片加号",
+      "font_class": "UploadPhotoPlusSign",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "47018621",
+      "name": "上传照片",
+      "font_class": "UploadPhoto",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "47018622",
+      "name": "小火箭",
+      "font_class": "LittleRocket",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "47018623",
+      "name": "图片",
+      "font_class": "picture",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
       "icon_id": "46963147",
       "name": "首页",
       "font_class": "home",

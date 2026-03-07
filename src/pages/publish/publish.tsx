@@ -75,17 +75,17 @@ export default function Publish() {
       {/* 表单内容 */}
       <View className={styles.content}>
         {/* 活动类型 */}
-        <FormSection title={FORM_LABELS.activityType} icon="📌" required>
+        <FormSection title={FORM_LABELS.activityType} icon="icon-flash-outfitActivityType" required>
           <ActivityTypeSelector value={activityType} onChange={setActivityType} />
         </FormSection>
 
         {/* 活动时间 */}
-        <FormSection title={FORM_LABELS.activityTime} icon="📅" required>
+        <FormSection title={FORM_LABELS.activityTime} icon="icon-flash-outfitcalendar" required>
           <TimePicker value={selectedTime} onChange={setSelectedTime} />
         </FormSection>
 
         {/* 活动地点 */}
-        <FormSection title={FORM_LABELS.activityLocation} icon="📍" required>
+        <FormSection title={FORM_LABELS.activityLocation} icon="icon-flash-outfitPositionIcon" required>
           <LocationSelector
             currentLocation={currentLocation}
             destination={destination}
@@ -95,7 +95,7 @@ export default function Publish() {
         </FormSection>
 
         {/* 伙伴偏好 */}
-        <FormSection title={FORM_LABELS.partnerPreference} icon="👥">
+        <FormSection title={FORM_LABELS.partnerPreference} icon="icon-flash-outfitPartnerPreference">
           <PartnerPreference
             gender={gender}
             ageRange={ageRange}
@@ -105,7 +105,7 @@ export default function Publish() {
         </FormSection>
 
         {/* 活动描述 */}
-        <FormSection title={FORM_LABELS.activityDescription} icon="📝" required>
+        <FormSection title={FORM_LABELS.activityDescription} icon="icon-flash-outfitdescription" required>
           <Textarea
             className={styles.textarea}
             placeholder="描述一下你的活动计划、对伙伴的要求等..."
@@ -121,7 +121,7 @@ export default function Publish() {
         </FormSection>
 
         {/* 活动照片 */}
-        <FormSection title={FORM_LABELS.activityPhotos} icon="📷" required>
+        <FormSection title={FORM_LABELS.activityPhotos} icon="icon-flash-outfitUploadPhoto" required>
           <ImageUploader
             images={images}
             onAdd={addImages}
@@ -136,7 +136,7 @@ export default function Publish() {
             disabled={!canSubmit}
             onClick={handleSubmit}
           >
-            <Text className={styles.submitBtnIcon}>🚀</Text>
+            <View className={`iconfont icon-flash-outfitLittleRocket ${styles.submitBtnIcon}`}></View>
             <Text className={styles.submitBtnText}>发布请求</Text>
           </Button>
           <Text className={styles.submitTip}>发布请求即代表您已同意社区公约</Text>

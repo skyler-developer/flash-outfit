@@ -17,7 +17,7 @@ export default function FormSection({
   return (
     <View className={styles.formSection}>
       <View className={styles.header}>
-        {icon && <Text className={styles.icon}>{icon}</Text>}
+        {icon && <View className={`iconfont ${icon} ${styles.icon}`}></View>}
         <Text className={styles.title}>
           {title}
           {required && <Text className={styles.required}>*</Text>}
