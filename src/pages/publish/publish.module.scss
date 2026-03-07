@@ -2,7 +2,7 @@
 
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #e8f5e9 0%, #fff9e6 200px, $bg-page 400px);
+  background: $bg-page;
   padding-bottom: calc(180px + env(safe-area-inset-bottom));
 }
 

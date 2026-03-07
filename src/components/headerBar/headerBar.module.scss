@@ -1,51 +1,48 @@
 @import '@/styles/variables.scss';
 
+
+
 .headerBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(135deg, #e8f5e9 0%, #fff9e6 100%);
-  z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: $bg-page;
+    z-index: 100;
 }
 
 .content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 32px;
-  position: relative;
-}
-
-.closeBtn,
-.helpBtn {
-  position: absolute;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 32px;
+    position: relative;
 }
 
 .closeBtn {
-  left: 32px;
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
-.helpBtn {
-  right: 32px;
+.closeBtn {
+    left: 32px;
 }
 
-.closeIcon,
-.helpIcon {
-  font-size: 36px;
-  color: $text-secondary;
-  font-weight: 300;
+
+.closeIcon {
+    font-size: 36px;
+    color: $text-secondary;
+    font-weight: 300;
 }
 
 .title {
-  font-size: $font-size-lg;
-  font-weight: 600;
-  color: $text-primary;
+    font-size: $font-size-lg;
+    font-weight: 700;
+    color: $text-primary;
 }

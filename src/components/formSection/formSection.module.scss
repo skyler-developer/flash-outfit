@@ -1,11 +1,8 @@
 @import '@/styles/variables.scss';
 
 .formSection {
-  background-color: $bg-card;
-  border-radius: $border-radius;
-  padding: $spacing-lg;
+  background-color: $bg-page;
   margin-bottom: $spacing-md;
-  box-shadow: $shadow-card;
 }
 
 .header {

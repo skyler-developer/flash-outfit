@@ -70,7 +70,7 @@ export default function Publish() {
   return (
     <View className={styles.page}>
       {/* 标题栏 */}
-      <HeaderBar title="发布活动请求" showClose showHelp />
+      <HeaderBar title="发布活动" showClose showHelp />
 
       {/* 表单内容 */}
       <View className={styles.content}>
@@ -144,7 +144,7 @@ export default function Publish() {
       </View>
 
       {/* 底部 TabBar */}
-      <CustomTabBar />
+      {/* <CustomTabBar /> */}
     </View>
   );
 }
