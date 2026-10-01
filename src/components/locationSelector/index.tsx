@@ -67,16 +67,16 @@ export default function LocationSelector({
           <Text className={styles.valueText}>
             {isLoading
               ? '定位中...'
-              : currentLocation?.name || (locFailed ? '定位失败' : '点击获取位置')}
+              : currentLocation?.name || (locFailed ? '定位失败' : '已定位，待填城市')}
           </Text>
           <Text className={styles.refreshIcon}>⟳</Text>
         </View>
-        {/* 定位失败降级：手动输入城市 */}
-        {locFailed && !currentLocation && (
+        {/* 城市名缺失（定位失败或无地图 key）：手动输入城市 */}
+        {!currentLocation?.name && (
           <View className={styles.manualCity}>
             <Input
               className={styles.manualInput}
-              placeholder='手动输入城市，如：北京'
+              placeholder='手动输入所在城市，如：北京'
               placeholderClass={styles.placeholder}
               value={manualCity}
               onInput={(e) => {

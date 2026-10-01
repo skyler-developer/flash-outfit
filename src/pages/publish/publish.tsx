@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Textarea, Button, Switch } from '@tarojs/components';
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
 import { usePublishStore } from '@/stores/publishStore/usePublishStore';
 import { useUserStore } from '@/stores/userStore/useUserStore';
@@ -51,18 +51,48 @@ export default function Publish() {
   /** 定位失败降级：手动填写的城市（无坐标） */
   const [manualCity, setManualCity] = useState('');
 
-  useLoad(() => {
+  useDidShow(() => {
     setSelectedTab(2);
   });
 
-  // 获取当前位置（真实逆地理编码）
+  /** 不满足条件的字段 → 对应表单区域节点 id */
+  const FIELD_SECTION_IDS: Record<string, string> = {
+    activityType: 'section-activityType',
+    activityTime: 'section-activityTime',
+    destination: 'section-location',
+    description: 'section-description',
+    images: 'section-photos',
+  };
+
+  // 滚动到不满足条件的表单区域
+  const scrollToSection = (field?: string) => {
+    const id = field ? FIELD_SECTION_IDS[field] : undefined;
+    if (!id) return;
+    Taro.nextTick(() => {
+      const query = Taro.createSelectorQuery();
+      query.select(`#${id}`).boundingClientRect();
+      query.selectViewport().scrollOffset();
+      query.exec((res) => {
+        const rect = res?.[0] as { top: number } | null;
+        const scroll = res?.[1] as { scrollTop: number } | null;
+        if (rect && scroll) {
+          Taro.pageScrollTo({
+            scrollTop: Math.max(scroll.scrollTop + rect.top - 140, 0),
+            duration: 300,
+          });
+        }
+      });
+    });
+  };
+
+  // 获取当前位置（真实逆地理编码；无地图 key 时 city 为空，引导手动输入）
   const handleRefreshLocation = async () => {
     try {
       const res = await Taro.getLocation({ type: 'gcj02' });
-      let name = '当前位置';
+      let name = '';
       try {
         const geo = await reverseGeo(res.latitude, res.longitude);
-        name = [geo.city, geo.district].filter(Boolean).join('') || '当前位置';
+        name = [geo.city, geo.district].filter(Boolean).join('');
       } catch {
         // 逆地理失败不影响坐标采集
       }
@@ -99,7 +129,14 @@ export default function Publish() {
   // 提交发布
   const handleSubmit = async () => {
     const state = usePublishStore.getState();
+    if (state.isSubmitting) return;
     const validation = state.validateForm();
+
+    if (!validation.valid) {
+      Taro.showToast({ title: validation.message || '请完善表单信息', icon: 'none' });
+      scrollToSection(validation.field);
+      return;
+    }
 
     // 微信号强校验（成组刚需）
     if (!user?.wechatId) {
@@ -121,21 +158,32 @@ export default function Publish() {
       return;
     }
 
-    // 定位兜底：未授权时再尝试一次；失败降级为手动城市（不阻断发布）
+    // 定位兜底：坐标或城市名缺失时再尝试一次；仍无城市名则要求手动输入
     let lat = currentLocation?.latitude ?? null;
     let lng = currentLocation?.longitude ?? null;
     let city = currentLocation?.name || manualCity || '';
-    if ((lat == null || lng == null) && !city) {
+    if ((lat == null || lng == null || !city) && !manualCity) {
       try {
         const res = await Taro.getLocation({ type: 'gcj02' });
-        lat = res.latitude;
-        lng = res.longitude;
+        lat = lat ?? res.latitude;
+        lng = lng ?? res.longitude;
+        if (!city) {
+          try {
+            const geo = await reverseGeo(res.latitude, res.longitude);
+            city = [geo.city, geo.district].filter(Boolean).join('');
+          } catch {
+            // 逆地理失败不影响提交
+          }
+        }
       } catch {
-        Taro.showToast({ title: '请授权定位，或手动输入所在城市', icon: 'none' });
-        return;
+        // 定位失败：只要手动填了城市也能提交
       }
     }
-    if (!city) city = '未知城市';
+    if (!city) {
+      Taro.showToast({ title: '请手动输入所在城市后提交', icon: 'none' });
+      scrollToSection('destination');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -186,30 +234,36 @@ export default function Publish() {
   return (
     <View className={styles.page}>
       {/* 标题栏 */}
-      <HeaderBar title='发布请求' showClose showHelp />
+      <HeaderBar title='发布请求' showBack showHelp={false} />
 
       {/* 表单内容 */}
       <View className={styles.content}>
         {/* 活动类型 */}
-        <FormSection title={FORM_LABELS.activityType} icon='icon-flash-outfitActivityType' required>
-          <ActivityTypeSelector value={activityType} onChange={setActivityType} />
-        </FormSection>
+        <View id='section-activityType'>
+          <FormSection title={FORM_LABELS.activityType} icon='icon-flash-outfitActivityType' required>
+            <ActivityTypeSelector value={activityType} onChange={setActivityType} />
+          </FormSection>
+        </View>
 
         {/* 活动时间 */}
-        <FormSection title={FORM_LABELS.activityTime} icon='icon-flash-outfitcalendar' required>
-          <TimePicker value={selectedTime} onChange={setSelectedTime} />
-        </FormSection>
+        <View id='section-activityTime'>
+          <FormSection title={FORM_LABELS.activityTime} icon='icon-flash-outfitcalendar' required>
+            <TimePicker value={selectedTime} onChange={setSelectedTime} />
+          </FormSection>
+        </View>
 
         {/* 活动地点 */}
-        <FormSection title={FORM_LABELS.activityLocation} icon='icon-flash-outfitPositionIcon' required>
-          <LocationSelector
-            currentLocation={currentLocation}
-            destination={destination}
-            onRefreshLocation={handleRefreshLocation}
-            onDestinationChange={setDestination}
-            onManualCity={setManualCity}
-          />
-        </FormSection>
+        <View id='section-location'>
+          <FormSection title={FORM_LABELS.activityLocation} icon='icon-flash-outfitPositionIcon' required>
+            <LocationSelector
+              currentLocation={currentLocation}
+              destination={destination}
+              onRefreshLocation={handleRefreshLocation}
+              onDestinationChange={setDestination}
+              onManualCity={setManualCity}
+            />
+          </FormSection>
+        </View>
 
         {/* 伙伴偏好 */}
         <FormSection title={FORM_LABELS.partnerPreference} icon='icon-flash-outfitPartnerPreference'>
@@ -255,7 +309,8 @@ export default function Publish() {
         </FormSection>
 
         {/* 活动描述 */}
-        <FormSection title={FORM_LABELS.activityDescription} icon='icon-flash-outfitdescription' required>
+        <View id='section-description'>
+          <FormSection title={FORM_LABELS.activityDescription} icon='icon-flash-outfitdescription' required>
           <Textarea
             className={styles.textarea}
             placeholder='描述一下你的活动计划、对伙伴的要求等...'
@@ -268,18 +323,20 @@ export default function Publish() {
           <View className={styles.textareaCount}>
             <Text className={styles.countText}>{description.length}/500</Text>
           </View>
-        </FormSection>
+          </FormSection>
+        </View>
 
         {/* 活动照片 */}
-        <FormSection title={FORM_LABELS.activityPhotos} icon='icon-flash-outfitUploadPhoto' required>
-          <ImageUploader images={images} onAdd={handleAddImages} onRemove={removeImage} />
-        </FormSection>
+        <View id='section-photos'>
+          <FormSection title={FORM_LABELS.activityPhotos} icon='icon-flash-outfitUploadPhoto' required>
+            <ImageUploader images={images} onAdd={handleAddImages} onRemove={removeImage} />
+          </FormSection>
+        </View>
 
         {/* 提交按钮 */}
         <View className={styles.submitSection}>
           <Button
             className={`${styles.submitBtn} ${!canSubmit ? styles.disabled : ''}`}
-            disabled={!canSubmit}
             onClick={handleSubmit}
           >
             <View className={`iconfont icon-flash-outfitLittleRocket ${styles.submitBtnIcon}`}></View>

@@ -37,7 +37,7 @@ export class UploadController {
     const filename = `r_${Date.now()}_${Math.random().toString(36).slice(2, 8)}${safeExt}`;
     fs.writeFileSync(path.join(dir, filename), file.buffer);
 
-    return { url: `${appConfig.publicBaseUrl}/uploads/r/${filename}` };
+    return { url: `${appConfig.publicBaseUrl}/api/v1/uploads/r/${filename}` };
   }
 }
 
@@ -54,8 +54,8 @@ export class GeoController {
     }
 
     if (!appConfig.tencentMapKey) {
-      // 开发降级：不调用外部服务
-      return { city: '未知城市', district: '' };
+      // 开发降级：未配置地图 key，无城市名（前端会引导手动输入）
+      return { city: '', district: '' };
     }
 
     const url =
@@ -67,10 +67,10 @@ export class GeoController {
       result?: { address_component?: { city?: string; district?: string } };
     };
     if (data.status !== 0 || !data.result?.address_component) {
-      return { city: '未知城市', district: '' };
+      return { city: '', district: '' };
     }
     return {
-      city: data.result.address_component.city || '未知城市',
+      city: data.result.address_component.city || '',
       district: data.result.address_component.district || '',
     };
   }

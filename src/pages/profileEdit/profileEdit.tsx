@@ -48,6 +48,24 @@ export default function ProfileEdit() {
     setInitialized(true);
   };
 
+  /** 微信官方「头像填充」：open-type=chooseAvatar，用户确认后返回临时文件，上传后存 URL */
+  const handleChooseWxAvatar = async (e: { detail: { avatarUrl: string } }) => {
+    const tempPath = e.detail.avatarUrl;
+    if (!tempPath) return;
+    try {
+      Taro.showLoading({ title: '上传中…', mask: true });
+      const url = await uploadImage(tempPath);
+      setAvatar(url);
+      Taro.hideLoading();
+      Taro.showToast({ title: '头像已更新', icon: 'none' });
+    } catch (err) {
+      Taro.hideLoading();
+      const error = err as { message?: string };
+      Taro.showToast({ title: error.message || '上传失败', icon: 'none' });
+    }
+  };
+
+  /** 兜底：从相册选图作为头像 */
   const handleChooseAvatar = async () => {
     try {
       const res = await Taro.chooseImage({ count: 1, sizeType: ['compressed'] });
@@ -127,7 +145,18 @@ export default function ProfileEdit() {
           <View className={styles.card}>
             <View className={styles.row}>
               <Text className={styles.label}>头像</Text>
-              <View className={styles.avatarWrap} onClick={handleChooseAvatar}>
+              <View className={styles.avatarBtns}>
+                {/* 微信官方能力：一键填充微信头像（基础库 ≥ 2.21.2） */}
+                <Button
+                  className={styles.wxAvatarBtn}
+                  openType='chooseAvatar'
+                  onChooseAvatar={handleChooseWxAvatar}
+                >
+                  <Text className={styles.wxAvatarBtnText}>微信头像</Text>
+                </Button>
+                <Button className={styles.localAvatarBtn} onClick={handleChooseAvatar}>
+                  <Text className={styles.localAvatarBtnText}>相册选图</Text>
+                </Button>
                 {avatar ? (
                   <Image className={styles.avatar} src={avatar} mode='aspectFill' />
                 ) : (
@@ -141,9 +170,10 @@ export default function ProfileEdit() {
               <Text className={styles.label}>昵称</Text>
               <Input
                 className={styles.input}
+                type='nickname'
                 value={nickname}
                 onInput={(e) => setNickname(e.detail.value)}
-                placeholder='给自己起个名字'
+                placeholder='点击可快速填入微信昵称'
                 placeholderClass={styles.placeholder}
                 maxlength={20}
               />

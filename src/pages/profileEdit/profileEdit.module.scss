@@ -80,6 +80,54 @@
   flex-shrink: 0;
 }
 
+.avatarBtns {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+/* 微信头像填充按钮：去原生样式，做成胶囊 */
+.wxAvatarBtn {
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  background: #fdf1de;
+  border-radius: 100px;
+  border: none;
+
+  &::after {
+    border: none;
+  }
+}
+
+.wxAvatarBtnText {
+  display: block;
+  padding: 10px 24px;
+  font-size: 22px;
+  color: #d97706;
+}
+
+.localAvatarBtn {
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  background: #f4f4f5;
+  border-radius: 100px;
+  border: none;
+
+  &::after {
+    border: none;
+  }
+}
+
+.localAvatarBtnText {
+  display: block;
+  padding: 10px 24px;
+  font-size: 22px;
+  color: #64748b;
+}
+
 .avatar {
   width: 100px;
   height: 100px;

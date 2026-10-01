@@ -1,4 +1,4 @@
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useDidShow, useLoad } from '@tarojs/taro';
 import { View, Text, Image } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
 import CustomTabBar from '@/customTabBar';
@@ -14,10 +14,14 @@ export default function Mine() {
   const logout = useUserStore((s) => s.logout);
 
   useLoad(() => {
-    setSelectedTab(3);
     refreshUser().catch(() => {
       // token 失效等场景静默处理
     });
+  });
+
+  // 每次进入页面同步 tabBar 选中态（switchTab 回来时 useLoad 不会重新执行）
+  useDidShow(() => {
+    setSelectedTab(3);
   });
 
   const goToEdit = () => {

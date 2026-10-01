@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import Taro, { useLoad, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Taro, { useDidShow, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { ScrollView, Text, View, Picker } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
 import CustomTabBar from '@/customTabBar';
@@ -41,7 +41,9 @@ const CITIES = [
 
 export default function Home() {
   const { setSelectedTab } = useTabsStore();
-  useLoad(() => setSelectedTab(0));
+
+  /** 首次 show 由挂载时的 useEffect 负责加载，跳过避免重复请求 */
+  const firstShowRef = useRef(true);
 
   const [type, setType] = useState('');
   const [timeRange, setTimeRange] = useState<'all' | 'weekend' | 'd7' | 'd30'>('all');
@@ -112,6 +114,17 @@ export default function Home() {
       return;
     }
     fetchList(1, true).finally(() => Taro.stopPullDownRefresh());
+  });
+
+  // 每次进入页面：同步 tabBar 选中态；非首次进入（如发布成功 switchTab 回来）刷新列表
+  useDidShow(() => {
+    setSelectedTab(0);
+    if (firstShowRef.current) {
+      firstShowRef.current = false;
+      return;
+    }
+    if (locMode === 'none') return;
+    fetchList(1, true);
   });
 
   useReachBottom(() => {

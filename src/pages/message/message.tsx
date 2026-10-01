@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useDidShow, useLoad } from '@tarojs/taro';
 import { ScrollView, Text, View } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
 import CustomTabBar from '@/customTabBar';
@@ -54,8 +54,12 @@ export default function Message() {
   };
 
   useLoad(() => {
-    setSelectedTab(1);
     load();
+  });
+
+  // 每次进入页面同步 tabBar 选中态（switchTab 回来时 useLoad 不会重新执行）
+  useDidShow(() => {
+    setSelectedTab(1);
   });
 
   const handleTapItem = async (item: NotificationItem) => {

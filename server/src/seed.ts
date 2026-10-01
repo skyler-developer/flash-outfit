@@ -38,7 +38,7 @@ async function seed() {
     mk({
       openid: 'mock:alice',
       nickname: '阿黄爱拍照',
-      avatar: 'https://cdn.example.com/u/a1.png',
+      avatar: 'http://localhost:3000/api/v1/uploads/r/avatar.jpg',
       gender: 'female',
       birthYear: 1998,
       wechatId: 'ahuang_98',
@@ -47,7 +47,7 @@ async function seed() {
     mk({
       openid: 'mock:bob',
       nickname: '山野小蓝',
-      avatar: 'https://cdn.example.com/u/b1.png',
+      avatar: 'http://localhost:3000/api/v1/uploads/r/avatar.jpg',
       gender: 'male',
       birthYear: 1997,
       wechatId: 'xiaolan27',
@@ -56,7 +56,7 @@ async function seed() {
     mk({
       openid: 'mock:carol',
       nickname: '走走停停',
-      avatar: 'https://cdn.example.com/u/c1.png',
+      avatar: 'http://localhost:3000/api/v1/uploads/r/avatar.jpg',
       gender: 'female',
       birthYear: 1995,
       wechatId: 'carol_trip',
@@ -95,7 +95,7 @@ async function seed() {
       ageMin: 20,
       ageMax: 35,
       description: '周末东澳岛拍星轨，两日一晚，找个会拍照的搭子，我带三脚架你带好心情。',
-      photos: ['https://cdn.example.com/r/501/0.jpg'],
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed1.jpg'],
     }),
     req({
       publisherId: u2.id,
@@ -107,7 +107,7 @@ async function seed() {
       city: '北京',
       genderPreference: 'male',
       description: '周六早上奥森南门集合，配速 6 分，跑完一起吃早餐，长期固定搭子更好。',
-      photos: ['https://cdn.example.com/r/502/0.jpg'],
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed2.jpg'],
     }),
     req({
       publisherId: u3.id,
@@ -121,7 +121,7 @@ async function seed() {
       ageMax: 45,
       maxMembers: 3,
       description: '五一后错峰川西小环线 5 天自驾，已订好车，找会开车的搭子平摊油费。',
-      photos: ['https://cdn.example.com/r/503/0.jpg'],
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed3.jpg'],
     }),
     req({
       publisherId: u1.id,
@@ -132,7 +132,7 @@ async function seed() {
       lng: 101.78,
       city: '西宁',
       description: '青甘大环线 7 天 6 晚，摄影向行程，日出日落各追一场，AA 制无购物。',
-      photos: ['https://cdn.example.com/r/504/0.jpg'],
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed4.jpg'],
     }),
     req({
       publisherId: u2.id,
@@ -143,7 +143,7 @@ async function seed() {
       lng: 116.49,
       city: '北京',
       description: '周中下午 798 扫街，人像互拍，我有相机有镜头，你出镜即可，出片全送。',
-      photos: ['https://cdn.example.com/r/505/0.jpg'],
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed5.jpg'],
     }),
     req({
       publisherId: u3.id,
@@ -155,7 +155,7 @@ async function seed() {
       city: '北京',
       genderPreference: 'female',
       description: '周三晚首钢园夜骑 20km，之后夜宵烧烤，女生优先，注意保暖和车灯。',
-      photos: ['https://cdn.example.com/r/506/0.jpg'],
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed6.jpg'],
     }),
   ]);
 

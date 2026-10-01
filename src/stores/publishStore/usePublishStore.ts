@@ -52,8 +52,8 @@ export interface PublishStore {
   isSubmitting: boolean;
   setIsSubmitting: (value: boolean) => void;
 
-  // 表单验证
-  validateForm: () => { valid: boolean; message?: string };
+  // 表单验证（field 用于定位到不满足条件的表单区域）
+  validateForm: () => { valid: boolean; field?: 'activityType' | 'activityTime' | 'destination' | 'description' | 'images'; message?: string };
 
   // 重置表单
   resetForm: () => void;
@@ -101,24 +101,24 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
   isSubmitting: false,
   setIsSubmitting: (value) => set({ isSubmitting: value }),
 
-  // 表单验证
+  // 表单验证（field 用于定位到不满足条件的表单区域）
   validateForm: () => {
     const state = get();
 
     if (!state.activityType) {
-      return { valid: false, message: VALIDATION_MESSAGES.activityTypeRequired };
+      return { valid: false, field: 'activityType', message: VALIDATION_MESSAGES.activityTypeRequired };
     }
     if (!state.selectedTime) {
-      return { valid: false, message: VALIDATION_MESSAGES.timeRequired };
+      return { valid: false, field: 'activityTime', message: VALIDATION_MESSAGES.timeRequired };
     }
     if (!state.destination.trim()) {
-      return { valid: false, message: VALIDATION_MESSAGES.destinationRequired };
+      return { valid: false, field: 'destination', message: VALIDATION_MESSAGES.destinationRequired };
     }
     if (state.description.length < 10) {
-      return { valid: false, message: VALIDATION_MESSAGES.descriptionMinLength };
+      return { valid: false, field: 'description', message: VALIDATION_MESSAGES.descriptionMinLength };
     }
     if (state.images.length === 0) {
-      return { valid: false, message: VALIDATION_MESSAGES.imageRequired };
+      return { valid: false, field: 'images', message: VALIDATION_MESSAGES.imageRequired };
     }
 
     return { valid: true };
