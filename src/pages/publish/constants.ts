@@ -13,8 +13,22 @@ export const ACTIVITY_TYPES: ActivityTypeOption[] = [
   { type: 'sports', label: '运动', icon: '动' },
 ];
 
+/** 活动类型映射（卡片/详情展示用） */
+export const ACTIVITY_TYPE_MAP: Record<ActivityType, { label: string; icon: string; iconClass: string }> = {
+  travel: { label: '旅行', icon: '旅', iconClass: 'icon-flash-outfittravel' },
+  photography: { label: '摄影', icon: '摄', iconClass: 'icon-flash-outfitphotography' },
+  sports: { label: '运动', icon: '动', iconClass: 'icon-flash-outfitsports' },
+};
+
 // 快捷时间选项
 export type QuickOptionType = 'weekend' | 'nextWeek' | 'nextMonth';
+
+/** 完整时间选择（发布表单使用） */
+export interface TimeSelection {
+  date: string; // YYYY-MM-DD
+  time: string; // HH:mm
+  quickOption: QuickOptionType | null;
+}
 
 export interface QuickTimeOption {
   type: QuickOptionType;

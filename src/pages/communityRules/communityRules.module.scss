@@ -1,0 +1,112 @@
+.page {
+  min-height: 100vh;
+  background: #f7f8f5;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 24px 24px 24px 12px;
+  background: #fff;
+}
+
+.backBtn {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backIcon {
+  font-size: 44px;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.headerTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-right: 64px;
+}
+
+.body {
+  height: calc(100vh - 120px);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.intro {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 24px;
+  margin-bottom: 20px;
+}
+
+.introTitle {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.introText {
+  display: block;
+  font-size: 26px;
+  color: #64748b;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+.section {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+  color: #d97706;
+  margin-bottom: 16px;
+}
+
+.ruleItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 14px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ruleDot {
+  font-size: 28px;
+  color: #f49d25;
+  margin-right: 12px;
+  line-height: 1.6;
+}
+
+.ruleText {
+  flex: 1;
+  font-size: 26px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 40px;
+}
+
+.footerText {
+  font-size: 22px;
+  color: #c4cbd5;
+}

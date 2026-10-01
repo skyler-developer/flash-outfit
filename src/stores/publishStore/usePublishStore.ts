@@ -1,14 +1,8 @@
 import { create } from 'zustand';
-import type { ActivityType, QuickOptionType, GenderType } from '@/pages/publish/constants';
+import type { ActivityType, GenderType, TimeSelection } from '@/pages/publish/constants';
 import { AGE_RANGE, VALIDATION_MESSAGES } from '@/pages/publish/constants';
-import Taro from '@tarojs/taro';
 
-// 时间选择类型
-export interface TimeSelection {
-  date: string;
-  time: string;
-  quickOption?: QuickOptionType | null;
-}
+export type { TimeSelection };
 
 // 位置信息类型
 export interface LocationInfo {
@@ -48,15 +42,18 @@ export interface PublishStore {
   addImages: (urls: string[]) => void;
   removeImage: (index: number) => void;
 
+  // 成组设置（v1.1 新增字段）
+  maxMembers: number;
+  autoCloseOnGrouped: boolean;
+  setMaxMembers: (n: number) => void;
+  setAutoCloseOnGrouped: (v: boolean) => void;
+
   // 表单状态
   isSubmitting: boolean;
   setIsSubmitting: (value: boolean) => void;
 
   // 表单验证
   validateForm: () => { valid: boolean; message?: string };
-
-  // 提交表单
-  submitForm: () => Promise<boolean>;
 
   // 重置表单
   resetForm: () => void;
@@ -94,6 +91,12 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     images: state.images.filter((_, i) => i !== index),
   })),
 
+  // 成组设置
+  maxMembers: 1,
+  autoCloseOnGrouped: false,
+  setMaxMembers: (n) => set({ maxMembers: n }),
+  setAutoCloseOnGrouped: (v) => set({ autoCloseOnGrouped: v }),
+
   // 表单状态
   isSubmitting: false,
   setIsSubmitting: (value) => set({ isSubmitting: value }),
@@ -121,60 +124,6 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     return { valid: true };
   },
 
-  // 提交表单
-  submitForm: async () => {
-    const state = get();
-    const validation = state.validateForm();
-
-    if (!validation.valid) {
-      Taro.showToast({
-        title: validation.message || '请完善表单信息',
-        icon: 'none',
-      });
-      return false;
-    }
-
-    set({ isSubmitting: true });
-
-    try {
-      // TODO: 调用实际的发布接口
-      // const response = await publishActivity({
-      //   activityType: state.activityType,
-      //   time: state.selectedTime,
-      //   location: { current: state.currentLocation, destination: state.destination },
-      //   partnerPreference: { gender: state.gender, ageRange: state.ageRange },
-      //   description: state.description,
-      //   images: state.images,
-      // });
-
-      // 模拟接口调用
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      Taro.showToast({
-        title: '发布成功',
-        icon: 'success',
-      });
-
-      // 重置表单
-      get().resetForm();
-
-      // 延迟跳转
-      setTimeout(() => {
-        Taro.switchTab({ url: '/pages/home/home' });
-      }, 1500);
-
-      return true;
-    } catch (error) {
-      Taro.showToast({
-        title: '发布失败，请重试',
-        icon: 'none',
-      });
-      return false;
-    } finally {
-      set({ isSubmitting: false });
-    }
-  },
-
   // 重置表单
   resetForm: () => set({
     activityType: null,
@@ -185,6 +134,8 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     ageRange: [AGE_RANGE.min, AGE_RANGE.default[1]],
     description: '',
     images: [],
+    maxMembers: 1,
+    autoCloseOnGrouped: false,
     isSubmitting: false,
   }),
 }));

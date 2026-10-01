@@ -84,3 +84,29 @@
   font-size: 26px;
   margin-top: 4px;
 }
+
+/* 消息 tab 未读红点 */
+.custom-tab-bar__badge {
+  position: absolute;
+  top: -10px;
+  right: -16px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: #ff4d4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-tab-bar__badge-text {
+  font-size: 20px;
+  color: #fff;
+  line-height: 1;
+}
+
+.custom-tab-bar__item {
+  position: relative;
+}

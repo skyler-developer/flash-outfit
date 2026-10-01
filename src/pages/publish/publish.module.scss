@@ -81,3 +81,61 @@
   color: $text-placeholder;
   margin-top: $spacing-md;
 }
+
+/* 成组设置（v1.1 新增） */
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+}
+
+.memberLabel {
+  font-size: $font-size-sm;
+  color: $text-primary;
+}
+
+.memberValue {
+  font-size: $font-size-md;
+  color: $text-primary;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+}
+
+.stepBtn {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: $bg-input;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.stepDisabled {
+    opacity: 0.4;
+  }
+}
+
+.stepIcon {
+  font-size: 36px;
+  color: $text-primary;
+  line-height: 1;
+}
+
+.switchLabelWrap {
+  flex: 1;
+  padding-right: $spacing-md;
+}
+
+.switchHint {
+  display: block;
+  font-size: 22px;
+  color: $text-placeholder;
+  margin-top: 4px;
+}

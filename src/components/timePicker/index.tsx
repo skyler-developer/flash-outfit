@@ -134,7 +134,7 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
   // 格式化显示日期
   const formatDisplayDate = (dateStr: string) => {
     if (!dateStr) return '选择日期';
-    const [year, month, day] = dateStr.split('-');
+    const [, month, day] = dateStr.split('-');
     return `${month}月${day}日`;
   };
 
@@ -180,12 +180,12 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
 
       {/* 隐藏的 Picker 组件 */}
       {showDatePicker && (
-        <Picker mode="date" value={value?.date || today} onChange={handleDateChange} start={today}>
+        <Picker mode='date' value={value?.date || today} onChange={handleDateChange} start={today}>
           <View style={{ display: 'none' }} />
         </Picker>
       )}
       {showTimePicker && (
-        <Picker mode="time" value={value?.time || '09:00'} onChange={handleTimeChange}>
+        <Picker mode='time' value={value?.time || '09:00'} onChange={handleTimeChange}>
           <View style={{ display: 'none' }} />
         </Picker>
       )}

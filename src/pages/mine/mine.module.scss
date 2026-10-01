@@ -1,12 +1,145 @@
-.mine {
-    padding: 20px;
-    padding-bottom: calc(120px + env(safe-area-inset-bottom));
-    background-color: #f5f5f5;
-    min-height: 100vh;
+.page {
+  min-height: 100vh;
+  background: #f7f8f5;
+  padding: 24px;
+  padding-bottom: calc(160px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
-.title {
-    font-size: 32px;
-    color: #333;
-    font-weight: bold;
+.profileCard {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px 24px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.avatarFallback {
+  background: #fdf1de;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarText {
+  font-size: 48px;
+  font-weight: 600;
+  color: #d97706;
+}
+
+.profileInfo {
+  flex: 1;
+  margin-left: 24px;
+  overflow: hidden;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+}
+
+.name {
+  font-size: 34px;
+  font-weight: 700;
+  color: #0f172a;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.completeChip {
+  margin-left: 16px;
+  padding: 4px 16px;
+  border-radius: 100px;
+  background: #dcfce7;
+}
+
+.completeChipText {
+  font-size: 20px;
+  color: #16a34a;
+}
+
+.incompleteChip {
+  margin-left: 16px;
+  padding: 4px 16px;
+  border-radius: 100px;
+  background: #fef3c7;
+}
+
+.incompleteChipText {
+  font-size: 20px;
+  color: #d97706;
+}
+
+.meta {
+  display: block;
+  font-size: 24px;
+  color: #64748b;
+  margin-top: 10px;
+}
+
+.wechatRow {
+  display: block;
+  font-size: 22px;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.wechatId {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.wechatEmpty {
+  color: #d97706;
+}
+
+.editIcon {
+  font-size: 40px;
+  color: #c4cbd5;
+  flex-shrink: 0;
+}
+
+.menuCard {
+  background: #fff;
+  border-radius: 24px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  padding: 32px 24px;
+}
+
+.menuIcon {
+  font-size: 36px;
+  color: #f49d25;
+  margin-right: 20px;
+}
+
+.menuLabel {
+  flex: 1;
+  font-size: 28px;
+  color: #334155;
+}
+
+.menuArrow {
+  font-size: 34px;
+  color: #c4cbd5;
+}
+
+.menuDivider {
+  height: 1px;
+  background: #f5f5f5;
+  margin-left: 80px;
 }

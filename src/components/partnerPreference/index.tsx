@@ -71,8 +71,8 @@ export default function PartnerPreference({
               min={AGE_RANGE.min}
               max={AGE_RANGE.max}
               value={ageRange[0]}
-              activeColor="#F49D25"
-              backgroundColor="#f0f0f0"
+              activeColor='#F49D25'
+              backgroundColor='#f0f0f0'
               blockSize={20}
               onChanging={handleMinAgeChange}
               onChange={handleMinAgeChange}
@@ -85,8 +85,8 @@ export default function PartnerPreference({
               min={AGE_RANGE.min}
               max={AGE_RANGE.max}
               value={ageRange[1]}
-              activeColor="#F49D25"
-              backgroundColor="#f0f0f0"
+              activeColor='#F49D25'
+              backgroundColor='#f0f0f0'
               blockSize={20}
               onChanging={handleMaxAgeChange}
               onChange={handleMaxAgeChange}

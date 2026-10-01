@@ -49,8 +49,8 @@ export default function HeaderBar({
 
     return (
         <View
-            className={styles.headerBar}
-            style={{
+          className={styles.headerBar}
+          style={{
                 paddingTop: `${systemInfo.statusBarHeight}px`,
                 height: `${navBarHeight}px`,
                 // 加上2px的下间距，过渡自然一些
@@ -64,6 +64,11 @@ export default function HeaderBar({
                     </View>
                 )}
                 <Text className={styles.title}>{title}</Text>
+                {showHelp && (
+                    <View className={styles.closeBtn} onClick={handleHelp}>
+                        <Text className={styles.closeIcon}>?</Text>
+                    </View>
+                )}
             </View>
         </View>
     );

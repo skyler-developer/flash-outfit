@@ -1,22 +1,134 @@
-import { View, Text } from "@tarojs/components";
-import { useLoad } from "@tarojs/taro";
-import CustomTabBar from "@/customTabBar";
-import PageLayout from "@/components/pageLayout";
-import { useTabsStore } from "@/stores/tabsStore/useTabsStore";
-import styles from "./mine.module.scss";
+import Taro, { useLoad } from '@tarojs/taro';
+import { View, Text, Image } from '@tarojs/components';
+import PageLayout from '@/components/pageLayout';
+import CustomTabBar from '@/customTabBar';
+import { useUserStore } from '@/stores/userStore/useUserStore';
+import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
+import { ACTIVITY_TYPES } from '@/pages/publish/constants';
+import styles from './mine.module.scss';
 
 export default function Mine() {
-    const { setSelectedTab } = useTabsStore();
-    useLoad(() => {
-        setSelectedTab(4);
-    });
+  const { setSelectedTab } = useTabsStore();
+  const user = useUserStore((s) => s.user);
+  const refreshUser = useUserStore((s) => s.refreshUser);
+  const logout = useUserStore((s) => s.logout);
 
-    return (
-        <PageLayout>
-            <View className={styles.mine}>
-                <Text className={styles.title}>我的</Text>
-                <CustomTabBar />
+  useLoad(() => {
+    setSelectedTab(3);
+    refreshUser().catch(() => {
+      // token 失效等场景静默处理
+    });
+  });
+
+  const goToEdit = () => {
+    Taro.navigateTo({ url: '/pages/profileEdit/profileEdit' });
+  };
+
+  const goToMyRequests = () => {
+    Taro.navigateTo({ url: '/pages/myRequests/myRequests' });
+  };
+
+  const goToMyApplications = () => {
+    Taro.navigateTo({ url: '/pages/myApplications/myApplications' });
+  };
+
+  const goToCommunityRules = () => {
+    Taro.navigateTo({ url: '/pages/communityRules/communityRules' });
+  };
+
+  const handleLogout = () => {
+    Taro.showModal({
+      title: '退出登录',
+      content: '确定要退出当前账号吗？',
+      confirmColor: '#F49D25',
+      success: (res) => {
+        if (res.confirm) {
+          logout();
+          Taro.showToast({ title: '已退出', icon: 'none' });
+          // 重新触发登录，回到游客可用状态
+          useUserStore.getState().ensureLogin();
+        }
+      },
+    });
+  };
+
+  const interestLabels = (user?.interests || [])
+    .map((i) => ACTIVITY_TYPES.find((t) => t.type === i)?.label || i)
+    .join(' / ');
+
+  return (
+    <PageLayout>
+      <View className={styles.page}>
+        {/* 资料卡 */}
+        <View className={styles.profileCard} onClick={goToEdit}>
+          {user?.avatar ? (
+            <Image className={styles.avatar} src={user.avatar} mode='aspectFill' />
+          ) : (
+            <View className={`${styles.avatar} ${styles.avatarFallback}`}>
+              <Text className={styles.avatarText}>
+                {user?.nickname ? user.nickname.slice(0, 1) : '客'}
+              </Text>
             </View>
-        </PageLayout>
-    );
+          )}
+          <View className={styles.profileInfo}>
+            <View className={styles.nameRow}>
+              <Text className={styles.name}>{user?.nickname || '未设置昵称'}</Text>
+              {user?.profileCompleted ? (
+                <View className={styles.completeChip}>
+                  <Text className={styles.completeChipText}>资料完整</Text>
+                </View>
+              ) : (
+                <View className={styles.incompleteChip}>
+                  <Text className={styles.incompleteChipText}>待完善</Text>
+                </View>
+              )}
+            </View>
+            <Text className={styles.meta}>
+              {user?.gender ? (user.gender === 'female' ? '♀' : '♂') : ''}
+              {user?.age ? ` ${user.age}岁` : ''}
+              {interestLabels ? ` · ${interestLabels}` : ''}
+            </Text>
+            <Text className={styles.wechatRow}>
+              微信号：{user?.wechatId ? <Text className={styles.wechatId}>{user.wechatId}</Text> : (
+                <Text className={styles.wechatEmpty}>未填写（发布前需填写）</Text>
+              )}
+            </Text>
+          </View>
+          <Text className={styles.editIcon}>›</Text>
+        </View>
+
+        {/* 入口列表 */}
+        <View className={styles.menuCard}>
+          <View className={styles.menuItem} onClick={goToMyRequests}>
+            <Text className={`iconfont icon-flash-outfitpublish ${styles.menuIcon}`} />
+            <Text className={styles.menuLabel}>我发布的请求</Text>
+            <Text className={styles.menuArrow}>›</Text>
+          </View>
+          <View className={styles.menuDivider} />
+          <View className={styles.menuItem} onClick={goToMyApplications}>
+            <Text className={`iconfont icon-flash-outfitPartnerPreference ${styles.menuIcon}`} />
+            <Text className={styles.menuLabel}>我的申请</Text>
+            <Text className={styles.menuArrow}>›</Text>
+          </View>
+          <View className={styles.menuDivider} />
+          <View className={styles.menuItem} onClick={goToCommunityRules}>
+            <Text className={`iconfont icon-flash-outfitcalendar ${styles.menuIcon}`} />
+            <Text className={styles.menuLabel}>社区公约</Text>
+            <Text className={styles.menuArrow}>›</Text>
+          </View>
+        </View>
+
+        {/* 退出登录 */}
+        <View className={styles.menuCard}>
+          <View className={styles.menuItem} onClick={handleLogout}>
+            <Text className={`iconfont icon-flash-outfitmine ${styles.menuIcon}`} />
+            <Text className={styles.menuLabel}>退出登录</Text>
+            <Text className={styles.menuArrow}>›</Text>
+          </View>
+        </View>
+
+        <CustomTabBar />
+      </View>
+    </PageLayout>
+  );
 }

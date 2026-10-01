@@ -16,7 +16,7 @@ export default function Card(props: CardProps) {
   return (
     <View className={styles.card}>
       {image && (
-        <Image className={styles.cardImage} src={image} mode="aspectFill" />
+        <Image className={styles.cardImage} src={image} mode='aspectFill' />
       )}
       {title && <Text className={styles.cardTitle}>{title}</Text>}
       {content && <Text className={styles.cardContent}>{content}</Text>}

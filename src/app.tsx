@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import { useLaunch } from "@tarojs/taro";
-import systemInfo from "@/utils/systemInfo";
+import { useUserStore } from "@/stores/userStore/useUserStore";
+import { useUnreadStore } from "@/stores/unreadStore/useUnreadStore";
 import "./app.scss";
 
 /**
@@ -11,7 +12,9 @@ import "./app.scss";
  */
 function App({ children }: PropsWithChildren<any>) {
   useLaunch(() => {
-    console.log("App launched.", systemInfo);
+    const { ensureLogin } = useUserStore.getState();
+    const { refreshUnread } = useUnreadStore.getState();
+    ensureLogin().then(() => refreshUnread());
   });
 
   return <>{children}</>;

@@ -84,7 +84,7 @@ export default function ImageUploader({
             className={styles.imageItem}
             onClick={() => handlePreview(index)}
           >
-            <Image className={styles.image} src={src} mode="aspectFill" />
+            <Image className={styles.image} src={src} mode='aspectFill' />
             <View
               className={styles.deleteBtn}
               onClick={(e) => handleRemove(index, e)}

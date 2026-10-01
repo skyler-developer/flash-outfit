@@ -1,7 +1,7 @@
 {
   "setting": {
-    "compileHotReLoad": false,
-    "urlCheck": true,
+    "compileHotReLoad": true,
+    "urlCheck": false,
     "coverView": false,
     "lazyloadPlaceholderEnable": false,
     "skylineRenderEnable": false,
@@ -16,6 +16,6 @@
     "ignoreDevUnusedFiles": true,
     "bigPackageSizeSupport": false
   },
-  "libVersion": "3.14.2",
+  "libVersion": "3.17.3",
   "projectname": "flash-outfit"
 }

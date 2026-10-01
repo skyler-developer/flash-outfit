@@ -9,6 +9,8 @@ export interface LocationSelectorProps {
   destination: string;
   onRefreshLocation: () => void;
   onDestinationChange: (dest: string) => void;
+  /** 定位失败降级：手动输入所在城市（无坐标，仅城市匹配） */
+  onManualCity: (city: string) => void;
 }
 
 export default function LocationSelector({
@@ -16,8 +18,11 @@ export default function LocationSelector({
   destination,
   onRefreshLocation,
   onDestinationChange,
+  onManualCity,
 }: LocationSelectorProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [locFailed, setLocFailed] = useState(false);
+  const [manualCity, setManualCity] = useState('');
 
   // 自动获取当前位置
   useEffect(() => {
@@ -26,24 +31,18 @@ export default function LocationSelector({
     }
   }, []);
 
-  // 获取当前位置
+  // 获取当前位置（失败后降级为手动输入城市）
   const handleGetLocation = async () => {
     setIsLoading(true);
+    setLocFailed(false);
     try {
-      const res = await Taro.getLocation({ type: 'gcj02' });
-      // 使用逆地理编码获取城市名（这里简化处理，实际需要调用地图API）
-      // TODO: 调用地图API获取具体地址名称
-      const locationInfo: LocationInfo = {
-        name: '上海', // 占位，实际应从地图API获取
-        latitude: res.latitude,
-        longitude: res.longitude,
-      };
+      await Taro.getLocation({ type: 'gcj02' });
       onRefreshLocation();
-      // 这里通过回调更新状态
     } catch (error) {
       console.error('获取位置失败', error);
+      setLocFailed(true);
       Taro.showToast({
-        title: '获取位置失败，请手动输入',
+        title: '定位失败，可手动输入城市继续',
         icon: 'none',
       });
     } finally {
@@ -66,10 +65,28 @@ export default function LocationSelector({
         </View>
         <View className={styles.locationValue} onClick={handleGetLocation}>
           <Text className={styles.valueText}>
-            {isLoading ? '定位中...' : currentLocation?.name || '点击获取位置'}
+            {isLoading
+              ? '定位中...'
+              : currentLocation?.name || (locFailed ? '定位失败' : '点击获取位置')}
           </Text>
           <Text className={styles.refreshIcon}>⟳</Text>
         </View>
+        {/* 定位失败降级：手动输入城市 */}
+        {locFailed && !currentLocation && (
+          <View className={styles.manualCity}>
+            <Input
+              className={styles.manualInput}
+              placeholder='手动输入城市，如：北京'
+              placeholderClass={styles.placeholder}
+              value={manualCity}
+              onInput={(e) => {
+                const v = e.detail.value;
+                setManualCity(v);
+                onManualCity(v.trim());
+              }}
+            />
+          </View>
+        )}
       </View>
 
       {/* 目的地 */}
@@ -81,7 +98,7 @@ export default function LocationSelector({
         <View className={styles.destinationInput}>
           <Input
             className={styles.input}
-            placeholder="想去哪里？"
+            placeholder='想去哪里？'
             placeholderClass={styles.placeholder}
             value={destination}
             onInput={(e) => onDestinationChange(e.detail.value)}

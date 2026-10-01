@@ -1,0 +1,206 @@
+.card {
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 0 24px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  &.expired {
+    opacity: 0.55;
+  }
+}
+
+.coverWrap {
+  position: relative;
+  height: 280px;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+}
+
+.coverFallback {
+  background: linear-gradient(135deg, #fdf1de 0%, #f9e3bd 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coverIcon {
+  font-size: 88px;
+  color: #f49d25;
+}
+
+.typeTag {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 6px 20px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.45);
+
+  &.tag_travel {
+    background: rgba(46, 125, 222, 0.85);
+  }
+
+  &.tag_photography {
+    background: rgba(244, 157, 37, 0.9);
+  }
+
+  &.tag_sports {
+    background: rgba(60, 197, 31, 0.85);
+  }
+}
+
+.typeTagText {
+  font-size: 22px;
+  color: #fff;
+}
+
+.expiredMask {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expiredText {
+  font-size: 40px;
+  font-weight: 700;
+  color: #64748b;
+  border: 4px solid #64748b;
+  border-radius: 12px;
+  padding: 8px 24px;
+}
+
+.body {
+  padding: 20px 24px 24px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 34px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.applyBadge {
+  flex-shrink: 0;
+  padding: 4px 16px;
+  border-radius: 100px;
+
+  &.apply_pending {
+    background: #fef3e2;
+  }
+
+  &.apply_approved {
+    background: #e8f8e3;
+  }
+
+  &.apply_rejected {
+    background: #fdecec;
+  }
+}
+
+.applyBadgeText {
+  font-size: 20px;
+  color: #64748b;
+}
+
+.apply_pending .applyBadgeText {
+  color: #d97706;
+}
+
+.apply_approved .applyBadgeText {
+  color: #2da818;
+}
+
+.apply_rejected .applyBadgeText {
+  color: #dc2626;
+}
+
+.summary {
+  display: block;
+  margin-top: 12px;
+  font-size: 26px;
+  color: #666;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  margin-right: 32px;
+}
+
+.metaIcon {
+  font-size: 26px;
+  color: #94a3b8;
+  margin-right: 8px;
+}
+
+.metaText {
+  font-size: 24px;
+  color: #64748b;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.publisher {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.avatarFallback {
+  background: #e2e8f0;
+}
+
+.nickname {
+  font-size: 24px;
+  color: #334155;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prefText {
+  font-size: 22px;
+  color: #94a3b8;
+}
