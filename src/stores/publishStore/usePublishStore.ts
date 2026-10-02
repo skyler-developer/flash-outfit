@@ -7,6 +7,8 @@ export type { TimeSelection };
 // 位置信息类型
 export interface LocationInfo {
   name: string;
+  city: string;
+  region?: [string, string, string];
   latitude?: number;
   longitude?: number;
 }
@@ -24,8 +26,9 @@ export interface PublishStore {
   // 位置信息
   currentLocation: LocationInfo | null;
   destination: string;
+  destinationRegion: [string, string, string] | null;
   setCurrentLocation: (loc: LocationInfo | null) => void;
-  setDestination: (dest: string) => void;
+  setDestinationRegion: (region: [string, string, string]) => void;
 
   // 伙伴偏好
   gender: GenderType;
@@ -71,8 +74,9 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
   // 位置信息
   currentLocation: null,
   destination: '',
+  destinationRegion: null,
   setCurrentLocation: (loc) => set({ currentLocation: loc }),
-  setDestination: (dest) => set({ destination: dest }),
+  setDestinationRegion: (region) => set({ destinationRegion: region, destination: region.join('') }),
 
   // 伙伴偏好
   gender: 'all',
@@ -115,7 +119,10 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     if (Number.isNaN(activityTime.getTime()) || activityTime.getTime() <= Date.now()) {
       return { valid: false, field: 'activityTime', message: VALIDATION_MESSAGES.timeMustBeFuture };
     }
-    if (!state.destination.trim()) {
+    if (!state.currentLocation?.city) {
+      return { valid: false, field: 'destination', message: '请定位或选择当前所在地区' };
+    }
+    if (!state.destinationRegion) {
       return { valid: false, field: 'destination', message: VALIDATION_MESSAGES.destinationRequired };
     }
     if (state.description.length < 10) {
@@ -134,6 +141,7 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     selectedTime: null,
     currentLocation: null,
     destination: '',
+    destinationRegion: null,
     gender: 'all',
     ageRange: [AGE_RANGE.min, AGE_RANGE.default[1]],
     description: '',

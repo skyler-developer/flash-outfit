@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { View, Text, Textarea, Button, Switch } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
@@ -24,6 +24,7 @@ export default function Publish() {
     selectedTime,
     currentLocation,
     destination,
+    destinationRegion,
     gender,
     ageRange,
     description,
@@ -34,7 +35,7 @@ export default function Publish() {
     setActivityType,
     setSelectedTime,
     setCurrentLocation,
-    setDestination,
+    setDestinationRegion,
     setGender,
     setAgeRange,
     setDescription,
@@ -48,8 +49,8 @@ export default function Publish() {
 
   const user = useUserStore((s) => s.user);
   const refreshUser = useUserStore((s) => s.refreshUser);
-  /** 定位失败降级：手动填写的城市（无坐标） */
-  const [manualCity, setManualCity] = useState('');
+  // 手动选择地区后使进行中的自动定位失效，防止旧坐标覆盖用户选择。
+  const locationRequestId = useRef(0);
 
   useDidShow(() => {
     setSelectedTab(1);
@@ -94,26 +95,30 @@ export default function Publish() {
     });
   };
 
-  // 获取当前位置（真实逆地理编码；无地图 key 时 city 为空，引导手动输入）
+  // 自动定位需要坐标和规范市名；缺少地图 key 或逆地理失败时改为手动选地区。
   const handleRefreshLocation = async () => {
+    const requestId = ++locationRequestId.current;
     try {
       const res = await Taro.getLocation({ type: 'gcj02' });
-      let name = '';
-      try {
-        const geo = await reverseGeo(res.latitude, res.longitude);
-        name = [geo.city, geo.district].filter(Boolean).join('');
-      } catch {
-        // 逆地理失败不影响坐标采集
-      }
+      const geo = await reverseGeo(res.latitude, res.longitude);
+      if (requestId !== locationRequestId.current) return;
+      if (!geo.city) throw new Error('无法识别所在地区');
       setCurrentLocation({
-        name,
+        name: [geo.province, geo.city, geo.district].filter(Boolean).join(''),
+        city: geo.city,
+        region: geo.province && geo.district ? [geo.province, geo.city, geo.district] : undefined,
         latitude: res.latitude,
         longitude: res.longitude,
       });
-    } catch (error) {
-      console.error('获取位置失败', error);
-      Taro.showToast({ title: '获取位置失败，请检查定位授权', icon: 'none' });
+    } catch {
+      if (requestId !== locationRequestId.current) return;
+      Taro.showToast({ title: '自动定位不可用，请手动选择所在地区', icon: 'none' });
     }
+  };
+
+  const handleCurrentRegionChange = (region: [string, string, string]) => {
+    locationRequestId.current += 1;
+    setCurrentLocation({ name: region.join(''), city: region[1], region });
   };
 
   // 图片选择后逐张上传（imageUploader 回调传入临时路径）
@@ -162,38 +167,6 @@ export default function Publish() {
       return;
     }
 
-    if (!validation.valid) {
-      Taro.showToast({ title: validation.message || '请完善表单信息', icon: 'none' });
-      return;
-    }
-
-    // 定位兜底：坐标或城市名缺失时再尝试一次；仍无城市名则要求手动输入
-    let lat = currentLocation?.latitude ?? null;
-    let lng = currentLocation?.longitude ?? null;
-    let city = currentLocation?.name || manualCity || '';
-    if ((lat == null || lng == null || !city) && !manualCity) {
-      try {
-        const res = await Taro.getLocation({ type: 'gcj02' });
-        lat = lat ?? res.latitude;
-        lng = lng ?? res.longitude;
-        if (!city) {
-          try {
-            const geo = await reverseGeo(res.latitude, res.longitude);
-            city = [geo.city, geo.district].filter(Boolean).join('');
-          } catch {
-            // 逆地理失败不影响提交
-          }
-        }
-      } catch {
-        // 定位失败：只要手动填了城市也能提交
-      }
-    }
-    if (!city) {
-      Taro.showToast({ title: '请手动输入所在城市后提交', icon: 'none' });
-      scrollToSection('destination');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const isoTime = new Date(
@@ -204,7 +177,11 @@ export default function Publish() {
         type: activityType!,
         activityTime: isoTime,
         destination: destination.trim(),
-        location: { lat, lng, city },
+        location: {
+          lat: currentLocation?.latitude ?? null,
+          lng: currentLocation?.longitude ?? null,
+          city: currentLocation!.city,
+        },
         genderPreference: gender,
         ageRange,
         description,
@@ -235,7 +212,8 @@ export default function Publish() {
   const canSubmit =
     activityType &&
     selectedTime &&
-    destination.trim() &&
+    currentLocation?.city &&
+    destinationRegion &&
     description.length >= 10 &&
     images.length > 0 &&
     !isSubmitting;
@@ -266,10 +244,10 @@ export default function Publish() {
           <FormSection title={FORM_LABELS.activityLocation} icon='icon-flash-outfitPositionIcon' required>
             <LocationSelector
               currentLocation={currentLocation}
-              destination={destination}
+              destinationRegion={destinationRegion}
               onRefreshLocation={handleRefreshLocation}
-              onDestinationChange={setDestination}
-              onManualCity={setManualCity}
+              onCurrentRegionChange={handleCurrentRegionChange}
+              onDestinationRegionChange={setDestinationRegion}
             />
           </FormSection>
         </View>

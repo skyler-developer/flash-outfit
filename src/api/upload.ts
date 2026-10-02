@@ -32,7 +32,7 @@ export async function uploadImage(filePath: string): Promise<string> {
 
 /** 逆地理编码（服务端代理腾讯位置服务） */
 export async function reverseGeo(lat: number, lng: number) {
-  return request<{ city: string; district: string }>({
+  return request<{ province: string; city: string; district: string }>({
     url: `/geo/reverse?lat=${lat}&lng=${lng}`,
   });
 }

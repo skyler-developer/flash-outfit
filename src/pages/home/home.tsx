@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro, { useDidShow, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { ScrollView, Text, View, Picker } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import systemInfo from '@/utils/systemInfo';
 import CustomTabBar from '@/customTabBar';
 import RequestCard from '@/components/requestCard';
 import { listRequests, RequestListItem } from '@/api/requestApi';
@@ -141,7 +142,10 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <View className={styles.page}>
+      <View
+        className={styles.page}
+        style={{ minHeight: `calc(100vh - ${systemInfo.statusBarHeight}px)` }}
+      >
         {/* 顶部标题 */}
         <View className={styles.header}>
           <Text className={styles.logo}>闪搭</Text>
@@ -238,7 +242,7 @@ export default function Home() {
         )}
 
         {/* 请求流 */}
-        <ScrollView scrollY className={styles.feed} enhanced showScrollbar={false}>
+        <View className={styles.feed}>
           {list.map((item) => (
             <RequestCard key={item.id} item={item} onClick={goToDetail} />
           ))}
@@ -254,12 +258,11 @@ export default function Home() {
             </View>
           )}
           {finished && list.length > 0 && (
-            <View className={styles.loading}>
+            <View className={`${styles.loading} ${styles.end}`}>
               <Text className={styles.loadingText}>— 到底啦 —</Text>
             </View>
           )}
-          <View className={styles.bottomSpace} />
-        </ScrollView>
+        </View>
       </View>
       <CustomTabBar />
     </PageLayout>

@@ -55,7 +55,7 @@ export class GeoController {
 
     if (!appConfig.tencentMapKey) {
       // 开发降级：未配置地图 key，无城市名（前端会引导手动输入）
-      return { city: '', district: '' };
+      return { province: '', city: '', district: '' };
     }
 
     const url =
@@ -64,12 +64,13 @@ export class GeoController {
     const res = await fetch(url);
     const data = (await res.json()) as {
       status: number;
-      result?: { address_component?: { city?: string; district?: string } };
+      result?: { address_component?: { province?: string; city?: string; district?: string } };
     };
     if (data.status !== 0 || !data.result?.address_component) {
-      return { city: '', district: '' };
+      return { province: '', city: '', district: '' };
     }
     return {
+      province: data.result.address_component.province || '',
       city: data.result.address_component.city || '',
       district: data.result.address_component.district || '',
     };
