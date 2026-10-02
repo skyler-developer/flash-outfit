@@ -20,26 +20,11 @@ export const ACTIVITY_TYPE_MAP: Record<ActivityType, { label: string; icon: stri
   sports: { label: '运动', icon: '动', iconClass: 'icon-flash-outfitsports' },
 };
 
-// 快捷时间选项
-export type QuickOptionType = 'weekend' | 'nextWeek' | 'nextMonth';
-
 /** 完整时间选择（发布表单使用） */
 export interface TimeSelection {
   date: string; // YYYY-MM-DD
   time: string; // HH:mm
-  quickOption: QuickOptionType | null;
 }
-
-export interface QuickTimeOption {
-  type: QuickOptionType;
-  label: string;
-}
-
-export const QUICK_TIME_OPTIONS: QuickTimeOption[] = [
-  { type: 'weekend', label: '本周末' },
-  { type: 'nextWeek', label: '下周' },
-  { type: 'nextMonth', label: '下个月' },
-];
 
 // 性别偏好
 export type GenderType = 'all' | 'female' | 'male';
@@ -83,6 +68,7 @@ export const FORM_LABELS = {
 export const VALIDATION_MESSAGES = {
   activityTypeRequired: '请选择活动类型',
   timeRequired: '请选择活动时间',
+  timeMustBeFuture: '请选择未来的活动时间',
   destinationRequired: '请输入目的地',
   descriptionMinLength: '活动描述至少10个字符',
   imageRequired: '请至少上传1张活动照片',

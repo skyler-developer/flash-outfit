@@ -108,8 +108,12 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     if (!state.activityType) {
       return { valid: false, field: 'activityType', message: VALIDATION_MESSAGES.activityTypeRequired };
     }
-    if (!state.selectedTime) {
+    if (!state.selectedTime?.date || !state.selectedTime.time) {
       return { valid: false, field: 'activityTime', message: VALIDATION_MESSAGES.timeRequired };
+    }
+    const activityTime = new Date(`${state.selectedTime.date}T${state.selectedTime.time}:00`);
+    if (Number.isNaN(activityTime.getTime()) || activityTime.getTime() <= Date.now()) {
+      return { valid: false, field: 'activityTime', message: VALIDATION_MESSAGES.timeMustBeFuture };
     }
     if (!state.destination.trim()) {
       return { valid: false, field: 'destination', message: VALIDATION_MESSAGES.destinationRequired };

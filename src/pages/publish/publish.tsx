@@ -53,6 +53,15 @@ export default function Publish() {
 
   useDidShow(() => {
     setSelectedTab(1);
+    if (!usePublishStore.getState().selectedTime) {
+      // 选择器精度为分钟，向上取整到最接近此刻的可发布时刻。
+      const now = new Date();
+      now.setSeconds(0, 0);
+      now.setMinutes(now.getMinutes() + 1);
+      const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      setSelectedTime({ date, time });
+    }
   });
 
   /** 不满足条件的字段 → 对应表单区域节点 id */

@@ -1,38 +1,5 @@
 @import '@/styles/variables.scss';
 
-.container {
-  // 容器样式
-}
-
-.quickOptions {
-  display: flex;
-  gap: $spacing-sm;
-  margin-bottom: $spacing-lg;
-}
-
-.quickOption {
-  padding: $spacing-sm $spacing-lg;
-  border: 1px solid $border-color-light;
-  border-radius: $border-radius-sm;
-  background-color: $bg-page;
-  transition: all 0.2s ease;
-
-  &.active {
-    border-color: $primary-color;
-    background-color: rgba($primary-color, 0.08);
-  }
-}
-
-.quickOptionText {
-  font-size: $font-size-sm;
-  color: $text-secondary;
-
-  .active & {
-    color: $primary-color;
-    font-weight: 600;
-  }
-}
-
 .dateTimePicker {
   display: flex;
   background-color: $bg-input;
