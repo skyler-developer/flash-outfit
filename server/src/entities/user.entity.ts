@@ -1,7 +1,15 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export type Gender = 'female' | 'male';
-export type Interest = 'travel' | 'photography' | 'sports';
+export type Interest =
+  | 'travel'
+  | 'photography'
+  | 'sports'
+  | 'food'
+  | 'show'
+  | 'game'
+  | 'study'
+  | 'outdoor';
 
 @Entity('users')
 export class User {

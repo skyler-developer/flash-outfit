@@ -33,7 +33,9 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
           <Image className={styles.cover} src={item.coverImage} mode='aspectFill' lazyLoad />
         ) : (
           <View className={`${styles.cover} ${styles.coverFallback}`}>
-            <Text className={`iconfont ${typeInfo?.iconClass || ''} ${styles.coverIcon}`} />
+            <Text className={`iconfont ${typeInfo?.iconClass || ''} ${styles.coverIcon}`}>
+              {typeInfo && !typeInfo.iconClass ? typeInfo.icon : ''}
+            </Text>
           </View>
         )}
         <View className={`${styles.typeTag} ${styles[`tag_${item.type}`] || ''}`}>

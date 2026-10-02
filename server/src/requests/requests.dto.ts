@@ -33,8 +33,8 @@ export class LocationDto {
 }
 
 export class CreateRequestDto {
-  @IsIn(['travel', 'photography', 'sports'])
-  type: 'travel' | 'photography' | 'sports';
+  @IsIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor', 'other'])
+  type: 'travel' | 'photography' | 'sports' | 'food' | 'show' | 'game' | 'study' | 'outdoor' | 'other';
 
   @IsISO8601()
   activityTime: string;
@@ -77,8 +77,8 @@ export class CreateRequestDto {
 
 export class UpdateRequestDto {
   @IsOptional()
-  @IsIn(['travel', 'photography', 'sports'])
-  type?: 'travel' | 'photography' | 'sports';
+  @IsIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor', 'other'])
+  type?: 'travel' | 'photography' | 'sports' | 'food' | 'show' | 'game' | 'study' | 'outdoor' | 'other';
 
   @IsOptional()
   @IsISO8601()
@@ -133,7 +133,7 @@ export class UpdateRequestDto {
 
 export class ListRequestsDto extends PaginationDto {
   @IsOptional()
-  @IsIn(['travel', 'photography', 'sports'])
+  @IsIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor', 'other'])
   type?: string;
 
   @IsOptional()

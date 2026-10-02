@@ -29,13 +29,25 @@
 
 .textareaCount {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
   margin-top: $spacing-sm;
+}
+
+.descriptionHint {
+  font-size: $font-size-xs;
+  color: $text-secondary;
+}
+
+.descriptionHintError {
+  color: #dc2626;
 }
 
 .countText {
   font-size: $font-size-xs;
   color: $text-placeholder;
+  flex-shrink: 0;
 }
 
 .submitSection {

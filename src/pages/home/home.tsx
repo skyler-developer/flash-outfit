@@ -6,16 +6,15 @@ import systemInfo from '@/utils/systemInfo';
 import CustomTabBar from '@/customTabBar';
 import RequestCard from '@/components/requestCard';
 import { listRequests, RequestListItem } from '@/api/requestApi';
+import { ACTIVITY_TYPES } from '@/pages/publish/constants';
 import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
 import { useUserStore } from '@/stores/userStore/useUserStore';
 import styles from './home.module.scss';
 
-/** 筛选维度（对齐需求 §4.2） */
+/** 筛选维度（对齐需求 §4.2）：类型选项由常量统一维护，v1.3 扩充至 9 项 */
 const TYPE_OPTIONS = [
   { value: '', label: '全部' },
-  { value: 'travel', label: '旅行' },
-  { value: 'photography', label: '摄影' },
-  { value: 'sports', label: '运动' },
+  ...ACTIVITY_TYPES.map((t) => ({ value: t.type, label: t.label })),
 ];
 
 const TIME_OPTIONS = [

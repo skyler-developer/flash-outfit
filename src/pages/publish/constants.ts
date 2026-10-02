@@ -1,5 +1,14 @@
-// 活动类型
-export type ActivityType = 'travel' | 'photography' | 'sports';
+// 活动类型（v1.3：扩充至 8 类 + 其他，共 9 项，标签统一两字）
+export type ActivityType =
+  | 'travel'
+  | 'photography'
+  | 'sports'
+  | 'food'
+  | 'show'
+  | 'game'
+  | 'study'
+  | 'outdoor'
+  | 'other';
 
 export interface ActivityTypeOption {
   type: ActivityType;
@@ -11,13 +20,30 @@ export const ACTIVITY_TYPES: ActivityTypeOption[] = [
   { type: 'travel', label: '旅行', icon: '旅' },
   { type: 'photography', label: '摄影', icon: '摄' },
   { type: 'sports', label: '运动', icon: '动' },
+  { type: 'food', label: '美食', icon: '美' },
+  { type: 'show', label: '观影', icon: '观' },
+  { type: 'game', label: '游戏', icon: '戏' },
+  { type: 'study', label: '学习', icon: '学' },
+  { type: 'outdoor', label: '户外', icon: '野' },
+  { type: 'other', label: '其他', icon: '其' },
 ];
 
-/** 活动类型映射（卡片/详情展示用） */
+/** 兴趣标签可选项（个人兴趣不含"其他"，对齐需求 §4.9） */
+export const INTEREST_TYPES: ActivityTypeOption[] = ACTIVITY_TYPES.filter(
+  (t) => t.type !== 'other',
+);
+
+/** 活动类型映射（卡片/详情展示用）；新增类型暂无 iconfont，iconClass 留空回退到文字图标 */
 export const ACTIVITY_TYPE_MAP: Record<ActivityType, { label: string; icon: string; iconClass: string }> = {
   travel: { label: '旅行', icon: '旅', iconClass: 'icon-flash-outfittravel' },
   photography: { label: '摄影', icon: '摄', iconClass: 'icon-flash-outfitphotography' },
   sports: { label: '运动', icon: '动', iconClass: 'icon-flash-outfitsports' },
+  food: { label: '美食', icon: '美', iconClass: '' },
+  show: { label: '观影', icon: '观', iconClass: '' },
+  game: { label: '游戏', icon: '戏', iconClass: '' },
+  study: { label: '学习', icon: '学', iconClass: '' },
+  outdoor: { label: '户外', icon: '野', iconClass: '' },
+  other: { label: '其他', icon: '其', iconClass: '' },
 };
 
 /** 完整时间选择（发布表单使用） */

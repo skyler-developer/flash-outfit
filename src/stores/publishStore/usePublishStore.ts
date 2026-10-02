@@ -125,7 +125,7 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     if (!state.destinationRegion) {
       return { valid: false, field: 'destination', message: VALIDATION_MESSAGES.destinationRequired };
     }
-    if (state.description.length < 10) {
+    if (state.description.trim().length < 10) {
       return { valid: false, field: 'description', message: VALIDATION_MESSAGES.descriptionMinLength };
     }
     if (state.images.length === 0) {

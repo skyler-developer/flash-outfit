@@ -1,6 +1,6 @@
 # 闪搭 · MVP 需求文档
 
-> 版本：v1.2（需求收敛完成）
+> 版本：v1.3（需求收敛完成）
 > 状态：作为后续开发的唯一需求源，每轮需求变更由讨论确认后更新此文档
 > 说明：本产品为"寻找搭子"类小程序，通过发布/浏览/申请"找搭子请求"实现快速组伴
 
@@ -74,7 +74,7 @@
 - 请求卡片流：上下滑动浏览，卡片需升级为展示「活动类型 / 标题摘要 / 时间 / 目的地 / **距你 x km** / 发起人头像昵称 / 伙伴偏好标签」
 - 排序：默认 LBS 距离排序；进入小程序时请求一次定位授权并缓存坐标
 - 筛选器（手动选择）：
-  1. **活动类型**：旅行 / 摄影 / 运动
+  1. **活动类型**：旅行 / 摄影 / 运动 / 美食 / 观影 / 游戏 / 学习 / 户外 / 其他
   2. **时间范围**：本周末 / 近 7 天 / 近 30 天 等
   3. **距离范围**：如 5km / 10km / 50km / 全城 / 不限
   4. **只看可申请**：过滤掉我不符合其伙伴偏好的请求（性别或年龄不符合的不再展示/置灰）
@@ -134,14 +134,14 @@ MVP 通知类型：
 ### 4.9 登录与资料（新流程）
 
 - `wx.login` + 自建后端 code2Session，静默登录
-- 资料引导页：性别、**出生年份**必填（年龄由出生年份自动计算，不随时间过期；伙伴偏好筛选依赖）；兴趣标签多选（旅行/摄影/运动，用于卡片展示）；微信号引导填写（发布时强制校验，成组刚需）
+- 资料引导页：性别、**出生年份**必填（年龄由出生年份自动计算，不随时间过期；伙伴偏好筛选依赖）；兴趣标签多选（旅行/摄影/运动/美食/观影/游戏/学习/户外，用于卡片展示，不含"其他"）；微信号引导填写（发布时强制校验，成组刚需）
 - 头像昵称：使用微信"头像昵称填写能力"（open-type/avatar 昵称 input），用户确认后入库
 
 ## 5. 数据模型（草案，供后端契约参考）
 
 ```
 User:        id, openid, nickname, avatar, gender, birthYear, age(派生), wechatId, interests[], createdAt
-Request:     id, publisherId, type(travel|photography|sports), activityTime,
+Request:     id, publisherId, type(travel|photography|sports|food|show|game|study|outdoor|other), activityTime,
              destination, location(lat,lng,city), genderPreference(all|female|male),
              ageRange[min,max], maxMembers(默认1), autoCloseOnGrouped(默认false),
              approvedCount(派生), description, photos[],
@@ -207,6 +207,7 @@ Notification:id, userId, type(newApply|applyApproved|applyRejected|requestClosed
 | v1.0 | 确认：TabBar 4 tab（消息页=通知中心）；资料加兴趣标签；筛选含"只看可申请"性别视角；文档落地仓库 |
 | v1.1 | 确认：人数上限发布者设、默认 1；自动结束招募发布者设、默认否，过期仅浏览时实时标记；年龄填出生年份自动计算；拒定位降级"选择城市"；微信号发布时强制引导；API 契约本方起草，NestJS 同仓库实现（server/） |
 | v1.2 | 确认：满员后 pending 申请保持不变由发布者处理；允许发布者修改/删除请求（删除通知全部申请人）；后端选型定案：MySQL 8 + TypeORM，图片 StorageService 抽象（本地开发→云 OSS/COS），部署云服务器，JWT 鉴权 |
+| v1.3 | 确认：活动类型扩充至 9 项（旅行/摄影/运动/美食/观影/游戏/学习/户外/其他，均为两字）；兴趣标签同步为 8 类（不含"其他"）；数据模型 type 枚举同步扩充（代码 constants/entities/dto/契约需同步改造） |
 
 ## 10. 实现完成快照（v1.2 → 实现收官）
 

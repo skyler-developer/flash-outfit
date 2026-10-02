@@ -209,12 +209,13 @@ export default function Publish() {
     }
   };
 
+  const descriptionLength = description.trim().length;
   const canSubmit =
     activityType &&
     selectedTime &&
     currentLocation?.city &&
     destinationRegion &&
-    description.length >= 10 &&
+    descriptionLength >= 10 &&
     images.length > 0 &&
     !isSubmitting;
 
@@ -298,18 +299,23 @@ export default function Publish() {
         {/* 活动描述 */}
         <View id='section-description'>
           <FormSection title={FORM_LABELS.activityDescription} icon='icon-flash-outfitdescription' required>
-          <Textarea
-            className={styles.textarea}
-            placeholder='描述一下你的活动计划、对伙伴的要求等...'
-            placeholderClass={styles.placeholder}
-            value={description}
-            onInput={(e) => setDescription(e.detail.value)}
-            maxlength={500}
-            autoHeight
-          />
-          <View className={styles.textareaCount}>
-            <Text className={styles.countText}>{description.length}/500</Text>
-          </View>
+            <Textarea
+              className={styles.textarea}
+              placeholder='描述一下你的活动计划、对伙伴的要求等...'
+              placeholderClass={styles.placeholder}
+              value={description}
+              onInput={(e) => setDescription(e.detail.value)}
+              maxlength={500}
+              autoHeight
+            />
+            <View className={styles.textareaCount}>
+              <Text className={`${styles.descriptionHint} ${description.length > 0 && descriptionLength < 10 ? styles.descriptionHintError : ''}`}>
+                {description.length > 0 && descriptionLength < 10
+                  ? `还需输入 ${10 - descriptionLength} 字（至少 10 字）`
+                  : '至少 10 字，最多 500 字'}
+              </Text>
+              <Text className={styles.countText}>{descriptionLength}/500 字</Text>
+            </View>
           </FormSection>
         </View>
 

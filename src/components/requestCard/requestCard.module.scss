@@ -54,6 +54,30 @@
   &.tag_sports {
     background: rgba(60, 197, 31, 0.85);
   }
+
+  &.tag_food {
+    background: rgba(236, 87, 90, 0.85);
+  }
+
+  &.tag_show {
+    background: rgba(147, 97, 220, 0.85);
+  }
+
+  &.tag_game {
+    background: rgba(72, 160, 220, 0.85);
+  }
+
+  &.tag_study {
+    background: rgba(42, 155, 155, 0.85);
+  }
+
+  &.tag_outdoor {
+    background: rgba(122, 165, 50, 0.9);
+  }
+
+  &.tag_other {
+    background: rgba(100, 116, 139, 0.85);
+  }
 }
 
 .typeTagText {

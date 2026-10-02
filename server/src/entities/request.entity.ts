@@ -1,6 +1,15 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export type RequestType = 'travel' | 'photography' | 'sports';
+export type RequestType =
+  | 'travel'
+  | 'photography'
+  | 'sports'
+  | 'food'
+  | 'show'
+  | 'game'
+  | 'study'
+  | 'outdoor'
+  | 'other';
 export type GenderPreference = 'all' | 'female' | 'male';
 export type RequestStatus = 'recruiting' | 'grouped' | 'finished' | 'cancelled';
 

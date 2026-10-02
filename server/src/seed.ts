@@ -9,7 +9,7 @@ import { User } from './entities/user.entity';
 import { ActivityRequest } from './entities/request.entity';
 
 /**
- * 开发种子数据：3 个用户 + 6 条不同类型/时间的招募中请求。
+ * 开发种子数据：3 个用户 + 8 条覆盖新旧类型的招募中请求。
  * 直接跑：npm run seed（需先 npm run build）
  */
 async function seed() {
@@ -51,7 +51,7 @@ async function seed() {
       gender: 'male',
       birthYear: 1997,
       wechatId: 'xiaolan27',
-      interests: ['sports', 'photography'],
+      interests: ['sports', 'photography', 'food'],
     }),
     mk({
       openid: 'mock:carol',
@@ -60,7 +60,7 @@ async function seed() {
       gender: 'female',
       birthYear: 1995,
       wechatId: 'carol_trip',
-      interests: ['travel'],
+      interests: ['travel', 'outdoor', 'show'],
     }),
   ]);
 
@@ -157,9 +157,31 @@ async function seed() {
       description: '周三晚首钢园夜骑 20km，之后夜宵烧烤，女生优先，注意保暖和车灯。',
       photos: ['http://localhost:3000/api/v1/uploads/r/seed6.jpg'],
     }),
+    req({
+      publisherId: u2.id,
+      type: 'food',
+      activityTime: day(2, 12),
+      destination: '牛街小吃扫街',
+      lat: 39.88,
+      lng: 116.36,
+      city: '北京',
+      description: '周六中午牛街一路吃过去，洪记年糕、聚宝源涮肉都安排，能吃辣优先。',
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed7.jpg'],
+    }),
+    req({
+      publisherId: u3.id,
+      type: 'show',
+      activityTime: day(6, 20),
+      destination: 'IMAX《沙丘 3》搭伴观影',
+      lat: 39.92,
+      lng: 116.46,
+      city: '北京',
+      description: '找一位同样想看 IMAX 的搭子，散场后可以顺路喝一杯聊聊剧情。',
+      photos: ['http://localhost:3000/api/v1/uploads/r/seed8.jpg'],
+    }),
   ]);
 
-  console.log('✅ seed done: 3 users, 6 requests');
+  console.log('✅ seed done: 3 users, 8 requests');
   await app.close();
 }
 seed();

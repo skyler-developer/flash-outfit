@@ -1,7 +1,8 @@
+import type { ActivityType } from '@/pages/publish/constants';
 import { request } from './request';
 import type { PublicUser } from './auth';
 
-export type ActivityType = 'travel' | 'photography' | 'sports';
+export type { ActivityType };
 export type RequestStatus = 'recruiting' | 'grouped' | 'finished' | 'cancelled';
 
 export interface RequestListItem {

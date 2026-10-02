@@ -5,7 +5,7 @@ import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { useUserStore } from '@/stores/userStore/useUserStore';
 import { uploadImage } from '@/api/upload';
-import { ACTIVITY_TYPES } from '@/pages/publish/constants';
+import { INTEREST_TYPES } from '@/pages/publish/constants';
 import type { UserInfo } from '@/api/auth';
 import styles from './profileEdit.module.scss';
 
@@ -216,7 +216,7 @@ export default function ProfileEdit() {
           <View className={styles.card}>
             <Text className={styles.cardTitle}>我的兴趣</Text>
             <View className={styles.interestGrid}>
-              {ACTIVITY_TYPES.map((t) => (
+              {INTEREST_TYPES.map((t) => (
                 <View
                   key={t.type}
                   className={`${styles.interestItem} ${

@@ -147,7 +147,9 @@ export default function Detail() {
             </Swiper>
           ) : (
             <View className={`${styles.photo} ${styles.photoFallback}`}>
-              <Text className={`iconfont ${typeInfo.iconClass} ${styles.photoFallbackIcon}`} />
+              <Text className={`iconfont ${typeInfo.iconClass} ${styles.photoFallbackIcon}`}>
+                {typeInfo && !typeInfo.iconClass ? typeInfo.icon : ''}
+              </Text>
             </View>
           )}
           <BackButton className={styles.backBtn} onClick={() => Taro.navigateBack()} />

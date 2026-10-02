@@ -53,7 +53,11 @@ export default function MyRequests() {
                 <Image className={styles.cover} src={item.coverImage} mode='aspectFill' />
               ) : (
                 <View className={`${styles.cover} ${styles.coverFallback}`}>
-                  <Text className={`iconfont ${ACTIVITY_TYPE_MAP[item.type].iconClass} ${styles.coverIcon}`} />
+                  <Text className={`iconfont ${ACTIVITY_TYPE_MAP[item.type].iconClass} ${styles.coverIcon}`}>
+                    {ACTIVITY_TYPE_MAP[item.type] && !ACTIVITY_TYPE_MAP[item.type].iconClass
+                      ? ACTIVITY_TYPE_MAP[item.type].icon
+                      : ''}
+                  </Text>
                 </View>
               )}
               <View className={styles.info}>

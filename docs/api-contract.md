@@ -120,7 +120,7 @@ Authorization: Bearer <token>
 
 - `gender`：`female | male`
 - `birthYear`：1900 ~ 当前年份-18（成年校验）；变更 birthYear 后派生 age 重算
-- `interests`：⊆ `travel | photography | sports`，去重
+- `interests`：⊆ `travel | photography | sports | food | show | game | study | outdoor`（不含 `other`，个人兴趣无"其他"），去重
 - `wechatId`：2~30 字符；后端做内容安全校验
 
 响应 `data`：更新后的 user 对象。
@@ -157,7 +157,7 @@ Authorization: Bearer <token>
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `page` / `pageSize` | number | 否 | 分页，默认 1 / 10 |
-| `type` | string | 否 | `travel / photography / sports`，多值逗号分隔 |
+| `type` | string | 否 | `travel / photography / sports / food / show / game / study / outdoor / other` |
 | `timeRange` | string | 否 | `weekend / d7 / d30 / all`（本周末/近7天/近30天/不限），按 activityTime 过滤 |
 | `lat` / `lng` | number | 条件 | 当前坐标；与 `sortBy=distance` 二选一组合 |
 | `distance` | number | 否 | 距离范围过滤（km），如 5/10/50；不传则不限 |
@@ -266,6 +266,7 @@ Authorization: Bearer <token>
 - `photos` 1~6 张，须为本系统上传域名（4103）
 - `description` 10~500 字，内容安全校验（4200）
 - `maxMembers` 1~9，默认 1；`autoCloseOnGrouped` 默认 false
+- `type`：`travel | photography | sports | food | show | game | study | outdoor | other`（v1.3 扩充）
 
 响应 `data`：完整 request 对象（同 4.2 结构，`isPublisher: true`）。
 

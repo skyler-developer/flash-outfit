@@ -49,7 +49,7 @@ export class UpdateUserDto {
   wechatId: string;
 
   @IsOptional()
-  @IsArrayIn(['travel', 'photography', 'sports'])
+  @IsArrayIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor'])
   interests: string[];
 }
 
