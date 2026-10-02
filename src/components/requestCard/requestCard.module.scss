@@ -36,6 +36,9 @@
   position: absolute;
   top: 20px;
   left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 6px 20px;
   border-radius: 100px;
   background: rgba(0, 0, 0, 0.45);
@@ -55,6 +58,7 @@
 
 .typeTagText {
   font-size: 22px;
+  line-height: 32px;
   color: #fff;
 }
 
