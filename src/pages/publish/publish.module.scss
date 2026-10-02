@@ -13,13 +13,14 @@
 
 .textarea {
   width: 100%;
-  min-height: 160px;
+  min-height: 200px;
   padding: $spacing-md;
-  font-size: $font-size-md;
+  font-size: $font-size-sm;
   color: $text-primary;
-  background-color: $bg-input;
+  background-color: $bg-page;
   border-radius: $border-radius-sm;
   line-height: 1.6;
+  box-sizing: border-box;
 }
 
 .placeholder {
@@ -87,7 +88,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-sm 0;
+  padding: $spacing-xs 0;
 }
 
 .memberLabel {
@@ -111,8 +112,8 @@
 .stepBtn {
   width: 56px;
   height: 56px;
-  border-radius: 12px;
-  background: $bg-input;
+  border-radius: $border-radius-sm;
+  background: $bg-page;
   display: flex;
   align-items: center;
   justify-content: center;

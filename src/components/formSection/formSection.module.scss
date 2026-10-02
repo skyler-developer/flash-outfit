@@ -1,8 +1,12 @@
 @import '@/styles/variables.scss';
 
+// 白色卡片容器：统一表单区块的层次感
 .formSection {
-    background-color: $bg-page;
+    background-color: $bg-card;
+    border-radius: $border-radius;
+    padding: $spacing-lg;
     margin-bottom: $spacing-md;
+    box-shadow: $shadow-sm;
 }
 
 .header {
@@ -13,13 +17,13 @@
 
 .icon {
     font-size: 32px;
-    margin-right: $spacing-md;
+    margin-right: $spacing-sm;
     color: $primary-color;
 }
 
 .title {
-    font-size: $font-size-lg;
-    font-weight: 700;
+    font-size: $font-size-md;
+    font-weight: 600;
     color: $text-primary;
 }
 

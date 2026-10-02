@@ -11,9 +11,9 @@
   flex-direction: column;
   align-items: center;
   padding: $spacing-lg 0;
-  border: 2px solid $border-color;
-  border-radius: $border-radius;
-  background-color: $bg-card;
+  border: 1px solid $border-color-light;
+  border-radius: $border-radius-sm;
+  background-color: $bg-page;
   transition: all 0.2s ease;
 
   &.active {
@@ -29,7 +29,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: $bg-input;
+  background-color: $bg-card;
   margin-bottom: $spacing-sm;
 
   .active & {

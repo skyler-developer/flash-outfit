@@ -11,10 +11,10 @@
 }
 
 .quickOption {
-  padding: $spacing-sm $spacing-md;
-  border: 1px solid $border-color;
+  padding: $spacing-sm $spacing-lg;
+  border: 1px solid $border-color-light;
   border-radius: $border-radius-sm;
-  background-color: $bg-card;
+  background-color: $bg-page;
   transition: all 0.2s ease;
 
   &.active {
@@ -29,6 +29,7 @@
 
   .active & {
     color: $primary-color;
+    font-weight: 600;
   }
 }
 

@@ -21,9 +21,9 @@
 
 .genderTabs {
   display: flex;
-  background-color: $bg-input;
+  background-color: $bg-page;
   border-radius: $border-radius-sm;
-  padding: 4px;
+  padding: $spacing-xs;
 }
 
 .genderTab {
