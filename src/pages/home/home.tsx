@@ -175,15 +175,17 @@ export default function Home() {
         {/* 筛选区 */}
         <View className={styles.filterBar}>
           <ScrollView scrollX className={styles.filterScroll} enableFlex>
-            {TYPE_OPTIONS.map((opt) => (
-              <View
-                key={opt.value}
-                className={`${styles.chip} ${type === opt.value ? styles.chipActive : ''}`}
-                onClick={() => setType(opt.value)}
-              >
-                <Text className={styles.chipText}>{opt.label}</Text>
-              </View>
-            ))}
+            <View className={styles.filterTypeRow}>
+              {TYPE_OPTIONS.map((opt) => (
+                <View
+                  key={opt.value}
+                  className={`${styles.chip} ${styles.chipSm} ${type === opt.value ? styles.chipActive : ''}`}
+                  onClick={() => setType(opt.value)}
+                >
+                  <Text className={styles.chipText}>{opt.label}</Text>
+                </View>
+              ))}
+            </View>
           </ScrollView>
           <View className={styles.filterRow}>
             {TIME_OPTIONS.map((opt) => (

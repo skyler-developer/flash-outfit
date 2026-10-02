@@ -72,10 +72,14 @@
 }
 
 .filterScroll {
-  white-space: nowrap;
-  padding: 0 20px;
-  box-sizing: border-box;
   width: 100%;
+}
+
+.filterTypeRow {
+  display: flex;
+  width: max-content;
+  padding: 0 20px;
+  gap: 12px;
 }
 
 .filterRow {
