@@ -1,7 +1,6 @@
 import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useTabsStore } from "@/stores/tabsStore/useTabsStore";
-import { useUnreadStore } from "@/stores/unreadStore/useUnreadStore";
 import { TAB_LIST_COMPLETED } from "./config/tabList";
 
 const CN = {
@@ -16,14 +15,10 @@ const CN = {
   centerText: "custom-tab-bar__center-text",
   label: "custom-tab-bar__label",
   iconText: "custom-tab-bar__icon-text",
-  badge: "custom-tab-bar__badge",
-  badgeText: "custom-tab-bar__badge-text",
 };
 
 export default function CustomTabBar() {
   const { selectedTab, setSelectedTab } = useTabsStore();
-  const unreadCount = useUnreadStore((s) => s.count);
-
   const handleSwitch = (item: (typeof TAB_LIST_COMPLETED)[0]) => {
     Taro.switchTab({ url: `/${item.pagePath}` });
     setSelectedTab(item.index);
@@ -77,11 +72,6 @@ export default function CustomTabBar() {
                   : {}),
               }}
             ></View>
-            {item.className === "icon-flash-outfitmessage" && unreadCount > 0 && (
-              <View className={CN.badge}>
-                <Text className={CN.badgeText}>{unreadCount > 99 ? "99+" : unreadCount}</Text>
-              </View>
-            )}
             <Text
               className={CN.label}
               style={{

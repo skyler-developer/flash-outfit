@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import Taro, { useDidShow, useLoad } from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { ScrollView, Text, View } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
-import CustomTabBar from '@/customTabBar';
 import {
   listNotifications,
   markRead,
@@ -11,7 +10,6 @@ import {
 } from '@/api/notification';
 import { useUnreadStore } from '@/stores/unreadStore/useUnreadStore';
 import { useUserStore } from '@/stores/userStore/useUserStore';
-import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
 import styles from './message.module.scss';
 
 const TYPE_ICON: Record<string, { cls: string; color: string }> = {
@@ -34,7 +32,6 @@ function timeAgo(iso: string): string {
 }
 
 export default function Message() {
-  const { setSelectedTab } = useTabsStore();
   const [list, setList] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const refreshUnread = useUnreadStore((s) => s.refreshUnread);
@@ -53,13 +50,10 @@ export default function Message() {
     }
   };
 
-  useLoad(() => {
-    load();
-  });
-
-  // 每次进入页面同步 tabBar 选中态（switchTab 回来时 useLoad 不会重新执行）
+  // 从通知详情返回时刷新消息和未读数
   useDidShow(() => {
-    setSelectedTab(1);
+    load();
+    refreshUnread();
   });
 
   const handleTapItem = async (item: NotificationItem) => {
@@ -98,6 +92,9 @@ export default function Message() {
     <PageLayout>
       <View className={styles.page}>
         <View className={styles.header}>
+          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
+            <Text className={styles.backIcon}>‹</Text>
+          </View>
           <Text className={styles.headerTitle}>消息</Text>
           {list.some((n) => !n.isRead) && (
             <View className={styles.readAllBtn} onClick={handleMarkAll}>
@@ -136,9 +133,7 @@ export default function Message() {
               <Text className={styles.emptyText}>暂无消息，去发布或申请一个搭子吧</Text>
             </View>
           )}
-          <View className={styles.bottomSpace} />
         </ScrollView>
-        <CustomTabBar />
       </View>
     </PageLayout>
   );

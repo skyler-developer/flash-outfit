@@ -4,10 +4,6 @@ const TAB_LIST = [
     text: "首页",
   },
   {
-    pagePath: "pages/message/message",
-    text: "消息",
-  },
-  {
     pagePath: "pages/publish/publish",
     text: "发布",
   },
@@ -19,9 +15,8 @@ const TAB_LIST = [
 
 const TAB_LIST_INFO = [
   { index: 0, className: "icon-flash-outfithome" },
-  { index: 1, className: "icon-flash-outfitmessage" },
-  { index: 2, className: "icon-flash-outfitpublish" },
-  { index: 3, className: "icon-flash-outfitmine" },
+  { index: 1, className: "icon-flash-outfitpublish" },
+  { index: 2, className: "icon-flash-outfitmine" },
 ];
 
 const TAB_LIST_COMPLETED = TAB_LIST.map((item, index) => ({

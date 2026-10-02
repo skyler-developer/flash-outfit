@@ -4,6 +4,7 @@ import PageLayout from '@/components/pageLayout';
 import CustomTabBar from '@/customTabBar';
 import { useUserStore } from '@/stores/userStore/useUserStore';
 import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
+import { useUnreadStore } from '@/stores/unreadStore/useUnreadStore';
 import { ACTIVITY_TYPES } from '@/pages/publish/constants';
 import styles from './mine.module.scss';
 
@@ -12,6 +13,8 @@ export default function Mine() {
   const user = useUserStore((s) => s.user);
   const refreshUser = useUserStore((s) => s.refreshUser);
   const logout = useUserStore((s) => s.logout);
+  const unreadCount = useUnreadStore((s) => s.count);
+  const refreshUnread = useUnreadStore((s) => s.refreshUnread);
 
   useLoad(() => {
     refreshUser().catch(() => {
@@ -21,11 +24,16 @@ export default function Mine() {
 
   // 每次进入页面同步 tabBar 选中态（switchTab 回来时 useLoad 不会重新执行）
   useDidShow(() => {
-    setSelectedTab(3);
+    setSelectedTab(2);
+    refreshUnread();
   });
 
   const goToEdit = () => {
     Taro.navigateTo({ url: '/pages/profileEdit/profileEdit' });
+  };
+
+  const goToMessages = () => {
+    Taro.navigateTo({ url: '/pages/message/message' });
   };
 
   const goToMyRequests = () => {
@@ -103,6 +111,17 @@ export default function Mine() {
 
         {/* 入口列表 */}
         <View className={styles.menuCard}>
+          <View className={styles.menuItem} onClick={goToMessages}>
+            <Text className={`iconfont icon-flash-outfitmessage ${styles.menuIcon}`} />
+            <Text className={styles.menuLabel}>消息</Text>
+            {unreadCount > 0 && (
+              <View className={styles.unreadBadge}>
+                <Text className={styles.unreadBadgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+              </View>
+            )}
+            <Text className={styles.menuArrow}>›</Text>
+          </View>
+          <View className={styles.menuDivider} />
           <View className={styles.menuItem} onClick={goToMyRequests}>
             <Text className={`iconfont icon-flash-outfitpublish ${styles.menuIcon}`} />
             <Text className={styles.menuLabel}>我发布的请求</Text>

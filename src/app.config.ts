@@ -3,9 +3,9 @@ import { TAB_LIST } from "@/customTabBar/config/tabList";
 export default defineAppConfig({
   pages: [
     "pages/home/home",
-    "pages/message/message",
     "pages/publish/publish",
     "pages/mine/mine",
+    "pages/message/message",
     "pages/detail/detail",
     "pages/profileEdit/profileEdit",
     "pages/myRequests/myRequests",

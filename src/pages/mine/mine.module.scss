@@ -133,6 +133,25 @@
   color: #334155;
 }
 
+.unreadBadge {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: #ff4d4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.unreadBadgeText {
+  font-size: 20px;
+  color: #fff;
+  line-height: 1;
+}
+
 .menuArrow {
   font-size: 34px;
   color: #c4cbd5;

@@ -52,7 +52,7 @@ export default function Publish() {
   const [manualCity, setManualCity] = useState('');
 
   useDidShow(() => {
-    setSelectedTab(2);
+    setSelectedTab(1);
   });
 
   /** 不满足条件的字段 → 对应表单区域节点 id */

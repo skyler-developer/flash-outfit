@@ -8,9 +8,18 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 24px 32px;
   background: #fff;
+}
+
+.backBtn {
+  margin-right: 24px;
+  padding: 0 8px;
+}
+
+.backIcon {
+  font-size: 40px;
+  color: #334155;
 }
 
 .headerTitle {
@@ -20,6 +29,7 @@
 }
 
 .readAllBtn {
+  margin-left: auto;
   padding: 8px 24px;
   border-radius: 100px;
   background: #f4f4f5;
@@ -32,7 +42,7 @@
 
 .list {
   flex: 1;
-  height: calc(100vh - 220px);
+  height: calc(100vh - 120px);
   padding: 24px;
   box-sizing: border-box;
 }
@@ -115,8 +125,4 @@
 .emptyText {
   font-size: 26px;
   color: #94a3b8;
-}
-
-.bottomSpace {
-  height: 120px;
 }
