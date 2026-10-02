@@ -43,20 +43,8 @@
 .backBtn {
   position: absolute;
   top: 24px;
-  left: 24px;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.backIcon {
-  font-size: 40px;
-  color: #fff;
-  line-height: 1;
+  left: 32px;
+  background-color: #fff;
 }
 
 .body {

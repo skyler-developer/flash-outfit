@@ -3,6 +3,14 @@ import Taro from '@tarojs/taro';
 import systemInfo from '@/utils/systemInfo';
 import styles from './headerBar.module.scss';
 
+export function BackButton({ onClick, className = '' }: { onClick: () => void; className?: string }) {
+    return (
+        <View className={`${styles.backControl} ${className}`} onClick={onClick}>
+            <Text className={styles.backGlyph}>‹</Text>
+        </View>
+    );
+}
+
 export interface HeaderBarProps {
     title: string;
     /** 左上角返回按钮（‹），优先于 showClose */
@@ -78,9 +86,7 @@ export default function HeaderBar({
         >
             <View className={styles.content} style={{ height: `${navBarHeight}px` }}>
                 {showBack ? (
-                    <View className={styles.backBtn} onClick={handleBack}>
-                        <Text className={styles.backIcon}>‹</Text>
-                    </View>
+                    <BackButton className={styles.backBtn} onClick={handleBack} />
                 ) : showClose ? (
                     <View className={styles.closeBtn} onClick={handleClose}>
                         <Text className={styles.closeIcon}>×</Text>

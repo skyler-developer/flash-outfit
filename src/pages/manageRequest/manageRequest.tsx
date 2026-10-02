@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
 import { ScrollView, Text, View, Image, Button, Switch, Textarea } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import { BackButton } from '@/components/headerBar';
 import { getRequest, updateRequest, deleteRequest, RequestDetail } from '@/api/requestApi';
 import { listApplicationsByRequest, reviewApplication, ApplicationItem } from '@/api/application';
 import { useUnreadStore } from '@/stores/unreadStore/useUnreadStore';
@@ -172,9 +173,7 @@ export default function ManageRequest() {
     <PageLayout>
       <View className={styles.page}>
         <View className={styles.header}>
-          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
-            <Text className={styles.backIcon}>‹</Text>
-          </View>
+          <BackButton onClick={() => Taro.navigateBack()} />
           <Text className={styles.headerTitle}>请求管理</Text>
         </View>
 

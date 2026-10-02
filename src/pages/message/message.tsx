@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { ScrollView, Text, View } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import { BackButton } from '@/components/headerBar';
 import {
   listNotifications,
   markRead,
@@ -92,9 +93,7 @@ export default function Message() {
     <PageLayout>
       <View className={styles.page}>
         <View className={styles.header}>
-          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
-            <Text className={styles.backIcon}>‹</Text>
-          </View>
+          <BackButton onClick={() => Taro.navigateBack()} />
           <Text className={styles.headerTitle}>消息</Text>
           {list.some((n) => !n.isRead) && (
             <View className={styles.readAllBtn} onClick={handleMarkAll}>

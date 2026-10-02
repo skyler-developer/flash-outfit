@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
 import { ScrollView, Swiper, SwiperItem, Text, Textarea, View, Image, Button } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import { BackButton } from '@/components/headerBar';
 import { getRequest, RequestDetail } from '@/api/requestApi';
 import { applyRequest } from '@/api/application';
 import { useUserStore } from '@/stores/userStore/useUserStore';
@@ -149,9 +150,7 @@ export default function Detail() {
               <Text className={`iconfont ${typeInfo.iconClass} ${styles.photoFallbackIcon}`} />
             </View>
           )}
-          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
-            <Text className={styles.backIcon}>‹</Text>
-          </View>
+          <BackButton className={styles.backBtn} onClick={() => Taro.navigateBack()} />
         </View>
 
         {/* 主体 */}

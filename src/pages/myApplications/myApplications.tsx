@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
 import { ScrollView, Text, View, Image } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import { BackButton } from '@/components/headerBar';
 import { myApplications, MyApplicationItem } from '@/api/application';
 import { ACTIVITY_TYPE_MAP } from '@/pages/publish/constants';
 import styles from './myApplications.module.scss';
@@ -40,9 +41,7 @@ export default function MyApplications() {
     <PageLayout>
       <View className={styles.page}>
         <View className={styles.header}>
-          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
-            <Text className={styles.backIcon}>‹</Text>
-          </View>
+          <BackButton onClick={() => Taro.navigateBack()} />
           <Text className={styles.headerTitle}>我的申请</Text>
         </View>
 

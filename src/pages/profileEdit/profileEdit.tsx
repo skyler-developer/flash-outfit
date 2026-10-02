@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
 import { ScrollView, Text, View, Image, Button, Input, Picker } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import { BackButton } from '@/components/headerBar';
 import { useUserStore } from '@/stores/userStore/useUserStore';
 import { uploadImage } from '@/api/upload';
 import { ACTIVITY_TYPES } from '@/pages/publish/constants';
@@ -132,9 +133,7 @@ export default function ProfileEdit() {
     <PageLayout>
       <View className={styles.page}>
         <View className={styles.header}>
-          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
-            <Text className={styles.backIcon}>‹</Text>
-          </View>
+          <BackButton onClick={() => Taro.navigateBack()} />
           <Text className={styles.headerTitle}>
             {from === 'apply' && !initialized ? '完善资料' : '编辑资料'}
           </Text>

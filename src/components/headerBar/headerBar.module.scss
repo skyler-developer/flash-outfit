@@ -33,6 +33,9 @@
 .backBtn {
     position: absolute;
     left: 32px;
+}
+
+.backControl {
     width: 56px;
     height: 56px;
     display: flex;
@@ -40,9 +43,10 @@
     justify-content: center;
     border-radius: 50%;
     background-color: rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
 }
 
-.backIcon {
+.backGlyph {
     font-size: 40px;
     color: $text-primary;
     line-height: 1;

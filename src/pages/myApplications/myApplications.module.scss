@@ -6,22 +6,8 @@
 .header {
   display: flex;
   align-items: center;
-  padding: 24px 24px 24px 12px;
+  padding: 24px 32px;
   background: #fff;
-}
-
-.backBtn {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.backIcon {
-  font-size: 44px;
-  color: #0f172a;
-  line-height: 1;
 }
 
 .headerTitle {
@@ -30,7 +16,7 @@
   font-size: 34px;
   font-weight: 600;
   color: #0f172a;
-  margin-right: 64px;
+  margin-right: 56px;
 }
 
 .list {

@@ -1,6 +1,7 @@
 import Taro from '@tarojs/taro';
 import { ScrollView, Text, View } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
+import { BackButton } from '@/components/headerBar';
 import styles from './communityRules.module.scss';
 
 const RULES: { title: string; items: string[] }[] = [
@@ -43,9 +44,7 @@ export default function CommunityRules() {
     <PageLayout>
       <View className={styles.page}>
         <View className={styles.header}>
-          <View className={styles.backBtn} onClick={() => Taro.navigateBack()}>
-            <Text className={styles.backIcon}>‹</Text>
-          </View>
+          <BackButton onClick={() => Taro.navigateBack()} />
           <Text className={styles.headerTitle}>社区公约</Text>
         </View>
 
