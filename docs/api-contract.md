@@ -485,7 +485,8 @@ Authorization: Bearer <token>
 - 字段：`file`，单文件；类型 jpg/png/webp；单张 ≤ 10MB
 - MVP 允许批量：前端多图循环调用
 - 响应 `data`: `{ "url": "https://{domain}/uploads/r/169xxxx.jpg" }`
-- 存储：开发阶段本地 `server/uploads/` 静态目录；上线切 OSS/COS（StorageService 适配器，返回完整可访问 URL）
+- 存储：双模式，`STORAGE_TYPE` 环境变量切换——`local`（开发，本地 `server/uploads/` 静态目录）/ `cos`（生产，腾讯云 COS，StorageService 适配器，返回完整可访问 URL）
+- COS 环境变量：`COS_SECRET_ID` / `COS_SECRET_KEY`（必填，子账号密钥建议只授该桶读写）、`COS_BUCKET`（默认 flash-outfit-1322045345）、`COS_REGION`（默认 ap-guangzhou）、`COS_BASE_URL`（默认桶访问域名 https://flash-outfit-1322045345.cos.ap-guangzhou.myqcloud.com）
 - 内容安全：发布请求时图片异步送审 mediaCheckAsync（上传接口本身不拦截），审核结果驱动请求 `reviewStatus`（见 §4.7）
 
 ### 7.2 逆地理编码（代理）
@@ -550,7 +551,7 @@ server/src/
   requests/          # request entity + 列表查询（Haversine SQL）/详情/发布/修改/删除
   applications/      # application entity + 申请/审批（事务内满员校验）
   notifications/     # entity + 内部 service（事件驱动：申请/审批/删除时写入）
-  upload/            # StorageService 接口 + LocalStorageProvider（本地）/ OssProvider（预留）
+  upload/            # StorageService（local 本地磁盘 / cos 腾讯云 COS 双实现）+ 上传/逆地理控制器
   geo/               # /geo/reverse 腾讯位置服务代理
   entities/          # User / Request / Application / Notification（TypeORM）
 ```
@@ -563,4 +564,4 @@ server/src/
 
 1. 内容安全接口：自建后端需申请微信开放平台的 msgSecCheck/imgSecCheck 调用权限（需小程序已发布？联调期可先 mock 通过）
 2. 逆地理编码：需注册腾讯位置服务并申请 key（免费额度充足）
-3. 图片 CDN 域名：上线后需加入小程序 downloadFile 合法域名白名单
+3. 图片 CDN 域名：上线后需加入小程序 downloadFile 合法域名白名单（COS 桶域名 https://flash-outfit-1322045345.cos.ap-guangzhou.myqcloud.com）

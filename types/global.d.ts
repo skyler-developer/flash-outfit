@@ -1,5 +1,8 @@
 /// <reference types="@tarojs/taro" />
 
+/** 后端 API 地址：由 config/index.ts defineConstants 构建期注入（dev=本地，prod=正式域名） */
+declare const API_BASE_URL: string;
+
 declare module "*.png";
 declare module "*.gif";
 declare module "*.jpg";

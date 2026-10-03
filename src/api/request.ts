@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro';
 
-/** 开发环境指向本地 NestJS 服务；上云后替换为备案域名 */
-const BASE_URL = 'http://localhost:3000/api/v1';
+/** 后端 API 地址：构建期由 defineConstants 注入（开发=本地服务，生产=正式域名） */
+const BASE_URL = API_BASE_URL;
 
 export interface ApiResponse<T = unknown> {
   code: number;

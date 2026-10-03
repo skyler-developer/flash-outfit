@@ -15,6 +15,18 @@ export const appConfig = {
     callbackToken: env('WX_CALLBACK_TOKEN', 'flash-outfit-dev-token'),
   },
   tencentMapKey: process.env.TENCENT_MAP_KEY || '',
+  storage: {
+    /** local = 本地磁盘（开发）；cos = 腾讯云 COS（生产） */
+    type: (env('STORAGE_TYPE', 'local') as 'local' | 'cos'),
+    cos: {
+      secretId: env('COS_SECRET_ID', ''),
+      secretKey: env('COS_SECRET_KEY', ''),
+      bucket: env('COS_BUCKET', 'flash-outfit-1322045345'),
+      region: env('COS_REGION', 'ap-guangzhou'),
+      /** 桶访问域名（末尾不带斜杠），默认即本项目桶 */
+      baseUrl: env('COS_BASE_URL', 'https://flash-outfit-1322045345.cos.ap-guangzhou.myqcloud.com').replace(/\/$/, ''),
+    },
+  },
   db: {
     type: (env('DB_TYPE', 'sqlite') as 'sqlite' | 'mysql'),
     get mysql() {

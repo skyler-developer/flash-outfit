@@ -8,21 +8,23 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
-import * as fs from 'fs';
 import * as path from 'path';
 import { Public } from '../common/jwt-auth';
 import { appConfig } from '../common/config';
 import { ErrorCode, err } from '../common/errors';
+import { StorageService } from './storage.service';
 
 const ALLOWED_EXT = ['.jpg', '.jpeg', '.png', '.webp'];
 const MAX_SIZE = 10 * 1024 * 1024;
 
 /**
- * 图片上传：开发阶段本地静态目录（server/uploads/），
- * 上线切 OSS/COS 只需替换 saveFile 内部实现（StorageService 适配器模式）。
+ * 图片上传：开发走本地静态目录（server/uploads/），
+ * 生产由 STORAGE_TYPE=cos 切换到腾讯云 COS（见 StorageService）。
  */
 @Controller('upload')
 export class UploadController {
+  constructor(private readonly storage: StorageService) {}
+
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
@@ -32,12 +34,8 @@ export class UploadController {
     const ext = path.extname(file.originalname || '').toLowerCase();
     const safeExt = ALLOWED_EXT.includes(ext) ? ext : '.jpg';
 
-    const dir = path.resolve(process.cwd(), appConfig.uploadDir, 'r');
-    fs.mkdirSync(dir, { recursive: true });
-    const filename = `r_${Date.now()}_${Math.random().toString(36).slice(2, 8)}${safeExt}`;
-    fs.writeFileSync(path.join(dir, filename), file.buffer);
-
-    return { url: `${appConfig.publicBaseUrl}/api/v1/uploads/r/${filename}` };
+    const url = await this.storage.saveImage(file.buffer, safeExt);
+    return { url };
   }
 }
 
