@@ -1,5 +1,5 @@
 import { ActivityRequest } from '../entities/request.entity';
-import { User, calcAge } from '../entities/user.entity';
+import { User } from '../entities/user.entity';
 
 export interface ApplicabilityResult {
   applicable: boolean;
@@ -7,8 +7,7 @@ export interface ApplicabilityResult {
 }
 
 /**
- * 申请资格静态校验（不含满员/重复申请等 DB 依赖项）。
- * 详情接口用；申请/审批路径在 service 里结合 DB 状态使用。
+ * 详情页申请资格的基础校验（不含重复申请等 DB 依赖项）。
  */
 export function checkPreference(
   viewer: User | null,
@@ -18,23 +17,11 @@ export function checkPreference(
   if (request.status !== 'recruiting') {
     return { applicable: false, reason: '该请求已结束' };
   }
-  if (new Date(request.activityTime).getTime() <= Date.now()) {
-    return { applicable: false, reason: '该请求已过期' };
+  if (request.reviewStatus !== 'pass') {
+    return { applicable: false, reason: '该请求尚未通过审核' };
   }
   if (request.publisherId === viewer.id) {
     return { applicable: false, reason: '不能申请自己发布的请求' };
-  }
-  if (request.genderPreference !== 'all' && request.genderPreference !== viewer.gender) {
-    return { applicable: false, reason: '不符合该请求的性别偏好' };
-  }
-  if (viewer.birthYear) {
-    const age = calcAge(viewer.birthYear);
-    if (age < request.ageMin || age > request.ageMax) {
-      return {
-        applicable: false,
-        reason: `该请求期望 ${request.ageMin}-${request.ageMax} 岁的伙伴`,
-      };
-    }
   }
   return { applicable: true, reason: null };
 }

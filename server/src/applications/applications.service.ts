@@ -30,30 +30,18 @@ export class ApplicationsService {
     const request = await this.requestsRepo.findOneBy({ id: requestId });
     if (!user || !request) throw new NotFoundException();
 
-    // 1. 状态/过期
+    // 1. 重新校验活动状态及发布者；过期、偏好和名额不限制提交。
     if (request.status !== 'recruiting') throw err(ErrorCode.NOT_APPLICABLE, '该请求已结束');
-    if (new Date(request.activityTime).getTime() <= Date.now()) {
-      throw err(ErrorCode.NOT_APPLICABLE, '该请求已过期');
-    }
-    // 2. 未满员
-    const approved = await this.appsRepo.count({ where: { requestId, status: 'approved' } });
-    if (approved >= request.maxMembers) throw err(ErrorCode.FULL);
-    // 3. 伙伴偏好
-    if (request.genderPreference !== 'all' && request.genderPreference !== user.gender) {
-      throw err(ErrorCode.PREFERENCE_MISMATCH);
-    }
-    if (user.birthYear) {
-      const age = calcAge(user.birthYear);
-      if (age < request.ageMin || age > request.ageMax) throw err(ErrorCode.PREFERENCE_MISMATCH);
-    }
-    // 4. 未重复申请
+    if (request.reviewStatus !== 'pass') throw err(ErrorCode.NOT_APPLICABLE, '该请求尚未通过审核');
+    if (request.publisherId === userId) throw err(ErrorCode.NOT_APPLICABLE, '不能申请自己发布的请求');
+    // 2. 未重复申请
     const mine = await this.appsRepo.findOne({
       where: { requestId, applicantId: userId },
       order: { id: 'DESC' },
     });
     if (mine && mine.status !== 'rejected') throw err(ErrorCode.DUPLICATE_APPLY);
 
-    // 5. 留言内容安全：本地敏感词 + 微信 msgSecCheck v2（scene=2 评论）
+    // 3. 留言内容安全：本地敏感词 + 微信 msgSecCheck v2（scene=2 评论）
     if (containsSensitive(dto.message)) throw err(ErrorCode.CONTENT_RISK);
     const suggest = await this.wx.checkText(dto.message, user.openid, 2);
     if (suggest === 'risky') throw err(ErrorCode.CONTENT_RISK);

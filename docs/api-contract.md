@@ -162,8 +162,8 @@ Authorization: Bearer <token>
 | `lat` / `lng` | number | 条件 | 当前坐标；与 `sortBy=distance` 二选一组合 |
 | `distance` | number | 否 | 距离范围过滤（km），如 5/10/50；不传则不限 |
 | `city` | string | 条件 | 定位降级模式下的城市过滤；`lat/lng` 缺失时必传其一 |
-| `sortBy` | string | 否 | `distance`（默认，需坐标）/ `time`（按 activityTime 倒序，降级模式默认） |
-| `onlyApplicable` | boolean | 否 | 默认 false；true 时只返回我符合伙伴偏好的请求 |
+| `sortBy` | string | 否 | `distance`（需坐标）/ `time`（按 activityTime 升序，降级模式默认）；两种模式均先展示未过期活动，过期活动按最近过期优先排列 |
+| `onlyApplicable` | boolean | 否 | 默认 false；true 时只返回招募中、审核通过且非本人发布的请求，不排除已过期、偏好不符、满员或已有申请的活动 |
 
 响应 `data`：
 
@@ -197,10 +197,10 @@ Authorization: Bearer <token>
 
 - 只返回 `status = recruiting` 且 `reviewStatus = pass` 的请求（审核未完成/未通过的不进流，详见 §4.7）
 - `distanceKm`：Haversine 计算，无坐标时为 null；`sortBy=distance` 时 null 距离的排最后
-- `expired`：activityTime 已过时实时计算为 true，前端置灰不可申请
+- `expired`：activityTime 已过时实时计算为 true，前端展示「已过期」角标；不影响申请资格。默认列表未过期活动优先，过期活动在后且最近过期的排前
 - `descriptionSummary`：描述截前 50 字
 - `myApplicationStatus`：当前用户对该请求的申请状态（`pending/approved/rejected/null`），供卡片角标展示
-- `onlyApplicable=true`：按当前用户 gender/age 与请求偏好双向匹配过滤
+- `onlyApplicable=true`：仅在招募中且审核通过的列表内过滤本人发布的请求，不按过期时间、性别/年龄偏好、名额或已有申请状态过滤
 
 ### 4.2 请求详情
 
@@ -236,7 +236,7 @@ Authorization: Bearer <token>
 
 规则：
 
-- `applicable`：当前用户是否可申请（false 时 `applicableReason` 给出原因：偏好不符/已满员/已过期/重复申请/状态不可申请）；前端据此置灰按钮
+- `applicable`：当前用户是否可申请（须招募中、审核通过、非本人发布，且最近一次申请不是 pending/approved；rejected 后可重新申请）。false 时 `applicableReason` 给出原因；过期、偏好及满员不影响该值
 - `isPublisher`：查看者即发布者时前端展示“管理”入口而非“申请”
 - 非招募中状态（grouped/finished/cancelled）仍可查看，仅不可申请
 - `reviewStatus != pass`（审核中/未通过）的详情仅发布者本人可访问，其他人访问返回 404；`photos` 原图全量返回，未通过审核的图片 URL 列在 `riskyPhotoUrls`，前端在对应图片左上角叠“未通过审核”角标（原图可见）
@@ -349,11 +349,11 @@ Authorization: Bearer <token>
 
 校验规则（按序校验，首个失败即返回错误码）：
 
-1. 请求 status = recruiting 且未过期（4110）
-2. 未满员：`approvedCount < maxMembers`（4111）
-3. 伙伴偏好：申请者 gender 符合 `genderPreference`，age 在 `ageRange` 内（4102）
-4. 未重复申请：该用户对该请求无 pending/approved 记录（4112，rejected 后可重新申请）
-5. `message` 必填、1~100 字，内容安全校验（4200）
+1. 请求仍为 `status = recruiting` 且 `reviewStatus = pass`，不能申请本人发布的请求（4110）；过期时间不阻止申请
+2. 未重复申请：最近一次申请不是 pending/approved（4112，rejected 后可重新申请）
+3. `message` 必填、1~100 字，内容安全校验（4200）
+
+性别/年龄偏好与已满员不限制提交；人数上限仅在审批通过时校验，满员申请仍可进入 pending。
 
 响应 `data`：
 

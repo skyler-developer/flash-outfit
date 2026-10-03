@@ -26,13 +26,12 @@ export class RequestsService {
     private mediaChecks: MediaCheckService,
   ) {}
 
-  /** 请求流：只返回 recruiting，支持类型/时间/距离/城市过滤 + 距离或时间排序 */
+  /** 请求流：招募中且审核通过；未过期优先，过期活动在默认列表末尾展示 */
   async list(viewerId: number, q: ListRequestsDto) {
     const page = q.page ?? 1;
     const pageSize = q.pageSize ?? 10;
     const onlyApplicable = q.onlyApplicable === 'true' || q.onlyApplicable === true;
 
-    const viewer = await this.usersRepo.findOneBy({ id: viewerId });
     const now = Date.now();
 
     // 1. 取招募中且审核通过的请求（粗筛，页码放大以支撑距离排序后分页）
@@ -46,7 +45,8 @@ export class RequestsService {
     // 2. 时间范围过滤
     let list = items.filter((r) => {
       const t = new Date(r.activityTime).getTime();
-      if (t <= now) return false; // 过期不进流
+      // 指定未来时间范围时仅展示对应日期的活动；默认「不限」展示历史活动。
+      if (q.timeRange && q.timeRange !== 'all' && t <= now) return false;
       switch (q.timeRange) {
         case 'weekend': {
           const d = new Date(r.activityTime);
@@ -72,15 +72,9 @@ export class RequestsService {
       list = list.filter((r) => r.city === q.city);
     }
 
-    // 5. 只看可申请（双向偏好匹配）
-    if (onlyApplicable && viewer) {
-      const viewerAge = viewer.birthYear ? calcAge(viewer.birthYear) : null;
-      list = list.filter((r) => {
-        if (r.publisherId === viewer.id) return false;
-        if (r.genderPreference !== 'all' && r.genderPreference !== viewer.gender) return false;
-        if (viewerAge !== null && (viewerAge < r.ageMin || viewerAge > r.ageMax)) return false;
-        return true;
-      });
+    // 5. 首页筛选只排除本人发布的请求；招募状态与审核状态已在查询中限制。
+    if (onlyApplicable) {
+      list = list.filter((r) => r.publisherId !== viewerId);
     }
 
     // 6. 我的申请状态（卡片角标）
@@ -98,18 +92,24 @@ export class RequestsService {
           : null,
     }));
 
-    // 8. 排序：sortBy=distance 需坐标；降级/无坐标按 activityTime 正序（最近的活动在前）
-    if (q.sortBy === 'distance' && q.lat != null && q.lng != null) {
-      withDistance.sort((a, b) => {
-        if (a.distanceKm == null) return 1;
-        if (b.distanceKm == null) return -1;
-        return a.distanceKm - b.distanceKm;
-      });
-    } else {
-      withDistance.sort(
-        (a, b) => new Date(a.r.activityTime).getTime() - new Date(b.r.activityTime).getTime(),
-      );
-    }
+    // 8. 未过期活动始终排在前面；同组内按距离或时间排序，过期活动按最近过期优先。
+    const sortByDistance = q.sortBy === 'distance' && q.lat != null && q.lng != null;
+    withDistance.sort((a, b) => {
+      const aTime = new Date(a.r.activityTime).getTime();
+      const bTime = new Date(b.r.activityTime).getTime();
+      const aExpired = aTime <= now;
+      const bExpired = bTime <= now;
+      if (aExpired !== bExpired) return aExpired ? 1 : -1;
+      if (aExpired) return bTime - aTime || b.r.id - a.r.id;
+      if (sortByDistance) {
+        if (a.distanceKm == null && b.distanceKm != null) return 1;
+        if (b.distanceKm == null && a.distanceKm != null) return -1;
+        if (a.distanceKm != null && b.distanceKm != null && a.distanceKm !== b.distanceKm) {
+          return a.distanceKm - b.distanceKm;
+        }
+      }
+      return aTime - bTime || b.r.id - a.r.id;
+    });
 
     // 9. 距离范围过滤（排序后过滤，避免先过滤丢远距离排序页）
     if (q.distance != null) {
@@ -190,32 +190,12 @@ export class RequestsService {
 
     let applicable = false;
     let applicableReason: string | null = null;
-    if (viewer) {
-      const pref = checkPreference(viewer, request);
-      if (!pref.applicable) {
-        applicable = false;
-        applicableReason = pref.reason;
-      } else {
-        // 静态偏好通过后，再校验满员与重复申请
-        const approvedCount0 = await this.appsRepo.count({
-          where: { requestId: id, status: 'approved' },
-        });
-        if (approvedCount0 >= request.maxMembers) {
-          applicable = false;
-          applicableReason = '该请求已满员';
-        } else {
-          const mine = await this.appsRepo.findOne({
-            where: { requestId: id, applicantId: viewerId },
-            order: { id: 'DESC' },
-          });
-          if (mine && mine.status !== 'rejected') {
-            applicable = false;
-            applicableReason = mine.status === 'pending' ? '已申请，等待审批' : '已成功加入';
-          } else {
-            applicable = true;
-          }
-        }
-      }
+    const eligibility = checkPreference(viewer, request);
+    applicable = eligibility.applicable;
+    applicableReason = eligibility.reason;
+    if (applicable && myApp && myApp.status !== 'rejected') {
+      applicable = false;
+      applicableReason = myApp.status === 'pending' ? '已申请，等待审批' : '已成功加入';
     }
 
     return {

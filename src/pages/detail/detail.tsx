@@ -123,7 +123,7 @@ export default function Detail() {
   const canShowApply =
     !detail.isPublisher &&
     detail.status === 'recruiting' &&
-    !detail.expired &&
+    detail.reviewStatus === 'pass' &&
     detail.myApplicationStatus !== 'approved';
 
   const applyDisabled = !detail.applicable;
@@ -261,7 +261,7 @@ export default function Detail() {
         ) : (
           <View className={styles.approvedBar}>
             <Text className={styles.approvedText}>
-              {detail.status !== 'recruiting' ? '该请求已结束' : '已过期，不可申请'}
+              {detail.status !== 'recruiting' ? '该请求已结束' : '该请求尚未通过审核'}
             </Text>
           </View>
         )}
