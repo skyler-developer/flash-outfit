@@ -190,11 +190,16 @@ export default function Publish() {
         autoCloseOnGrouped,
       });
 
-      Taro.showToast({ title: '发布成功', icon: 'success' });
+      // 先审后展：图片异步审核通过后才会进首页流，统一提示待审核
+      Taro.showToast({
+        title: '发布成功，待通过审核后展示',
+        icon: 'none',
+        duration: 2500,
+      });
       resetForm();
       setTimeout(() => {
         Taro.switchTab({ url: '/pages/home/home' });
-      }, 1200);
+      }, 2000);
     } catch (e) {
       const err = e as { message?: string };
       // 微信号校验兜底（token 内用户资料可能过期）

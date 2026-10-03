@@ -11,6 +11,8 @@ export const appConfig = {
   wx: {
     appid: process.env.WX_APPID || '',
     secret: process.env.WX_SECRET || '',
+    /** 消息推送回调签名 token（与小程序后台「消息推送」配置一致） */
+    callbackToken: env('WX_CALLBACK_TOKEN', 'flash-outfit-dev-token'),
   },
   tencentMapKey: process.env.TENCENT_MAP_KEY || '',
   db: {

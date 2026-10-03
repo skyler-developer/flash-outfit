@@ -7,9 +7,10 @@ import { RequestsController } from './requests.controller';
 import { MyRequestsController } from './my-requests.controller';
 import { RequestsService } from './requests.service';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { WxModule } from '../wx/wx.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ActivityRequest, User, Application]), NotificationsModule],
+  imports: [TypeOrmModule.forFeature([ActivityRequest, User, Application]), NotificationsModule, WxModule],
   controllers: [RequestsController, MyRequestsController],
   providers: [RequestsService],
   exports: [RequestsService],

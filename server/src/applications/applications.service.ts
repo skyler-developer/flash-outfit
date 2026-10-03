@@ -5,6 +5,7 @@ import { Application } from '../entities/application.entity';
 import { ActivityRequest } from '../entities/request.entity';
 import { User, calcAge } from '../entities/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
+import { WxService } from '../wx/wx.service';
 import { ErrorCode, err } from '../common/errors';
 import { containsSensitive, truncate } from '../common/applicability';
 import { CreateApplicationDto } from './applications.dto';
@@ -19,6 +20,7 @@ export class ApplicationsService {
     @InjectRepository(User)
     private usersRepo: Repository<User>,
     private notifications: NotificationsService,
+    private wx: WxService,
     private dataSource: DataSource,
   ) {}
 
@@ -51,8 +53,10 @@ export class ApplicationsService {
     });
     if (mine && mine.status !== 'rejected') throw err(ErrorCode.DUPLICATE_APPLY);
 
-    // 5. 留言内容安全（MVP 简单敏感词过滤，上线替换 msgSecCheck）
+    // 5. 留言内容安全：本地敏感词 + 微信 msgSecCheck v2（scene=2 评论）
     if (containsSensitive(dto.message)) throw err(ErrorCode.CONTENT_RISK);
+    const suggest = await this.wx.checkText(dto.message, user.openid, 2);
+    if (suggest === 'risky') throw err(ErrorCode.CONTENT_RISK);
 
     const app = await this.appsRepo.save(
       this.appsRepo.create({

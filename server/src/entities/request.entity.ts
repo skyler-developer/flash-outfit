@@ -12,6 +12,7 @@ export type RequestType =
   | 'other';
 export type GenderPreference = 'all' | 'female' | 'male';
 export type RequestStatus = 'recruiting' | 'grouped' | 'finished' | 'cancelled';
+export type ReviewStatus = 'checking' | 'pass' | 'rejected';
 
 @Entity('requests')
 export class ActivityRequest {
@@ -66,6 +67,16 @@ export class ActivityRequest {
 
   @Column({ type: 'text', default: 'recruiting' })
   status: RequestStatus;
+
+  /**
+   * 内容安全审核状态（先审后展门控）：
+   * - checking：图片异步审核中，首页不展示，仅发布者可见
+   * - pass：审核通过（含无图片记录的存量数据），对外展示
+   * - rejected：任一图片判违规，首页不展示，仅发布者可见，可改后重新送审
+   * 文字在发布时已同步过 msgSecCheck，不参与该状态机。
+   */
+  @Column({ type: 'text', default: 'pass' })
+  reviewStatus: ReviewStatus;
 
   @CreateDateColumn()
   createdAt: Date;

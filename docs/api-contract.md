@@ -195,7 +195,7 @@ Authorization: Bearer <token>
 
 规则：
 
-- 只返回 `status = recruiting` 的请求（grouped/finished/cancelled 不进流）
+- 只返回 `status = recruiting` 且 `reviewStatus = pass` 的请求（审核未完成/未通过的不进流，详见 §4.7）
 - `distanceKm`：Haversine 计算，无坐标时为 null；`sortBy=distance` 时 null 距离的排最后
 - `expired`：activityTime 已过时实时计算为 true，前端置灰不可申请
 - `descriptionSummary`：描述截前 50 字
@@ -219,10 +219,12 @@ Authorization: Bearer <token>
   "ageRange": [18, 35],
   "description": "完整描述文本...",
   "photos": ["https://cdn.example.com/r/501/0.jpg", "..."],
+  "riskyPhotoUrls": [],
   "maxMembers": 1,
   "autoCloseOnGrouped": false,
   "approvedCount": 0,
   "status": "recruiting",
+  "reviewStatus": "pass",
   "expired": false,
   "isPublisher": false,
   "applicable": true,
@@ -235,8 +237,9 @@ Authorization: Bearer <token>
 规则：
 
 - `applicable`：当前用户是否可申请（false 时 `applicableReason` 给出原因：偏好不符/已满员/已过期/重复申请/状态不可申请）；前端据此置灰按钮
-- `isPublisher`：查看者即发布者时前端展示"管理"入口而非"申请"
+- `isPublisher`：查看者即发布者时前端展示“管理”入口而非“申请”
 - 非招募中状态（grouped/finished/cancelled）仍可查看，仅不可申请
+- `reviewStatus != pass`（审核中/未通过）的详情仅发布者本人可访问，其他人访问返回 404；`photos` 原图全量返回，未通过审核的图片 URL 列在 `riskyPhotoUrls`，前端在对应图片左上角叠“未通过审核”角标（原图可见）
 
 ### 4.3 发布请求
 
@@ -268,6 +271,12 @@ Authorization: Bearer <token>
 - `maxMembers` 1~9，默认 1；`autoCloseOnGrouped` 默认 false
 - `type`：`travel | photography | sports | food | show | game | study | outdoor | other`（v1.3 扩充）
 
+发布副作用（先审后展门控，详见 §4.7）：
+
+- `description` 同步送审 msgSecCheck v2（scene=3），`risky` 拒绝（4200）
+- `photos` 异步送审 mediaCheckAsync；请求初始 `reviewStatus = checking`，首页不展示
+- 开发 mock 模式（未配置 WX_APPID/SECRET）下图片直接判 pass，请求立即可见，保持本地联调体验
+
 响应 `data`：完整 request 对象（同 4.2 结构，`isPublisher: true`）。
 
 ### 4.4 修改请求
@@ -296,6 +305,7 @@ Authorization: Bearer <token>
 {
   "id": 501,
   "status": "recruiting",
+  "reviewStatus": "pass",
   "expired": false,
   "approvedCount": 1,
   "maxMembers": 1,
@@ -307,7 +317,20 @@ Authorization: Bearer <token>
 }
 ```
 
-`pendingCount` 用于列表角标提示（待审批数）。
+`pendingCount` 用于列表角标提示（待审批数）；`reviewStatus` 供"我发布的"列表渲染审核中/审核未通过/审核通过标记（状态机见 §4.7）。
+
+### 4.7 内容安全审核状态机（先审后展）
+
+`requests.reviewStatus`：`checking | pass | rejected`
+
+- 发布：`description` 同步过 msgSecCheck v2（risky → 4200 拒绝）；图片异步送审 mediaCheckAsync，请求落库为 `checking`，首页请求流不展示，详情仅发布者可见
+- 微信回调 `POST /wx/callback`（事件 `wxa_media_check`，trace_id 对账，幂等）：
+  - 任一当前图片判 `risky` → `rejected`，推送 `contentBlocked` 通知（“未通过内容安全审核，已在首页隐藏，请更换图片后重新提交”）；详情 `riskyPhotoUrls` 标记违规图，前端原图叠角标
+  - 全部图片判 `pass` → `pass`，请求进入首页请求流，发布者刷新首页即可看到
+- 修改请求换图：新图重新送审、按当前 `photos` 数组重算（移除违规图可恢复 `pass`；新增图片回到 `checking`）
+- 存量/种子数据无送审记录的图片视为 `pass`
+- 开发 mock 模式（未配置 WX_APPID/SECRET 或 openid 以 `mock:` 开头）：不真实送审，图片直接判 `pass`，请求发布后立即可见
+- 上线配置：小程序后台「开发 → 开发设置 → 消息推送」填 `https://{domain}/api/v1/wx/callback`，Token 与服务端 `WX_CALLBACK_TOKEN` 一致，数据格式 JSON
 
 ---
 
@@ -462,7 +485,7 @@ Authorization: Bearer <token>
 - MVP 允许批量：前端多图循环调用
 - 响应 `data`: `{ "url": "https://{domain}/uploads/r/169xxxx.jpg" }`
 - 存储：开发阶段本地 `server/uploads/` 静态目录；上线切 OSS/COS（StorageService 适配器，返回完整可访问 URL）
-- 内容安全：上传后异步 imgSecCheck，违规图片相关请求展示时替换占位图
+- 内容安全：发布请求时图片异步送审 mediaCheckAsync（上传接口本身不拦截），审核结果驱动请求 `reviewStatus`（见 §4.7）
 
 ### 7.2 逆地理编码（代理）
 

@@ -9,6 +9,8 @@ import { haversineKm } from '../common/haversine';
 import { checkPreference, containsSensitive, truncate } from '../common/applicability';
 import { CreateRequestDto, ListRequestsDto, UpdateRequestDto } from './requests.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { WxService } from '../wx/wx.service';
+import { MediaCheckService } from '../wx/media-check.service';
 
 @Injectable()
 export class RequestsService {
@@ -20,6 +22,8 @@ export class RequestsService {
     @InjectRepository(Application)
     private appsRepo: Repository<Application>,
     private notifications: NotificationsService,
+    private wx: WxService,
+    private mediaChecks: MediaCheckService,
   ) {}
 
   /** 请求流：只返回 recruiting，支持类型/时间/距离/城市过滤 + 距离或时间排序 */
@@ -31,10 +35,10 @@ export class RequestsService {
     const viewer = await this.usersRepo.findOneBy({ id: viewerId });
     const now = Date.now();
 
-    // 1. 取招募中的请求（粗筛，页码放大以支撑距离排序后分页）
+    // 1. 取招募中且审核通过的请求（粗筛，页码放大以支撑距离排序后分页）
     const fetchSize = 200;
     const [items] = await this.requestsRepo.findAndCount({
-      where: { status: 'recruiting' },
+      where: { status: 'recruiting', reviewStatus: 'pass' },
       order: { id: 'DESC' },
       take: fetchSize,
     });
@@ -132,38 +136,43 @@ export class RequestsService {
     const publisherMap = new Map(publishers.map((u) => [u.id, u]));
 
     return {
-      list: slice.map(({ r, distanceKm }) => {
-        const p = publisherMap.get(r.publisherId);
-        return {
-          id: r.id,
-          type: r.type,
-          activityTime: r.activityTime,
-          destination: r.destination,
-          city: r.city,
-          genderPreference: r.genderPreference,
-          ageRange: [r.ageMin, r.ageMax],
-          descriptionSummary: r.description.slice(0, 50),
-          coverImage: r.photos?.[0] || null,
-          distanceKm,
-          expired: new Date(r.activityTime).getTime() <= Date.now(),
-          status: r.status,
-          approvedCount: 0, // 列表流场景不需要，详情单独查
-          maxMembers: r.maxMembers,
-          publisher: p
-            ? { id: p.id, nickname: p.nickname, avatar: p.avatar }
-            : null,
-        };
-      }),
+      list: await Promise.all(
+        slice.map(async ({ r, distanceKm }) => {
+          const p = publisherMap.get(r.publisherId);
+          return {
+            id: r.id,
+            type: r.type,
+            activityTime: r.activityTime,
+            destination: r.destination,
+            city: r.city,
+            genderPreference: r.genderPreference,
+            ageRange: [r.ageMin, r.ageMax],
+            descriptionSummary: r.description.slice(0, 50),
+            coverImage: await this.mediaChecks.pickCover(r.photos),
+            distanceKm,
+            expired: new Date(r.activityTime).getTime() <= Date.now(),
+            status: r.status,
+            approvedCount: 0, // 列表流场景不需要，详情单独查
+            maxMembers: r.maxMembers,
+            publisher: p
+              ? { id: p.id, nickname: p.nickname, avatar: p.avatar }
+              : null,
+          };
+        }),
+      ),
       total,
       page,
       pageSize,
     };
   }
 
-  /** 请求详情 */
+  /** 请求详情：审核未通过的请求仅发布者本人可见 */
   async detail(viewerId: number, id: number) {
     const request = await this.requestsRepo.findOneBy({ id });
     if (!request) throw new NotFoundException();
+    if (request.reviewStatus !== 'pass' && request.publisherId !== viewerId) {
+      throw new NotFoundException();
+    }
 
     const viewer = await this.usersRepo.findOneBy({ id: viewerId });
     const publisher = await this.usersRepo.findOneBy({ id: request.publisherId });
@@ -218,12 +227,15 @@ export class RequestsService {
       genderPreference: request.genderPreference,
       ageRange: [request.ageMin, request.ageMax],
       description: request.description,
+      // 先审后展：违规图保留原图返回，标记在 riskyPhotoUrls，前端叠“未通过审核”角标
       photos: request.photos || [],
+      riskyPhotoUrls: [...(await this.mediaChecks.riskyUrlSet(request.photos || []))],
       maxMembers: request.maxMembers,
       autoCloseOnGrouped: request.autoCloseOnGrouped,
       approvedCount,
       pendingCount,
       status: request.status,
+      reviewStatus: request.reviewStatus,
       expired: new Date(request.activityTime).getTime() <= Date.now(),
       isPublisher: request.publisherId === viewerId,
       applicable,
@@ -256,6 +268,10 @@ export class RequestsService {
     }
     if (containsSensitive(dto.description)) throw err(ErrorCode.CONTENT_RISK);
 
+    // 微信 msgSecCheck v2 同步文本审核（scene=3 论坛；未配置/异常时 fail-open 放行）
+    const suggest = await this.wx.checkText(dto.description, user.openid, 3);
+    if (suggest === 'risky') throw err(ErrorCode.CONTENT_RISK);
+
     const [ageMin, ageMax] = dto.ageRange;
     const entity = await this.requestsRepo.save(
       this.requestsRepo.create({
@@ -274,8 +290,12 @@ export class RequestsService {
         maxMembers: dto.maxMembers ?? 1,
         autoCloseOnGrouped: dto.autoCloseOnGrouped ?? false,
         status: 'recruiting',
+        // 图片异步审核中（开发 mock 模式下 submitForPhotos 重算后会立即置 pass）
+        reviewStatus: 'checking',
       }),
     );
+    // 先送审重算状态（决定首页可见性），再返回详情
+    await this.mediaChecks.submitForPhotos(dto.photos, user.openid);
     return this.detail(userId, entity.id);
   }
 
@@ -290,6 +310,15 @@ export class RequestsService {
     }
     if (dto.description !== undefined && containsSensitive(dto.description)) {
       throw err(ErrorCode.CONTENT_RISK);
+    }
+
+    // 文案变更时同步送审 msgSecCheck
+    if (dto.description !== undefined) {
+      const user = await this.usersRepo.findOneBy({ id: userId });
+      if (user) {
+        const suggest = await this.wx.checkText(dto.description, user.openid, 3);
+        if (suggest === 'risky') throw err(ErrorCode.CONTENT_RISK);
+      }
     }
 
     const patch: Partial<ActivityRequest> = {};
@@ -318,6 +347,13 @@ export class RequestsService {
     if (dto.status === 'finished') patch.status = 'finished';
 
     await this.requestsRepo.update(id, patch);
+
+    // 图片变更：新图送审并按当前 photos 重算 reviewStatus
+    // （移除违规图 → 重算可恢复 pass；新增图片 → 回到 checking 待回调）
+    if (dto.photos) {
+      const user = await this.usersRepo.findOneBy({ id: userId });
+      if (user) await this.mediaChecks.submitForPhotos(dto.photos, user.openid);
+    }
     return this.detail(userId, id);
   }
 
@@ -362,10 +398,11 @@ export class RequestsService {
       list.push({
         id: r.id,
         status: r.status,
+        reviewStatus: r.reviewStatus,
         expired: new Date(r.activityTime).getTime() <= Date.now(),
         approvedCount,
         pendingCount,
-        coverImage: r.photos?.[0] || null,
+        coverImage: await this.mediaChecks.pickCover(r.photos),
         activityTime: r.activityTime,
         destination: r.destination,
         type: r.type,

@@ -4,6 +4,8 @@ import type { PublicUser } from './auth';
 
 export type { ActivityType };
 export type RequestStatus = 'recruiting' | 'grouped' | 'finished' | 'cancelled';
+/** 内容安全审核状态：checking=审核中 pass=审核通过已展示 rejected=审核未通过（仅发布者可见） */
+export type ReviewStatus = 'checking' | 'pass' | 'rejected';
 
 export interface RequestListItem {
   id: number;
@@ -33,12 +35,15 @@ export interface RequestDetail {
   genderPreference: 'all' | 'female' | 'male';
   ageRange: [number, number];
   description: string;
+  /** 原图全量返回；未通过内容安全审核的图在 riskyPhotoUrls 中标记，前端叠角标 */
   photos: string[];
+  riskyPhotoUrls: string[];
   maxMembers: number;
   autoCloseOnGrouped: boolean;
   approvedCount: number;
   pendingCount: number;
   status: RequestStatus;
+  reviewStatus: ReviewStatus;
   expired: boolean;
   isPublisher: boolean;
   applicable: boolean;
@@ -117,6 +122,7 @@ export async function deleteRequest(id: number) {
 export interface MyPublishedItem {
   id: number;
   status: RequestStatus;
+  reviewStatus: ReviewStatus;
   expired: boolean;
   approvedCount: number;
   pendingCount: number;

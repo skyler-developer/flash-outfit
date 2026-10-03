@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Taro, { useLoad } from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { ScrollView, Text, View, Image } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
@@ -13,6 +13,8 @@ const STATUS_LABEL: Record<string, string> = {
   finished: '已结束',
   cancelled: '已取消',
 };
+
+// 内容安全审核状态标记（先审后展）：未通过红色、审核中橙色、通过后绿色，随 item.reviewStatus 渲染
 
 export default function MyRequests() {
   const [list, setList] = useState<MyPublishedItem[]>([]);
@@ -30,7 +32,8 @@ export default function MyRequests() {
     }
   };
 
-  useLoad(() => {
+  // 用 useDidShow：从管理/编辑页返回时刷新审核状态（回调是异步落库的）
+  useDidShow(() => {
     load();
   });
 
@@ -64,6 +67,19 @@ export default function MyRequests() {
                 <Text className={styles.dest}>{item.destination}</Text>
                 <Text className={styles.time}>{item.activityTime.slice(0, 16).replace('T', ' ')}</Text>
                 <View className={styles.tags}>
+                  {item.reviewStatus === 'rejected' ? (
+                    <View className={styles.tagReviewRejected}>
+                      <Text className={styles.tagReviewRejectedText}>审核未通过</Text>
+                    </View>
+                  ) : item.reviewStatus === 'checking' ? (
+                    <View className={styles.tagReviewChecking}>
+                      <Text className={styles.tagReviewCheckingText}>审核中</Text>
+                    </View>
+                  ) : (
+                    <View className={styles.tagReviewPass}>
+                      <Text className={styles.tagReviewPassText}>审核通过</Text>
+                    </View>
+                  )}
                   <View className={styles.tag}>
                     <Text className={styles.tagText}>
                       {item.expired ? '已过期' : STATUS_LABEL[item.status] || item.status}

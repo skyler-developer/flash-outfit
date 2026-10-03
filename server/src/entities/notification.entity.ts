@@ -1,6 +1,11 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export type NotificationType = 'newApply' | 'applyApproved' | 'applyRejected' | 'requestClosed';
+export type NotificationType =
+  | 'newApply'
+  | 'applyApproved'
+  | 'applyRejected'
+  | 'requestClosed'
+  | 'contentBlocked';
 
 @Entity('notifications')
 export class Notification {

@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
 import * as path from 'path';
+import { Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/response.interceptor';
 import { AllExceptionFilter } from './common/all-exception.filter';
@@ -30,7 +31,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalGuards(app.get(JwtAuthGuard));
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)));
   app.useGlobalFilters(new AllExceptionFilter());
   app.enableCors();
 

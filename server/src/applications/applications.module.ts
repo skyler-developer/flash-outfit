@@ -6,11 +6,13 @@ import { User } from '../entities/user.entity';
 import { ApplicationsController } from './applications.controller';
 import { ApplicationsService } from './applications.service';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { WxModule } from '../wx/wx.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Application, ActivityRequest, User]),
     NotificationsModule,
+    WxModule,
   ],
   controllers: [ApplicationsController],
   providers: [ApplicationsService],

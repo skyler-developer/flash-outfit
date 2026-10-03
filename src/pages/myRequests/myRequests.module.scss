@@ -104,6 +104,40 @@
   color: #d97706;
 }
 
+/* 内容安全审核状态标签（先审后展） */
+.tagReviewChecking {
+  background: #fef3e2;
+  border-radius: 100px;
+  padding: 4px 16px;
+}
+
+.tagReviewCheckingText {
+  font-size: 20px;
+  color: #d97706;
+}
+
+.tagReviewRejected {
+  background: #fee2e2;
+  border-radius: 100px;
+  padding: 4px 16px;
+}
+
+.tagReviewRejectedText {
+  font-size: 20px;
+  color: #dc2626;
+}
+
+.tagReviewPass {
+  background: #dcfce7;
+  border-radius: 100px;
+  padding: 4px 16px;
+}
+
+.tagReviewPassText {
+  font-size: 20px;
+  color: #16a34a;
+}
+
 .arrow {
   font-size: 40px;
   color: #cbd5e1;

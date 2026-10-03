@@ -18,6 +18,7 @@ const TYPE_ICON: Record<string, { cls: string; color: string }> = {
   applyApproved: { cls: 'icon-flash-outfitPartnerPreference', color: '#16A34A' },
   applyRejected: { cls: 'icon-flash-outfitcalendar', color: '#DC2626' },
   requestClosed: { cls: 'icon-flash-outfitcalendar', color: '#64748B' },
+contentBlocked: { cls: 'icon-flash-outfitLittleRocket', color: '#DC2626' },
 };
 
 function timeAgo(iso: string): string {

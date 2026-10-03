@@ -130,18 +130,25 @@ export default function Detail() {
   return (
     <PageLayout>
       <ScrollView scrollY className={styles.page}>
-        {/* 照片轮播 */}
+        {/* 照片轮播：未通过内容安全审核的图叠左上角角标（仅发布者会看到 rejected 状态的详情） */}
         <View className={styles.gallery}>
           {detail.photos.length > 0 ? (
             <Swiper className={styles.swiper} circular indicatorDots={detail.photos.length > 1}>
               {detail.photos.map((p, i) => (
                 <SwiperItem key={`${p}-${i}`}>
-                  <Image
-                    className={styles.photo}
-                    src={p}
-                    mode='aspectFill'
-                    onClick={() => Taro.previewImage({ urls: detail.photos, current: p })}
-                  />
+                  <View className={styles.photoWrap}>
+                    <Image
+                      className={styles.photo}
+                      src={p}
+                      mode='aspectFill'
+                      onClick={() => Taro.previewImage({ urls: detail.photos, current: p })}
+                    />
+                    {detail.riskyPhotoUrls?.includes(p) && (
+                      <View className={styles.riskyBadge}>
+                        <Text className={styles.riskyBadgeText}>未通过审核</Text>
+                      </View>
+                    )}
+                  </View>
                 </SwiperItem>
               ))}
             </Swiper>
