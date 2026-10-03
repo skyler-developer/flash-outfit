@@ -20,6 +20,9 @@
 }
 
 .readAllBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-left: auto;
   padding: 8px 24px;
   border-radius: 100px;
@@ -28,6 +31,7 @@
 
 .readAllText {
   font-size: 24px;
+  line-height: 34px;
   color: #64748b;
 }
 

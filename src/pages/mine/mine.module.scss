@@ -55,6 +55,18 @@
   white-space: nowrap;
 }
 
+.completeChip,
+.incompleteChip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completeChipText,
+.incompleteChipText {
+  line-height: 28px;
+}
+
 .completeChip {
   margin-left: 16px;
   padding: 4px 16px;

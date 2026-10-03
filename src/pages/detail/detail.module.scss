@@ -39,6 +39,9 @@
   position: absolute;
   top: 20px;
   left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(220, 38, 38, 0.92);
   border-radius: 8px;
   padding: 6px 14px;
@@ -46,6 +49,7 @@
 
 .riskyBadgeText {
   font-size: 22px;
+  line-height: 32px;
   color: #fff;
 }
 
@@ -83,6 +87,9 @@
 }
 
 .typeTag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 6px 20px;
   border-radius: 100px;
   background: #f49d25;
@@ -124,6 +131,7 @@
 
 .typeTagText {
   font-size: 22px;
+  line-height: 32px;
   color: #fff;
 }
 
@@ -139,11 +147,14 @@
   border-radius: 12px;
   padding: 8px 20px;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
 }
 
 .expiredTagText {
   font-size: 24px;
+  line-height: 34px;
   color: #64748b;
 }
 

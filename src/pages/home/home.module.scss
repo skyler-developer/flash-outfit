@@ -25,6 +25,9 @@
 }
 
 .citySwitch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-left: auto;
   padding: 6px 20px;
   border-radius: 100px;
@@ -33,6 +36,7 @@
 
 .citySwitchText {
   font-size: 22px;
+  line-height: 32px;
   color: #d97706;
 }
 
@@ -52,6 +56,9 @@
 }
 
 .cityPickBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 24px;
   padding: 14px 56px;
   border-radius: 100px;
@@ -60,6 +67,7 @@
 
 .cityPickText {
   font-size: 28px;
+  line-height: 40px;
   color: #fff;
   font-weight: 600;
 }

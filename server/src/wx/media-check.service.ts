@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Like, Repository } from 'typeorm';
+import { In, LessThan, Like, Repository } from 'typeorm';
 import { MediaCheck } from './media-check.entity';
 import { ActivityRequest, ReviewStatus } from '../entities/request.entity';
 import { WxService } from './wx.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
+/** 审核中超过该时限仍未收到回调的图片，视为审核服务不可用，自动放行（fail-open） */
+const CHECK_TIMEOUT_MS = 10 * 60 * 1000;
+const SWEEP_INTERVAL_MS = 5 * 60 * 1000;
+
 @Injectable()
 export class MediaCheckService {
+  private sweepTimer: ReturnType<typeof setInterval> | null = null;
+
   constructor(
     @InjectRepository(MediaCheck)
     private repo: Repository<MediaCheck>,
@@ -15,7 +21,40 @@ export class MediaCheckService {
     private requestsRepo: Repository<ActivityRequest>,
     private wx: WxService,
     private notifications: NotificationsService,
-  ) {}
+  ) {
+    // 启动 5 秒后扫一次（治愈重启前遗留的 checking），之后每 5 分钟定期扫描
+    const startup = setTimeout(() => {
+      this.sweepStaleChecks().catch(() => {});
+      this.sweepTimer = setInterval(
+        () => this.sweepStaleChecks().catch(() => {}),
+        SWEEP_INTERVAL_MS,
+      );
+    }, 5_000);
+    startup.unref?.();
+  }
+
+  onModuleDestroy() {
+    if (this.sweepTimer) clearInterval(this.sweepTimer);
+  }
+
+  /**
+   * 兜底 sweep：checking 超过 10 分钟仍未收到微信回调的图片自动置 pass 并重算请求状态。
+   * 场景：回调丢失（消息推送未配置/推送失败/服务重启错过）、本地开发无公网回调地址。
+   * 与文档的 fail-open 策略一致：审核服务不可用时不阻断业务内容展示。
+   */
+  private async sweepStaleChecks(): Promise<void> {
+    const stale = await this.repo.find({
+      where: { status: 'checking', createdAt: LessThan(new Date(Date.now() - CHECK_TIMEOUT_MS)) },
+    });
+    if (!stale.length) return;
+    const urls = stale.map((s) => s.mediaUrl);
+    console.warn(`[wx] ${urls.length} 条图片审核超过 ${CHECK_TIMEOUT_MS / 60000} 分钟未收到回调，自动放行:`, urls);
+    await this.repo.update(
+      { id: In(stale.map((s) => s.id)) },
+      { status: 'pass', checkedAt: new Date() },
+    );
+    await this.recomputeRequestsByUrls(urls);
+  }
 
   /**
    * 发布/修改请求时：为尚未送审过的图片发起异步审核（同一 URL 只送审一次），

@@ -74,6 +74,13 @@
 }
 
 /* 微信头像填充按钮：去原生样式，做成胶囊 */
+.wxAvatarBtn,
+.localAvatarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .wxAvatarBtn {
   padding: 0;
   margin: 0;
@@ -85,6 +92,11 @@
   &::after {
     border: none;
   }
+}
+
+.wxAvatarBtnText,
+.localAvatarBtnText {
+  line-height: 32px;
 }
 
 .wxAvatarBtnText {
@@ -148,6 +160,13 @@
   gap: 20px;
 }
 
+.genderOption,
+.interestItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .genderOption {
   padding: 10px 44px;
   border-radius: 100px;
@@ -156,6 +175,11 @@
 
 .genderActive {
   background: #fdf1de;
+}
+
+.genderText,
+.interestText {
+  line-height: 36px;
 }
 
 .genderText {

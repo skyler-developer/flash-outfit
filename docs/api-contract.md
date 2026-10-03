@@ -330,6 +330,7 @@ Authorization: Bearer <token>
 - 修改请求换图：新图重新送审、按当前 `photos` 数组重算（移除违规图可恢复 `pass`；新增图片回到 `checking`）
 - 存量/种子数据无送审记录的图片视为 `pass`
 - 开发 mock 模式（未配置 WX_APPID/SECRET 或 openid 以 `mock:` 开头）：不真实送审，图片直接判 `pass`，请求发布后立即可见
+- 兜底：`checking` 超过 10 分钟仍未收到回调的图片自动置 `pass` 并重算（服务每 5 分钟扫描一次，启动 5 秒后先扫一次），覆盖回调丢失/未配置消息推送/本地无公网回调地址等场景，与 fail-open 策略一致
 - 上线配置：小程序后台「开发 → 开发设置 → 消息推送」填 `https://{domain}/api/v1/wx/callback`，Token 与服务端 `WX_CALLBACK_TOKEN` 一致，数据格式 JSON
 
 ---

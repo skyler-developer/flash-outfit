@@ -29,7 +29,9 @@
 .genderTab {
   flex: 1;
   padding: $spacing-sm $spacing-md;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: $border-radius-sm;
   transition: all 0.2s ease;
 
@@ -41,6 +43,7 @@
 
 .genderTabText {
   font-size: $font-size-sm;
+  line-height: 36px;
   color: $text-secondary;
 
   .active & {

@@ -67,10 +67,22 @@
   border-top: 1px solid #f0f0f0;
 }
 
+.miniBtn,
+.miniBtnDanger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .miniBtn {
   padding: 10px 32px;
   border-radius: 100px;
   background: #fdf1de;
+}
+
+.miniBtnText,
+.miniBtnDangerText {
+  line-height: 34px;
 }
 
 .miniBtnText {

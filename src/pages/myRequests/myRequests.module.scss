@@ -82,10 +82,28 @@
   margin-top: 12px;
 }
 
+.tag,
+.tagPending,
+.tagReviewChecking,
+.tagReviewRejected,
+.tagReviewPass {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .tag {
   background: #f4f4f5;
   border-radius: 100px;
   padding: 4px 16px;
+}
+
+.tagText,
+.tagPendingText,
+.tagReviewCheckingText,
+.tagReviewRejectedText,
+.tagReviewPassText {
+  line-height: 28px;
 }
 
 .tagText {
