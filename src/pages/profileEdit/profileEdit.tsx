@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
-import { ScrollView, Text, View, Image, Button, Input, Picker } from '@tarojs/components';
+import { ScrollView, Text, View, Button, Input, Picker } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { useUserStore } from '@/stores/userStore/useUserStore';
@@ -157,7 +158,7 @@ export default function ProfileEdit() {
                   <Text className={styles.localAvatarBtnText}>相册选图</Text>
                 </Button>
                 {avatar ? (
-                  <Image className={styles.avatar} src={avatar} mode='aspectFill' />
+                  <SmartImage className={styles.avatar} src={avatar} mode='aspectFill' />
                 ) : (
                   <View className={`${styles.avatar} ${styles.avatarFallback}`}>
                     <Text className={styles.avatarPlus}>+</Text>

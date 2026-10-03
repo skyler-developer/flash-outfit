@@ -16,14 +16,13 @@ import { appConfig } from './common/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 全局前缀 + 静态资源（本地磁盘存储模式；COS 模式图片直接从桶域名访问）
+  // 全局前缀 + 本地静态资源（无论存储模式都挂载：cos 模式下新图走桶域名，
+  // 本地目录继续兼容历史数据里 localhost 形式的旧 URL）
   app.setGlobalPrefix('api/v1');
-  if (appConfig.storage.type === 'local') {
-    app.use(
-      '/api/v1/uploads',
-      express.static(path.resolve(process.cwd(), appConfig.uploadDir)),
-    );
-  }
+  app.use(
+    '/api/v1/uploads',
+    express.static(path.resolve(process.cwd(), appConfig.uploadDir)),
+  );
 
   // 全局管道（class-validator DTO 校验）+ 统一响应/异常
   app.useGlobalPipes(

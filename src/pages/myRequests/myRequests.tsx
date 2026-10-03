@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
-import { ScrollView, Text, View, Image } from '@tarojs/components';
+import { ScrollView, Text, View } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { myPublishedRequests, MyPublishedItem } from '@/api/requestApi';
@@ -53,7 +54,7 @@ export default function MyRequests() {
           {list.map((item) => (
             <View key={item.id} className={styles.item} onClick={() => goToManage(item.id)}>
               {item.coverImage ? (
-                <Image className={styles.cover} src={item.coverImage} mode='aspectFill' />
+                <SmartImage className={styles.cover} src={item.coverImage} mode='aspectFill' />
               ) : (
                 <View className={`${styles.cover} ${styles.coverFallback}`}>
                   <Text className={`iconfont ${ACTIVITY_TYPE_MAP[item.type].iconClass} ${styles.coverIcon}`}>

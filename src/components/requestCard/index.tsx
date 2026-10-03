@@ -1,4 +1,5 @@
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import type { RequestListItem } from '@/api/requestApi';
 import { ACTIVITY_TYPE_MAP } from '@/pages/publish/constants';
 import styles from './requestCard.module.scss';
@@ -30,7 +31,7 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
     >
       <View className={styles.coverWrap}>
         {item.coverImage ? (
-          <Image className={styles.cover} src={item.coverImage} mode='aspectFill' lazyLoad />
+          <SmartImage className={styles.cover} src={item.coverImage} mode='aspectFill' lazyLoad />
         ) : (
           <View className={`${styles.cover} ${styles.coverFallback}`}>
             <Text className={`iconfont ${typeInfo?.iconClass || ''} ${styles.coverIcon}`}>
@@ -84,7 +85,7 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
         <View className={styles.footer}>
           <View className={styles.publisher}>
             {item.publisher?.avatar ? (
-              <Image className={styles.avatar} src={item.publisher.avatar} mode='aspectFill' />
+              <SmartImage className={styles.avatar} src={item.publisher.avatar} mode='aspectFill' />
             ) : (
               <View className={`${styles.avatar} ${styles.avatarFallback}`} />
             )}

@@ -1,5 +1,6 @@
 import Taro, { useDidShow, useLoad } from '@tarojs/taro';
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import CustomTabBar from '@/customTabBar';
 import { useUserStore } from '@/stores/userStore/useUserStore';
@@ -74,7 +75,7 @@ export default function Mine() {
         {/* 资料卡 */}
         <View className={styles.profileCard} onClick={goToEdit}>
           {user?.avatar ? (
-            <Image className={styles.avatar} src={user.avatar} mode='aspectFill' />
+            <SmartImage className={styles.avatar} src={user.avatar} mode='aspectFill' />
           ) : (
             <View className={`${styles.avatar} ${styles.avatarFallback}`}>
               <Text className={styles.avatarText}>

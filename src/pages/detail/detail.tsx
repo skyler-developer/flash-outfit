@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
-import { ScrollView, Swiper, SwiperItem, Text, Textarea, View, Image, Button } from '@tarojs/components';
+import { ScrollView, Swiper, SwiperItem, Text, Textarea, View, Button } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { getRequest, RequestDetail } from '@/api/requestApi';
@@ -137,7 +138,7 @@ export default function Detail() {
               {detail.photos.map((p, i) => (
                 <SwiperItem key={`${p}-${i}`}>
                   <View className={styles.photoWrap}>
-                    <Image
+                    <SmartImage
                       className={styles.photo}
                       src={p}
                       mode='aspectFill'
@@ -216,7 +217,7 @@ export default function Detail() {
               <Text className={styles.sectionTitle}>发起人</Text>
               <View className={styles.publisherCard}>
                 {detail.publisher.avatar ? (
-                  <Image className={styles.publisherAvatar} src={detail.publisher.avatar} mode='aspectFill' />
+                  <SmartImage className={styles.publisherAvatar} src={detail.publisher.avatar} mode='aspectFill' />
                 ) : (
                   <View className={`${styles.publisherAvatar} ${styles.avatarFallback}`} />
                 )}

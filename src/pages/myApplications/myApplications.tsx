@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Taro, { useLoad } from '@tarojs/taro';
-import { ScrollView, Text, View, Image } from '@tarojs/components';
+import { ScrollView, Text, View } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { myApplications, MyApplicationItem } from '@/api/application';
@@ -54,7 +55,7 @@ export default function MyApplications() {
               <View key={item.id} className={styles.card} onClick={() => req && goToDetail(req.id)}>
                 {req ? (
                   req.coverImage ? (
-                    <Image className={styles.cover} src={req.coverImage} mode='aspectFill' />
+                    <SmartImage className={styles.cover} src={req.coverImage} mode='aspectFill' />
                   ) : (
                     <View className={`${styles.cover} ${styles.coverFallback}`}>
                       <Text className={`iconfont ${ACTIVITY_TYPE_MAP[req.type].iconClass} ${styles.coverIcon}`}>

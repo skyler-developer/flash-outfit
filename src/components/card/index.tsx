@@ -1,4 +1,5 @@
-import { View, Image, Text } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
+import SmartImage from "@/components/smartImage";
 import styles from "./card.module.scss";
 
 type CardProps = {
@@ -16,7 +17,7 @@ export default function Card(props: CardProps) {
   return (
     <View className={styles.card}>
       {image && (
-        <Image className={styles.cardImage} src={image} mode='aspectFill' />
+        <SmartImage className={styles.cardImage} src={image} mode='aspectFill' />
       )}
       {title && <Text className={styles.cardTitle}>{title}</Text>}
       {content && <Text className={styles.cardContent}>{content}</Text>}

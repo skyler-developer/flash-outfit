@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
-import { ScrollView, Text, View, Image, Button, Switch, Textarea } from '@tarojs/components';
+import { ScrollView, Text, View, Button, Switch, Textarea } from '@tarojs/components';
+import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { getRequest, updateRequest, deleteRequest, RequestDetail } from '@/api/requestApi';
@@ -226,7 +227,7 @@ export default function ManageRequest() {
             <View key={app.id} className={styles.appCard}>
               <View className={styles.appHead}>
                 {app.applicant.avatar ? (
-                  <Image className={styles.appAvatar} src={app.applicant.avatar} mode='aspectFill' />
+                  <SmartImage className={styles.appAvatar} src={app.applicant.avatar} mode='aspectFill' />
                 ) : (
                   <View className={`${styles.appAvatar} ${styles.avatarFallback}`} />
                 )}
