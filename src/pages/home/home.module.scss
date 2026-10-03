@@ -1,4 +1,9 @@
+.scrollView {
+  background: #f7f8f5;
+}
+
 .page {
+  min-height: 100%;
   box-sizing: border-box;
   background: #f7f8f5;
   padding-bottom: calc(240px + env(safe-area-inset-bottom));

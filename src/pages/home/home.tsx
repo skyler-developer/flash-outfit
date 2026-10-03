@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Taro, { useDidShow, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { ScrollView, Text, View, Picker } from '@tarojs/components';
 import PageLayout from '@/components/pageLayout';
 import systemInfo from '@/utils/systemInfo';
@@ -44,6 +44,8 @@ export default function Home() {
 
   /** 首次 show 由挂载时的 useEffect 负责加载，跳过避免重复请求 */
   const firstShowRef = useRef(true);
+  const requestIdRef = useRef(0);
+  const loadingRef = useRef(false);
 
   const [type, setType] = useState('');
   const [timeRange, setTimeRange] = useState<'all' | 'weekend' | 'd7' | 'd30'>('all');
@@ -53,6 +55,7 @@ export default function Home() {
   const [list, setList] = useState<RequestListItem[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [finished, setFinished] = useState(false);
   const [locMode, setLocMode] = useState<'coords' | 'city' | 'none'>('coords');
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -72,7 +75,9 @@ export default function Home() {
 
   const fetchList = useCallback(
     async (pageNo: number, replace: boolean) => {
-      if (loading) return;
+      if (!replace && loadingRef.current) return;
+      const requestId = ++requestIdRef.current;
+      loadingRef.current = true;
       setLoading(true);
       try {
         const res = await listRequests({
@@ -86,17 +91,22 @@ export default function Home() {
             ? { lat: coords.lat, lng: coords.lng, sortBy: 'distance' as const }
             : { city: city || '北京', sortBy: 'time' as const }),
         });
+        if (requestId !== requestIdRef.current) return;
         setList((prev) => (replace ? res.list : [...prev, ...res.list]));
-        setFinished(replace ? res.list.length < PAGE_SIZE : list.length + res.list.length >= res.total);
+        setFinished(res.list.length < PAGE_SIZE || pageNo * PAGE_SIZE >= res.total);
         setPage(pageNo);
       } catch (e) {
-        const err = e as { message?: string };
-        Taro.showToast({ title: err.message || '加载失败', icon: 'none' });
+        if (requestId === requestIdRef.current) {
+          const err = e as { message?: string };
+          Taro.showToast({ title: err.message || '加载失败', icon: 'none' });
+        }
       } finally {
-        setLoading(false);
+        if (requestId === requestIdRef.current) {
+          loadingRef.current = false;
+          setLoading(false);
+        }
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [type, timeRange, distance, onlyApplicable, locMode, coords, city],
   );
 
@@ -108,13 +118,14 @@ export default function Home() {
     fetchList(1, true);
   }, [fetchList, locMode]);
 
-  usePullDownRefresh(() => {
-    if (locMode === 'none') {
-      Taro.stopPullDownRefresh();
-      return;
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      if (locMode !== 'none') await fetchList(1, true);
+    } finally {
+      setRefreshing(false);
     }
-    fetchList(1, true).finally(() => Taro.stopPullDownRefresh());
-  });
+  };
 
   // 每次进入页面：同步 tabBar 选中态；非首次进入（如发布成功 switchTab 回来）刷新列表
   useDidShow(() => {
@@ -127,10 +138,10 @@ export default function Home() {
     fetchList(1, true);
   });
 
-  useReachBottom(() => {
-    if (loading || finished || locMode === 'none') return;
+  const handleReachBottom = () => {
+    if (loadingRef.current || finished || locMode === 'none') return;
     fetchList(page + 1, false);
-  });
+  };
 
   const goToDetail = (id: number) => {
     Taro.navigateTo({ url: `/pages/detail/detail?id=${id}` });
@@ -141,10 +152,19 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <View
-        className={styles.page}
-        style={{ minHeight: `calc(100vh - ${systemInfo.statusBarHeight}px)` }}
+      <ScrollView
+        scrollY
+        className={styles.scrollView}
+        style={{ height: `calc(100vh - ${systemInfo.statusBarHeight}px)` }}
+        refresherEnabled
+        refresherDefaultStyle='black'
+        refresherBackground='#f7f8f5'
+        refresherTriggered={refreshing}
+        lowerThreshold={100}
+        onRefresherRefresh={handleRefresh}
+        onScrollToLower={handleReachBottom}
       >
+        <View className={styles.page}>
         {/* 顶部标题 */}
         <View className={styles.header}>
           <Text className={styles.logo}>闪搭</Text>
@@ -253,18 +273,19 @@ export default function Home() {
               <Text className={styles.emptyText}>暂无符合条件的请求，换个筛选试试</Text>
             </View>
           )}
-          {loading && (
+          {loading && !refreshing && (
             <View className={styles.loading}>
               <Text className={styles.loadingText}>加载中…</Text>
             </View>
           )}
-          {finished && list.length > 0 && (
+          {finished && !refreshing && list.length > 0 && (
             <View className={`${styles.loading} ${styles.end}`}>
               <Text className={styles.loadingText}>— 到底啦 —</Text>
             </View>
           )}
         </View>
-      </View>
+        </View>
+      </ScrollView>
       <CustomTabBar />
     </PageLayout>
   );
