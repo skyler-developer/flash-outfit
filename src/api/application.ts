@@ -55,6 +55,7 @@ export interface MyApplicationItem {
   request: {
     id: number;
     type: ActivityType;
+    title: string;
     activityTime: string;
     destination: string;
     coverImage: string | null;

@@ -30,9 +30,17 @@ export class LocationDto {
   @IsString()
   @Length(1, 30)
   city: string;
+
+  @IsString()
+  @Length(1, 100)
+  name: string;
 }
 
 export class CreateRequestDto {
+  @IsString()
+  @Length(1, 50)
+  title: string;
+
   @IsIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor', 'other'])
   type: 'travel' | 'photography' | 'sports' | 'food' | 'show' | 'game' | 'study' | 'outdoor' | 'other';
 
@@ -76,6 +84,11 @@ export class CreateRequestDto {
 }
 
 export class UpdateRequestDto {
+  @IsOptional()
+  @IsString()
+  @Length(1, 50)
+  title?: string;
+
   @IsOptional()
   @IsIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor', 'other'])
   type?: 'travel' | 'photography' | 'sports' | 'food' | 'show' | 'game' | 'study' | 'outdoor' | 'other';

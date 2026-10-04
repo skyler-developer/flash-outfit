@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { View, Text, Textarea, Button, Switch } from '@tarojs/components';
+import { View, Text, Textarea, Input, Button, Switch } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useTabsStore } from '@/stores/tabsStore/useTabsStore';
 import { usePublishStore } from '@/stores/publishStore/usePublishStore';
@@ -27,6 +27,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
   const { setSelectedTab } = useTabsStore();
 
   const {
+    title,
     activityType,
     selectedTime,
     currentLocation,
@@ -39,6 +40,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
     isSubmitting,
     maxMembers,
     autoCloseOnGrouped,
+    setTitle,
     setActivityType,
     setSelectedTime,
     setCurrentLocation,
@@ -75,6 +77,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
 
   /** 不满足条件的字段 → 对应表单区域节点 id */
   const FIELD_SECTION_IDS: Record<string, string> = {
+    title: 'section-title',
     activityType: 'section-activityType',
     activityTime: 'section-activityTime',
     destination: 'section-location',
@@ -186,6 +189,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
         : new Date(`${localTime}+08:00`).toISOString();
 
       const params: CreateRequestParams = {
+        title: title.trim(),
         type: activityType!,
         activityTime: isoTime,
         destination: destination.trim(),
@@ -193,6 +197,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
           lat: currentLocation?.latitude ?? null,
           lng: currentLocation?.longitude ?? null,
           city: currentLocation!.city,
+          name: currentLocation!.name,
         },
         genderPreference: gender,
         ageRange,
@@ -243,6 +248,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
 
   const descriptionLength = description.trim().length;
   const canSubmit =
+    title.trim() &&
     activityType &&
     selectedTime &&
     currentLocation?.city &&
@@ -258,6 +264,20 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
 
       {/* 表单内容 */}
       <View className={styles.content}>
+        {/* 活动标题 */}
+        <View id='section-title'>
+          <FormSection title={FORM_LABELS.title} icon='icon-flash-outfitdescription' required>
+            <Input
+              className={styles.titleInput}
+              placeholder='给活动起个吸引人的标题（最多50字）'
+              placeholderClass={styles.placeholder}
+              value={title}
+              onInput={(e) => setTitle(e.detail.value)}
+              maxlength={50}
+            />
+          </FormSection>
+        </View>
+
         {/* 活动类型 */}
         <View id='section-activityType'>
           <FormSection title={FORM_LABELS.activityType} icon='icon-flash-outfitActivityType' required>

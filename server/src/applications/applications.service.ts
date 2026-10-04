@@ -58,7 +58,7 @@ export class ApplicationsService {
       request.publisherId,
       'newApply',
       app.id,
-      `${user.nickname || '有人'} 申请加入你的「${truncate(request.destination, 10)}」`,
+      `${user.nickname || '有人'} 申请加入你的「${truncate(request.title, 10)}」`,
     );
     return { id: app.id, status: app.status, createdAt: app.createdAt };
   }
@@ -119,7 +119,7 @@ export class ApplicationsService {
           app.applicantId,
           'applyRejected',
           applicationId,
-          `你的申请「${truncate(request.destination, 10)}」未通过`,
+          `你的申请「${truncate(request.title, 10)}」未通过`,
         );
         return {
           id: applicationId,
@@ -149,7 +149,7 @@ export class ApplicationsService {
         app.applicantId,
         'applyApproved',
         applicationId,
-        `你的申请「${truncate(request.destination, 10)}」已通过`,
+        `你的申请「${truncate(request.title, 10)}」已通过`,
       );
 
       return {
@@ -185,6 +185,7 @@ export class ApplicationsService {
           ? {
               id: request.id,
               type: request.type,
+              title: request.title,
               activityTime: request.activityTime,
               destination: request.destination,
               coverImage: request.photos?.[0] || null,

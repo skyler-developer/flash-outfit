@@ -50,7 +50,7 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
 
       <View className={styles.body}>
         <View className={styles.titleRow}>
-          <Text className={styles.title}>{item.destination}</Text>
+          <Text className={styles.title}>{item.title}</Text>
           {item.myApplicationStatus && (
             <View className={`${styles.applyBadge} ${styles[`apply_${item.myApplicationStatus}`] || ''}`}>
               <Text className={styles.applyBadgeText}>
@@ -65,6 +65,7 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
         </View>
 
         <Text className={styles.summary}>{item.descriptionSummary}</Text>
+        <Text className={styles.summary}>活动地点：{item.destination}</Text>
 
         <View className={styles.metaRow}>
           <View className={styles.metaItem}>

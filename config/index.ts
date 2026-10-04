@@ -19,14 +19,10 @@ export default defineConfig<"vite">(async (merge) => {
     sourceRoot: "src",
     outputRoot: "dist",
     plugins: ["@tarojs/plugin-generator"],
-    // 后端 API 地址注入：dev 走本地服务；生产构建用 API_BASE_URL 环境变量注入正式域名
-    // （例：API_BASE_URL=https://api.example.com/api/v1 pnpm build:weapp）
+    // 默认连接本地后端；部署正式环境时必须通过 API_BASE_URL 指定可访问的域名。
+    // 真机调试也应指定电脑的局域网 IP（手机上的 localhost 指向手机自身）。
     defineConstants: {
-      API_BASE_URL: JSON.stringify(
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:3000/api/v1"
-          : process.env.API_BASE_URL || "https://REPLACE-WITH-YOUR-PROD-DOMAIN/api/v1",
-      ),
+      API_BASE_URL: JSON.stringify(process.env.API_BASE_URL || "http://localhost:3000/api/v1"),
     },
     copy: {
       patterns: [],

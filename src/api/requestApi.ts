@@ -10,6 +10,7 @@ export type ReviewStatus = 'checking' | 'pass' | 'rejected';
 export interface RequestListItem {
   id: number;
   type: ActivityType;
+  title: string;
   activityTime: string;
   destination: string;
   city: string;
@@ -29,9 +30,10 @@ export interface RequestListItem {
 export interface RequestDetail {
   id: number;
   type: ActivityType;
+  title: string;
   activityTime: string;
   destination: string;
-  location: { lat?: number | null; lng?: number | null; city: string };
+  location: { lat?: number | null; lng?: number | null; city: string; name: string };
   genderPreference: 'all' | 'female' | 'male';
   ageRange: [number, number];
   description: string;
@@ -95,10 +97,11 @@ export async function getRequest(id: number) {
 }
 
 export interface CreateRequestParams {
+  title: string;
   type: ActivityType;
   activityTime: string;
   destination: string;
-  location: { lat?: number | null; lng?: number | null; city: string };
+  location: { lat?: number | null; lng?: number | null; city: string; name: string };
   genderPreference: 'all' | 'female' | 'male';
   ageRange: [number, number];
   description: string;
@@ -121,6 +124,7 @@ export async function deleteRequest(id: number) {
 
 export interface MyPublishedItem {
   id: number;
+  title: string;
   status: RequestStatus;
   reviewStatus: ReviewStatus;
   expired: boolean;

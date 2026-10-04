@@ -170,7 +170,7 @@ export default function Detail() {
             <View className={`${styles.typeTag} ${styles[`tag_${detail.type}`] || ''}`}>
               <Text className={styles.typeTagText}>{typeInfo.label}</Text>
             </View>
-            <Text className={styles.title}>{detail.destination}</Text>
+            <Text className={styles.title}>{detail.title}</Text>
           </View>
           {detail.expired && <View className={styles.expiredTag}><Text className={styles.expiredTagText}>已过期</Text></View>}
 
@@ -187,9 +187,8 @@ export default function Detail() {
               <Text className={`iconfont icon-flash-outfitPositionIcon ${styles.metaIcon}`} />
               <View className={styles.metaContent}>
                 <Text className={styles.metaLabel}>活动地点</Text>
-                <Text className={styles.metaValue}>
-                  {detail.destination} · {detail.location.city}
-                </Text>
+                <Text className={styles.metaValue}>活动发布位置：{detail.location.name}</Text>
+                <Text className={styles.metaValue}>活动目的地：{detail.destination}</Text>
               </View>
             </View>
             <View className={styles.metaItem}>
@@ -271,7 +270,7 @@ export default function Detail() {
       {showApply && (
         <View className={styles.modalMask} onClick={() => !submitting && setShowApply(false)}>
           <View className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <Text className={styles.modalTitle}>申请加入「{detail.destination}」</Text>
+            <Text className={styles.modalTitle}>申请加入「{detail.title}」</Text>
             <Text className={styles.modalDesc}>写一句话让发布者更快了解你（必填，100字内）</Text>
             <Textarea
               className={styles.modalTextarea}

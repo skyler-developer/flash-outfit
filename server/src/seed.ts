@@ -67,11 +67,13 @@ async function seed() {
   const req = (o: Partial<ActivityRequest>) =>
     requestsRepo.create({
       type: 'travel',
+      title: o.title || o.destination || '一起出发',
       activityTime: day(3),
       destination: '目的地',
       lat: 39.9,
       lng: 116.4,
       city: '北京',
+      locationName: o.city || '北京',
       genderPreference: 'all',
       ageMin: 18,
       ageMax: 40,

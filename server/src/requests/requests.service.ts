@@ -142,6 +142,7 @@ export class RequestsService {
           return {
             id: r.id,
             type: r.type,
+            title: r.title,
             activityTime: r.activityTime,
             destination: r.destination,
             city: r.city,
@@ -201,9 +202,10 @@ export class RequestsService {
     return {
       id: request.id,
       type: request.type,
+      title: request.title,
       activityTime: request.activityTime,
       destination: request.destination,
-      location: { lat: request.lat, lng: request.lng, city: request.city },
+      location: { lat: request.lat, lng: request.lng, city: request.city, name: request.locationName },
       genderPreference: request.genderPreference,
       ageRange: [request.ageMin, request.ageMax],
       description: request.description,
@@ -246,10 +248,12 @@ export class RequestsService {
     if (!Array.isArray(dto.photos) || dto.photos.length < 1 || dto.photos.length > 6) {
       throw err(ErrorCode.PHOTO_INVALID, '需上传 1~6 张照片');
     }
-    if (containsSensitive(dto.description)) throw err(ErrorCode.CONTENT_RISK);
+    if (!dto.title.trim() || !dto.location.name.trim() || containsSensitive(dto.title) || containsSensitive(dto.description)) {
+      throw err(ErrorCode.CONTENT_RISK);
+    }
 
     // 微信 msgSecCheck v2 同步文本审核（scene=3 论坛；未配置/异常时 fail-open 放行）
-    const suggest = await this.wx.checkText(dto.description, user.openid, 3);
+    const suggest = await this.wx.checkText(`${dto.title}\n${dto.description}`, user.openid, 3);
     if (suggest === 'risky') throw err(ErrorCode.CONTENT_RISK);
 
     const [ageMin, ageMax] = dto.ageRange;
@@ -257,11 +261,13 @@ export class RequestsService {
       this.requestsRepo.create({
         publisherId: userId,
         type: dto.type,
+        title: dto.title.trim(),
         activityTime: dto.activityTime,
         destination: dto.destination.trim(),
         lat: dto.location.lat,
         lng: dto.location.lng,
         city: dto.location.city,
+        locationName: dto.location.name.trim(),
         genderPreference: dto.genderPreference,
         ageMin,
         ageMax,
@@ -288,27 +294,31 @@ export class RequestsService {
     if (dto.activityTime !== undefined && new Date(dto.activityTime).getTime() <= Date.now()) {
       throw err(ErrorCode.TIME_PAST);
     }
-    if (dto.description !== undefined && containsSensitive(dto.description)) {
+    if ((dto.title !== undefined && (!dto.title.trim() || containsSensitive(dto.title))) ||
+      (dto.location !== undefined && !dto.location.name.trim()) ||
+      (dto.description !== undefined && containsSensitive(dto.description))) {
       throw err(ErrorCode.CONTENT_RISK);
     }
 
-    // 文案变更时同步送审 msgSecCheck
-    if (dto.description !== undefined) {
+    // 标题或描述变更时同步送审 msgSecCheck
+    if (dto.title !== undefined || dto.description !== undefined) {
       const user = await this.usersRepo.findOneBy({ id: userId });
       if (user) {
-        const suggest = await this.wx.checkText(dto.description, user.openid, 3);
+        const suggest = await this.wx.checkText(`${dto.title ?? request.title}\n${dto.description ?? request.description}`, user.openid, 3);
         if (suggest === 'risky') throw err(ErrorCode.CONTENT_RISK);
       }
     }
 
     const patch: Partial<ActivityRequest> = {};
     if (dto.type) patch.type = dto.type;
+    if (dto.title !== undefined) patch.title = dto.title.trim();
     if (dto.activityTime) patch.activityTime = dto.activityTime;
     if (dto.destination) patch.destination = dto.destination.trim();
     if (dto.location) {
       patch.lat = dto.location.lat;
       patch.lng = dto.location.lng;
       patch.city = dto.location.city;
+      patch.locationName = dto.location.name.trim();
     }
     if (dto.genderPreference) patch.genderPreference = dto.genderPreference;
     if (dto.ageRange) {
@@ -350,7 +360,7 @@ export class RequestsService {
         app.applicantId,
         'requestClosed',
         id,
-        `「${truncate(request.destination, 10)}」的发布者已删除该活动`,
+        `「${truncate(request.title, 10)}」的发布者已删除该活动`,
       );
     }
 
@@ -384,6 +394,7 @@ export class RequestsService {
         pendingCount,
         coverImage: await this.mediaChecks.pickCover(r.photos),
         activityTime: r.activityTime,
+        title: r.title,
         destination: r.destination,
         type: r.type,
         maxMembers: r.maxMembers,

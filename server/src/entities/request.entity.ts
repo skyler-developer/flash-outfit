@@ -25,6 +25,9 @@ export class ActivityRequest {
   @Column({ type: 'text' })
   type: RequestType;
 
+  @Column({ type: 'text' })
+  title: string;
+
   /** ISO 8601 时间字符串 */
   @Column({ type: 'text' })
   activityTime: string;
@@ -41,6 +44,10 @@ export class ActivityRequest {
 
   @Column({ type: 'text' })
   city: string;
+
+  /** 发布时选择或定位得到的完整地区名称 */
+  @Column({ type: 'text' })
+  locationName: string;
 
   @Column({ type: 'text', default: 'all' })
   genderPreference: GenderPreference;

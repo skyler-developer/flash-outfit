@@ -15,6 +15,7 @@ export interface LocationInfo {
 }
 
 export interface PublishFormValues {
+  title: string;
   activityType: ActivityType | null;
   selectedTime: TimeSelection | null;
   currentLocation: LocationInfo | null;
@@ -30,14 +31,15 @@ export interface PublishFormValues {
 
 /** 从当前发布草稿中提取表单字段，编辑现有活动时用于恢复草稿。 */
 export function getPublishFormValues(state: PublishStore): PublishFormValues {
-  const { activityType, selectedTime, currentLocation, destination, destinationRegion,
+  const { title, activityType, selectedTime, currentLocation, destination, destinationRegion,
     gender, ageRange, description, images, maxMembers, autoCloseOnGrouped } = state;
-  return { activityType, selectedTime, currentLocation, destination, destinationRegion,
+  return { title, activityType, selectedTime, currentLocation, destination, destinationRegion,
     gender, ageRange, description, images, maxMembers, autoCloseOnGrouped };
 }
 
 // 发布表单状态
 export interface PublishStore extends PublishFormValues {
+  setTitle: (title: string) => void;
   setActivityType: (type: ActivityType) => void;
   setSelectedTime: (time: TimeSelection | null) => void;
   setCurrentLocation: (loc: LocationInfo | null) => void;
@@ -55,7 +57,7 @@ export interface PublishStore extends PublishFormValues {
   setIsSubmitting: (value: boolean) => void;
 
   // 表单验证（field 用于定位到不满足条件的表单区域）
-  validateForm: () => { valid: boolean; field?: 'activityType' | 'activityTime' | 'destination' | 'description' | 'images'; message?: string };
+  validateForm: () => { valid: boolean; field?: 'title' | 'activityType' | 'activityTime' | 'destination' | 'description' | 'images'; message?: string };
 
   // 编辑活动时回填，退出编辑后恢复原发布草稿
   setFormValues: (values: PublishFormValues) => void;
@@ -66,6 +68,9 @@ export interface PublishStore extends PublishFormValues {
 }
 
 export const usePublishStore = create<PublishStore>((set, get) => ({
+  title: '',
+  setTitle: (title) => set({ title }),
+
   // 活动类型
   activityType: null,
   setActivityType: (type) => set({ activityType: type }),
@@ -112,6 +117,9 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
   validateForm: () => {
     const state = get();
 
+    if (!state.title.trim() || state.title.trim().length > 50) {
+      return { valid: false, field: 'title', message: VALIDATION_MESSAGES.titleRequired };
+    }
     if (!state.activityType) {
       return { valid: false, field: 'activityType', message: VALIDATION_MESSAGES.activityTypeRequired };
     }
@@ -142,13 +150,14 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
   fillFromRequest: (detail) => {
     const activityTime = new Date(new Date(detail.activityTime).getTime() + 8 * 3600_000).toISOString();
     set({
+      title: detail.title,
       activityType: detail.type,
       selectedTime: {
         date: activityTime.slice(0, 10),
         time: activityTime.slice(11, 16),
       },
       currentLocation: {
-        name: detail.location.city,
+        name: detail.location.name,
         city: detail.location.city,
         latitude: detail.location.lat ?? undefined,
         longitude: detail.location.lng ?? undefined,
@@ -168,6 +177,7 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
 
   // 重置表单
   resetForm: () => set({
+    title: '',
     activityType: null,
     selectedTime: null,
     currentLocation: null,

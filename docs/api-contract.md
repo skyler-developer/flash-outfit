@@ -173,6 +173,7 @@ Authorization: Bearer <token>
     {
       "id": 501,
       "type": "photography",
+      "title": "周末一起去东澳岛拍星轨",
       "activityTime": "2026-10-25T07:00:00+08:00",
       "destination": "东澳岛",
       "city": "珠海",
@@ -198,6 +199,7 @@ Authorization: Bearer <token>
 - 只返回 `status = recruiting` 且 `reviewStatus = pass` 的请求（审核未完成/未通过的不进流，详见 §4.7）
 - `distanceKm`：Haversine 计算，无坐标时为 null；`sortBy=distance` 时 null 距离的排最后
 - `expired`：activityTime 已过时实时计算为 true，前端展示「已过期」角标；不影响申请资格。默认列表未过期活动优先，过期活动在后且最近过期的排前
+- `title`：活动标题（1~50 字），首页卡片主标题；`destination` 为活动目的地，在描述下方单独展示
 - `descriptionSummary`：描述截前 50 字
 - `myApplicationStatus`：当前用户对该请求的申请状态（`pending/approved/rejected/null`），供卡片角标展示
 - `onlyApplicable=true`：仅在招募中且审核通过的列表内过滤本人发布的请求，不按过期时间、性别/年龄偏好、名额或已有申请状态过滤
@@ -212,9 +214,10 @@ Authorization: Bearer <token>
 {
   "id": 501,
   "type": "photography",
+  "title": "周末一起去东澳岛拍星轨",
   "activityTime": "2026-10-25T07:00:00+08:00",
   "destination": "东澳岛",
-  "location": { "lat": 22.017, "lng": 113.717, "city": "珠海" },
+  "location": { "lat": 22.017, "lng": 113.717, "city": "珠海", "name": "广东省珠海市香洲区" },
   "genderPreference": "all",
   "ageRange": [18, 35],
   "description": "完整描述文本...",
@@ -237,11 +240,12 @@ Authorization: Bearer <token>
 规则：
 
 - `applicable`：当前用户是否可申请（须招募中、审核通过、非本人发布，且最近一次申请不是 pending/approved；rejected 后可重新申请）。false 时 `applicableReason` 给出原因；过期、偏好及满员不影响该值
+- `location.name` 是发布时选择或定位的活动发布位置完整名称，`location.city` 用于城市筛选；详情页将 `location.name` 和 `destination` 分别展示为“活动发布位置”和“活动目的地”
 - `isPublisher`：查看者即发布者时前端展示“管理”入口而非“申请”
 - 非招募中状态（grouped/finished/cancelled）仍可查看，仅不可申请
 - `reviewStatus != pass`（审核中/未通过）的详情仅发布者本人可访问，其他人访问返回 404；`photos` 原图全量返回，未通过审核的图片 URL 列在 `riskyPhotoUrls`，前端在对应图片左上角叠“未通过审核”角标（原图可见）
 
-### 4.3 发布请求
+### 4.3 发布活动
 
 `POST /requests`
 
@@ -249,10 +253,11 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "title": "周末一起去东澳岛拍星轨",
   "type": "photography",
   "activityTime": "2026-10-25T07:00:00+08:00",
   "destination": "东澳岛",
-  "location": { "lat": 22.017, "lng": 113.717, "city": "珠海" },
+  "location": { "lat": 22.017, "lng": 113.717, "city": "珠海", "name": "广东省珠海市香洲区" },
   "genderPreference": "all",
   "ageRange": [18, 35],
   "description": "周末东澳岛拍星轨，两日一晚，找个会拍照的搭子...",
@@ -264,6 +269,8 @@ Authorization: Bearer <token>
 
 校验规则（错误码见 §9）：
 
+- `title` 必填，去除首尾空格后 1~50 字，标题与 `description` 一起进行文本内容安全校验（4200）
+- `location.name` 必填，1~100 字，保存活动发布位置完整名称；`location.city` 必填，1~30 字，保存所在城市；`destination` 必填，1~50 字，保存活动目的地
 - 发布者必须已填 `wechatId`（4100）
 - `activityTime` 必须晚于当前时间（4101）
 - `photos` 1~6 张，须为本系统上传域名（4103）
@@ -273,7 +280,7 @@ Authorization: Bearer <token>
 
 发布副作用（先审后展门控，详见 §4.7）：
 
-- `description` 同步送审 msgSecCheck v2（scene=3），`risky` 拒绝（4200）
+- `title` 与 `description` 拼接后同步送审 msgSecCheck v2（scene=3），`risky` 拒绝（4200）
 - `photos` 异步送审 mediaCheckAsync；请求初始 `reviewStatus = checking`，首页不展示
 - 开发 mock 模式（未配置 WX_APPID/SECRET）下图片直接判 pass，请求立即可见，保持本地联调体验
 
@@ -284,7 +291,7 @@ Authorization: Bearer <token>
 `PATCH /requests/:id`
 
 - 仅发布者本人可改（4104）
-- 请求体同 4.3（仅传需更新字段）；修改不通知已申请者
+- 请求体同 4.3（仅传需更新字段），`title` 可修改，变更标题或描述时重新校验文本内容安全；修改不通知已申请者
 - 可修改 `status`：`recruiting → finished`（手动结束招募）；已成组/已结束请求的偏好类字段不可再改
 
 ### 4.5 删除请求
@@ -304,6 +311,7 @@ Authorization: Bearer <token>
 ```json
 {
   "id": 501,
+  "title": "周末一起去东澳岛拍星轨",
   "status": "recruiting",
   "reviewStatus": "pass",
   "expired": false,
@@ -317,7 +325,7 @@ Authorization: Bearer <token>
 }
 ```
 
-`pendingCount` 用于列表角标提示（待审批数）；`reviewStatus` 供"我发布的"列表渲染审核中/审核未通过/审核通过标记（状态机见 §4.7）。
+`title` 是活动标题，`destination` 是活动目的地；`pendingCount` 用于列表角标提示（待审批数）；`reviewStatus` 供"我发布的"列表渲染审核中/审核未通过/审核通过标记（状态机见 §4.7）。
 
 ### 4.7 内容安全审核状态机（先审后展）
 
@@ -425,6 +433,7 @@ Authorization: Bearer <token>
   "request": {
     "id": 501,
     "type": "photography",
+    "title": "周末一起去东澳岛拍星轨",
     "activityTime": "...",
     "destination": "东澳岛",
     "coverImage": "...",

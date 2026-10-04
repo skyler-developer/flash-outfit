@@ -65,7 +65,7 @@ export default function MyRequests() {
                 </View>
               )}
               <View className={styles.info}>
-                <Text className={styles.dest}>{item.destination}</Text>
+                <Text className={styles.dest}>{item.title}</Text>
                 <Text className={styles.time}>{item.activityTime.slice(0, 16).replace('T', ' ')}</Text>
                 <View className={styles.tags}>
                   {item.reviewStatus === 'rejected' ? (

@@ -181,7 +181,7 @@ export default function ManageRequest() {
         <ScrollView scrollY className={styles.body}>
           {/* 活动概要 */}
           <View className={styles.summaryCard}>
-            <Text className={styles.dest}>{detail.destination}</Text>
+            <Text className={styles.dest}>{detail.title}</Text>
             <View className={styles.summaryMeta}>
               <Text className={styles.summaryText}>
                 {detail.approvedCount}/{detail.maxMembers} 人已加入 · 待审批 {detail.pendingCount}

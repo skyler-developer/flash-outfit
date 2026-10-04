@@ -82,6 +82,7 @@ export const IMAGE_UPLOAD = {
 
 // 表单字段标签
 export const FORM_LABELS = {
+  title: '活动标题',
   activityType: '活动类型',
   activityTime: '活动时间',
   activityLocation: '活动地点',
@@ -92,6 +93,7 @@ export const FORM_LABELS = {
 
 // 表单验证消息
 export const VALIDATION_MESSAGES = {
+  titleRequired: '请输入活动标题（最多50字）',
   activityTypeRequired: '请选择活动类型',
   timeRequired: '请选择活动时间',
   timeMustBeFuture: '请选择未来的活动时间',
