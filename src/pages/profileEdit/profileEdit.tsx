@@ -244,10 +244,11 @@ export default function ProfileEdit() {
               className={styles.wechatInput}
               value={wechatId}
               onInput={(e) => setWechatId(e.detail.value)}
-              placeholder='选填；发布活动前必须填写，成组后互相可见'
+              placeholder='请输入微信号（选填）'
               placeholderClass={styles.placeholder}
               maxlength={30}
             />
+            <Text className={styles.wechatHint}>发布活动前需填写，成组后双方可见</Text>
           </View>
 
           <Button className={styles.saveBtn} loading={submitting} disabled={submitting} onClick={handleSave}>
