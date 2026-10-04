@@ -8,6 +8,7 @@ type Region = [string, string, string];
 export interface LocationSelectorProps {
   currentLocation: LocationInfo | null;
   destinationRegion: Region | null;
+  destination?: string;
   onRefreshLocation: () => Promise<void>;
   onCurrentRegionChange: (region: Region) => void;
   onDestinationRegionChange: (region: Region) => void;
@@ -16,6 +17,7 @@ export interface LocationSelectorProps {
 export default function LocationSelector({
   currentLocation,
   destinationRegion,
+  destination,
   onRefreshLocation,
   onCurrentRegionChange,
   onDestinationRegionChange,
@@ -87,8 +89,8 @@ export default function LocationSelector({
           onChange={(e) => handleRegionChange(e, onDestinationRegionChange)}
         >
           <View className={styles.regionValue}>
-            <Text className={destinationRegion ? styles.valueText : styles.placeholder}>
-              {destinationRegion?.join('') || '选择省 / 市 / 区'}
+              <Text className={destination ? styles.valueText : styles.placeholder}>
+                {destinationRegion?.join('') || destination || '选择省 / 市 / 区'}
             </Text>
             <Text className={styles.arrow}>›</Text>
           </View>

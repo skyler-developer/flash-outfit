@@ -11,12 +11,19 @@ import TimePicker from '@/components/timePicker';
 import LocationSelector from '@/components/locationSelector';
 import PartnerPreference from '@/components/partnerPreference';
 import ImageUploader from '@/components/imageUploader';
-import { createRequest } from '@/api/requestApi';
+import { createRequest, updateRequest } from '@/api/requestApi';
+import type { RequestDetail, CreateRequestParams } from '@/api/requestApi';
 import { uploadImage, reverseGeo } from '@/api/upload';
 import { FORM_LABELS } from './constants';
 import styles from './publish.module.scss';
 
-export default function Publish() {
+interface PublishProps {
+  editDetail?: RequestDetail;
+  onSaved?: () => void;
+  onCancel?: () => void;
+}
+
+export default function Publish({ editDetail, onSaved, onCancel }: PublishProps) {
   const { setSelectedTab } = useTabsStore();
 
   const {
@@ -53,6 +60,7 @@ export default function Publish() {
   const locationRequestId = useRef(0);
 
   useDidShow(() => {
+    if (editDetail) return;
     setSelectedTab(1);
     if (!usePublishStore.getState().selectedTime) {
       // 选择器精度为分钟，向上取整到最接近此刻的可发布时刻。
@@ -140,7 +148,7 @@ export default function Publish() {
     }
   };
 
-  // 提交发布
+  // 发布与编辑共用表单校验、数据构造和提交入口
   const handleSubmit = async () => {
     const state = usePublishStore.getState();
     if (state.isSubmitting) return;
@@ -152,8 +160,8 @@ export default function Publish() {
       return;
     }
 
-    // 微信号强校验（成组刚需）
-    if (!user?.wechatId) {
+    // 新发布请求需要微信号；修改既有请求不应被该校验阻断。
+    if (!editDetail && !user?.wechatId) {
       Taro.showModal({
         title: '需要微信号',
         content: '搭子成组后需要互加微信联系，发布前请先填写你的微信号',
@@ -169,11 +177,15 @@ export default function Publish() {
 
     setIsSubmitting(true);
     try {
-      const isoTime = new Date(
-        `${selectedTime!.date}T${selectedTime!.time}:00+08:00`,
-      ).toISOString();
+      const localTime = `${selectedTime!.date}T${selectedTime!.time}:00`;
+      const originalLocalTime = editDetail
+        ? new Date(new Date(editDetail.activityTime).getTime() + 8 * 3600_000).toISOString().slice(0, 19)
+        : null;
+      const isoTime = originalLocalTime === localTime
+        ? editDetail!.activityTime
+        : new Date(`${localTime}+08:00`).toISOString();
 
-      await createRequest({
+      const params: CreateRequestParams = {
         type: activityType!,
         activityTime: isoTime,
         destination: destination.trim(),
@@ -188,7 +200,22 @@ export default function Publish() {
         photos: images,
         maxMembers,
         autoCloseOnGrouped,
-      });
+      };
+
+      if (editDetail) {
+        // 原图未变化时不重复送审，避免已展示请求无故回到审核中。
+        const patch: Partial<CreateRequestParams> = { ...params };
+        if (originalLocalTime === localTime) delete patch.activityTime;
+        if (images.length === editDetail.photos.length && images.every((url, i) => url === editDetail.photos[i])) {
+          delete patch.photos;
+        }
+        await updateRequest(editDetail.id, patch);
+        Taro.showToast({ title: '修改成功', icon: 'success' });
+        onSaved?.();
+        return;
+      }
+
+      await createRequest(params);
 
       // 先审后展：图片异步审核通过后才会进首页流，统一提示待审核
       Taro.showToast({
@@ -207,7 +234,7 @@ export default function Publish() {
         refreshUser();
         Taro.showToast({ title: '请先在“我的”中填写微信号', icon: 'none' });
       } else {
-        Taro.showToast({ title: err.message || '发布失败，请重试', icon: 'none' });
+        Taro.showToast({ title: err.message || (editDetail ? '修改失败，请重试' : '发布失败，请重试'), icon: 'none' });
       }
     } finally {
       setIsSubmitting(false);
@@ -219,7 +246,7 @@ export default function Publish() {
     activityType &&
     selectedTime &&
     currentLocation?.city &&
-    destinationRegion &&
+    destination.trim() &&
     descriptionLength >= 10 &&
     images.length > 0 &&
     !isSubmitting;
@@ -227,7 +254,7 @@ export default function Publish() {
   return (
     <View className={styles.page}>
       {/* 标题栏 */}
-      <HeaderBar title='发布请求' showBack showHelp={false} />
+      <HeaderBar title={editDetail ? '修改请求' : '发布请求'} showBack showHelp={false} onBack={editDetail ? onCancel : undefined} />
 
       {/* 表单内容 */}
       <View className={styles.content}>
@@ -251,6 +278,7 @@ export default function Publish() {
             <LocationSelector
               currentLocation={currentLocation}
               destinationRegion={destinationRegion}
+              destination={destination}
               onRefreshLocation={handleRefreshLocation}
               onCurrentRegionChange={handleCurrentRegionChange}
               onDestinationRegionChange={setDestinationRegion}
@@ -338,9 +366,9 @@ export default function Publish() {
             onClick={handleSubmit}
           >
             <View className={`iconfont icon-flash-outfitLittleRocket ${styles.submitBtnIcon}`}></View>
-            <Text className={styles.submitBtnText}>发布请求</Text>
+            <Text className={styles.submitBtnText}>{editDetail ? '保存修改' : '发布请求'}</Text>
           </Button>
-          <Text className={styles.submitTip}>发布请求即代表您已同意社区公约</Text>
+          {!editDetail && <Text className={styles.submitTip}>发布请求即代表您已同意社区公约</Text>}
         </View>
       </View>
     </View>

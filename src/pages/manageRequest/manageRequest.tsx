@@ -1,12 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Taro, { useLoad, useRouter } from '@tarojs/taro';
-import { ScrollView, Text, View, Button, Switch, Textarea } from '@tarojs/components';
+import { ScrollView, Text, View, Button } from '@tarojs/components';
 import SmartImage from '@/components/smartImage';
 import PageLayout from '@/components/pageLayout';
 import { BackButton } from '@/components/headerBar';
 import { getRequest, updateRequest, deleteRequest, RequestDetail } from '@/api/requestApi';
 import { listApplicationsByRequest, reviewApplication, ApplicationItem } from '@/api/application';
 import { useUnreadStore } from '@/stores/unreadStore/useUnreadStore';
+import { usePublishStore, getPublishFormValues, PublishFormValues } from '@/stores/publishStore/usePublishStore';
+import Publish from '@/pages/publish/publish';
 import styles from './manageRequest.module.scss';
 
 type TabKey = 'pending' | 'approved' | 'rejected';
@@ -20,12 +22,26 @@ export default function ManageRequest() {
   const [apps, setApps] = useState<ApplicationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewing, setReviewing] = useState<number | null>(null);
-  const [showEdit, setShowEdit] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const publishDraft = useRef<PublishFormValues | null>(null);
 
-  // 编辑表单
-  const [editDesc, setEditDesc] = useState('');
-  const [editMax, setEditMax] = useState(1);
-  const [editAutoClose, setEditAutoClose] = useState(false);
+  // 管理页内复用发布表单，离开编辑模式时恢复尚未发布的草稿。
+  useEffect(() => {
+    if (!editing) return;
+    return () => {
+      if (publishDraft.current) {
+        usePublishStore.getState().setFormValues(publishDraft.current);
+        publishDraft.current = null;
+      }
+    };
+  }, [editing]);
+
+  const openEdit = () => {
+    if (!detail) return;
+    publishDraft.current = getPublishFormValues(usePublishStore.getState());
+    usePublishStore.getState().fillFromRequest(detail);
+    setEditing(true);
+  };
 
   const refreshUnread = useUnreadStore((s) => s.refreshUnread);
 
@@ -56,12 +72,7 @@ export default function ManageRequest() {
 
   useLoad(async () => {
     const d = await loadDetail();
-    if (d) {
-      setEditDesc(d.description);
-      setEditMax(d.maxMembers);
-      setEditAutoClose(d.autoCloseOnGrouped);
-      await loadApps('pending');
-    }
+    if (d) await loadApps('pending');
     setLoading(false);
   });
 
@@ -89,24 +100,9 @@ export default function ManageRequest() {
     }
   };
 
-  const handleSaveEdit = async () => {
-    if (editDesc.trim().length < 10) {
-      Taro.showToast({ title: '描述至少10个字', icon: 'none' });
-      return;
-    }
-    try {
-      await updateRequest(id, {
-        description: editDesc.trim(),
-        maxMembers: editMax,
-        autoCloseOnGrouped: editAutoClose,
-      });
-      setShowEdit(false);
-      await loadDetail();
-      Taro.showToast({ title: '已保存', icon: 'success' });
-    } catch (e) {
-      const err = e as { message?: string };
-      Taro.showToast({ title: err.message || '保存失败', icon: 'none' });
-    }
+  const handleEditSaved = async () => {
+    setEditing(false);
+    await loadDetail();
   };
 
   const handleFinish = () => {
@@ -147,6 +143,10 @@ export default function ManageRequest() {
       },
     });
   };
+
+  if (editing && detail) {
+    return <Publish editDetail={detail} onSaved={handleEditSaved} onCancel={() => setEditing(false)} />;
+  }
 
   if (loading) {
     return (
@@ -190,7 +190,7 @@ export default function ManageRequest() {
             </View>
 
             <View className={styles.actionsRow}>
-              <View className={styles.miniBtn} onClick={() => setShowEdit(true)}>
+              <View className={styles.miniBtn} onClick={openEdit}>
                 <Text className={styles.miniBtnText}>修改</Text>
               </View>
               {detail.status === 'recruiting' && (
@@ -279,50 +279,6 @@ export default function ManageRequest() {
         </ScrollView>
       </View>
 
-      {/* 编辑弹窗 */}
-      {showEdit && (
-        <View className={styles.modalMask} onClick={() => setShowEdit(false)}>
-          <View className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <Text className={styles.modalTitle}>修改请求</Text>
-            <Text className={styles.fieldLabel}>活动描述</Text>
-            <Textarea
-              className={styles.modalTextarea}
-              value={editDesc}
-              onInput={(e) => setEditDesc(e.detail.value)}
-              maxlength={500}
-              autoHeight
-            />
-            <Text className={styles.fieldLabel}>搭子人数上限</Text>
-            <View className={styles.stepperRow}>
-              <View
-                className={`${styles.stepBtn} ${editMax <= 1 ? styles.stepDisabled : ''}`}
-                onClick={() => editMax > 1 && setEditMax(editMax - 1)}
-              >
-                <Text className={styles.stepIcon}>−</Text>
-              </View>
-              <Text className={styles.memberValue}>{editMax}</Text>
-              <View
-                className={`${styles.stepBtn} ${editMax >= 9 ? styles.stepDisabled : ''}`}
-                onClick={() => editMax < 9 && setEditMax(editMax + 1)}
-              >
-                <Text className={styles.stepIcon}>+</Text>
-              </View>
-            </View>
-            <View className={styles.switchRow}>
-              <Text className={styles.fieldLabelInline}>成组后自动结束招募</Text>
-              <Switch checked={editAutoClose} color='#F49D25' onChange={(e) => setEditAutoClose(e.detail.value)} />
-            </View>
-            <View className={styles.modalActions}>
-              <Button className={styles.cancelBtn} onClick={() => setShowEdit(false)}>
-                <Text className={styles.cancelText}>取消</Text>
-              </Button>
-              <Button className={styles.confirmBtn} onClick={handleSaveEdit}>
-                <Text className={styles.confirmText}>保存</Text>
-              </Button>
-            </View>
-          </View>
-        </View>
-      )}
     </PageLayout>
   );
 }

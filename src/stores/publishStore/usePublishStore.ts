@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { ActivityType, GenderType, TimeSelection } from '@/pages/publish/constants';
+import type { RequestDetail } from '@/api/requestApi';
 import { AGE_RANGE, VALIDATION_MESSAGES } from '@/pages/publish/constants';
 
 export type { TimeSelection };
@@ -13,41 +14,39 @@ export interface LocationInfo {
   longitude?: number;
 }
 
-// 发布表单状态
-export interface PublishStore {
-  // 活动类型
+export interface PublishFormValues {
   activityType: ActivityType | null;
-  setActivityType: (type: ActivityType) => void;
-
-  // 时间选择
   selectedTime: TimeSelection | null;
-  setSelectedTime: (time: TimeSelection | null) => void;
-
-  // 位置信息
   currentLocation: LocationInfo | null;
   destination: string;
   destinationRegion: [string, string, string] | null;
-  setCurrentLocation: (loc: LocationInfo | null) => void;
-  setDestinationRegion: (region: [string, string, string]) => void;
-
-  // 伙伴偏好
   gender: GenderType;
   ageRange: [number, number];
-  setGender: (gender: GenderType) => void;
-  setAgeRange: (range: [number, number]) => void;
-
-  // 活动描述
   description: string;
-  setDescription: (desc: string) => void;
-
-  // 图片列表
   images: string[];
-  addImages: (urls: string[]) => void;
-  removeImage: (index: number) => void;
-
-  // 成组设置（v1.1 新增字段）
   maxMembers: number;
   autoCloseOnGrouped: boolean;
+}
+
+/** 从当前发布草稿中提取表单字段，编辑现有请求时用于恢复草稿。 */
+export function getPublishFormValues(state: PublishStore): PublishFormValues {
+  const { activityType, selectedTime, currentLocation, destination, destinationRegion,
+    gender, ageRange, description, images, maxMembers, autoCloseOnGrouped } = state;
+  return { activityType, selectedTime, currentLocation, destination, destinationRegion,
+    gender, ageRange, description, images, maxMembers, autoCloseOnGrouped };
+}
+
+// 发布表单状态
+export interface PublishStore extends PublishFormValues {
+  setActivityType: (type: ActivityType) => void;
+  setSelectedTime: (time: TimeSelection | null) => void;
+  setCurrentLocation: (loc: LocationInfo | null) => void;
+  setDestinationRegion: (region: [string, string, string]) => void;
+  setGender: (gender: GenderType) => void;
+  setAgeRange: (range: [number, number]) => void;
+  setDescription: (desc: string) => void;
+  addImages: (urls: string[]) => void;
+  removeImage: (index: number) => void;
   setMaxMembers: (n: number) => void;
   setAutoCloseOnGrouped: (v: boolean) => void;
 
@@ -57,6 +56,10 @@ export interface PublishStore {
 
   // 表单验证（field 用于定位到不满足条件的表单区域）
   validateForm: () => { valid: boolean; field?: 'activityType' | 'activityTime' | 'destination' | 'description' | 'images'; message?: string };
+
+  // 编辑请求时回填，退出编辑后恢复原发布草稿
+  setFormValues: (values: PublishFormValues) => void;
+  fillFromRequest: (detail: RequestDetail) => void;
 
   // 重置表单
   resetForm: () => void;
@@ -115,14 +118,14 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     if (!state.selectedTime?.date || !state.selectedTime.time) {
       return { valid: false, field: 'activityTime', message: VALIDATION_MESSAGES.timeRequired };
     }
-    const activityTime = new Date(`${state.selectedTime.date}T${state.selectedTime.time}:00`);
+    const activityTime = new Date(`${state.selectedTime.date}T${state.selectedTime.time}:00+08:00`);
     if (Number.isNaN(activityTime.getTime()) || activityTime.getTime() <= Date.now()) {
       return { valid: false, field: 'activityTime', message: VALIDATION_MESSAGES.timeMustBeFuture };
     }
     if (!state.currentLocation?.city) {
       return { valid: false, field: 'destination', message: '请定位或选择当前所在地区' };
     }
-    if (!state.destinationRegion) {
+    if (!state.destination.trim()) {
       return { valid: false, field: 'destination', message: VALIDATION_MESSAGES.destinationRequired };
     }
     if (state.description.trim().length < 10) {
@@ -133,6 +136,34 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     }
 
     return { valid: true };
+  },
+
+  setFormValues: (values) => set({ ...values, isSubmitting: false }),
+  fillFromRequest: (detail) => {
+    const activityTime = new Date(new Date(detail.activityTime).getTime() + 8 * 3600_000).toISOString();
+    set({
+      activityType: detail.type,
+      selectedTime: {
+        date: activityTime.slice(0, 10),
+        time: activityTime.slice(11, 16),
+      },
+      currentLocation: {
+        name: detail.location.city,
+        city: detail.location.city,
+        latitude: detail.location.lat ?? undefined,
+        longitude: detail.location.lng ?? undefined,
+      },
+      destination: detail.destination,
+      // 历史请求仅保存了目的地文本，没有完整的省/市/区三级数组。
+      destinationRegion: null,
+      gender: detail.genderPreference,
+      ageRange: detail.ageRange,
+      description: detail.description,
+      images: detail.photos,
+      maxMembers: detail.maxMembers,
+      autoCloseOnGrouped: detail.autoCloseOnGrouped,
+      isSubmitting: false,
+    });
   },
 
   // 重置表单
