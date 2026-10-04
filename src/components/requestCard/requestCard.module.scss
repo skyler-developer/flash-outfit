@@ -4,10 +4,6 @@
   overflow: hidden;
   margin: 0 24px 24px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-
-  &.expired {
-    opacity: 0.55;
-  }
 }
 
 .coverWrap {
@@ -32,10 +28,16 @@
   color: #f49d25;
 }
 
-.typeTag {
+.tagRow {
   position: absolute;
   top: 20px;
   left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.typeTag {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,22 +88,13 @@
   color: #fff;
 }
 
-.expiredMask {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.35);
+.expiredTag {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.expiredText {
-  font-size: 40px;
-  font-weight: 700;
-  color: #64748b;
-  border: 4px solid #64748b;
-  border-radius: 12px;
-  padding: 8px 24px;
+  padding: 6px 20px;
+  border-radius: 100px;
+  background: rgba(100, 116, 139, 0.85);
 }
 
 .body {

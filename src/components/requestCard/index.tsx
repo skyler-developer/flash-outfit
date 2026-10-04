@@ -25,10 +25,7 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
   const typeInfo = ACTIVITY_TYPE_MAP[item.type];
 
   return (
-    <View
-      className={`${styles.card} ${item.expired ? styles.expired : ''}`}
-      onClick={() => onClick?.(item.id)}
-    >
+    <View className={styles.card} onClick={() => onClick?.(item.id)}>
       <View className={styles.coverWrap}>
         {item.coverImage ? (
           <SmartImage className={styles.cover} src={item.coverImage} mode='aspectFill' lazyLoad />
@@ -39,14 +36,16 @@ export default function RequestCard({ item, onClick }: RequestCardProps) {
             </Text>
           </View>
         )}
-        <View className={`${styles.typeTag} ${styles[`tag_${item.type}`] || ''}`}>
-          <Text className={styles.typeTagText}>{typeInfo?.label || item.type}</Text>
-        </View>
-        {item.expired && (
-          <View className={styles.expiredMask}>
-            <Text className={styles.expiredText}>已过期</Text>
+        <View className={styles.tagRow}>
+          <View className={`${styles.typeTag} ${styles[`tag_${item.type}`] || ''}`}>
+            <Text className={styles.typeTagText}>{typeInfo?.label || item.type}</Text>
           </View>
-        )}
+          {item.expired && (
+            <View className={styles.expiredTag}>
+              <Text className={styles.typeTagText}>已过期</Text>
+            </View>
+          )}
+        </View>
       </View>
 
       <View className={styles.body}>
