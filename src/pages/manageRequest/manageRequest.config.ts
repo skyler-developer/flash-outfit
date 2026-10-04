@@ -1,4 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: "请求管理",
+  navigationBarTitleText: "活动管理",
   navigationStyle: "custom",
 });

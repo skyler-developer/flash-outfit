@@ -16,25 +16,25 @@ import { CurrentUser } from '../common/jwt-auth';
 export class RequestsController {
   constructor(private readonly service: RequestsService) {}
 
-  /** 请求流（首页） */
+  /** 活动流（首页） */
   @Get()
   async list(@CurrentUser() user: { id: number }, @Query() q: ListRequestsDto) {
     return this.service.list(user.id, q);
   }
 
-  /** 请求详情 */
+  /** 活动详情 */
   @Get(':id')
   async detail(@CurrentUser() user: { id: number }, @Param('id') id: number) {
     return this.service.detail(user.id, Number(id));
   }
 
-  /** 发布请求 */
+  /** 发布活动 */
   @Post()
   async create(@CurrentUser() user: { id: number }, @Body() dto: CreateRequestDto) {
     return this.service.create(user.id, dto);
   }
 
-  /** 修改请求（仅发布者） */
+  /** 修改活动（仅发布者） */
   @Patch(':id')
   async update(
     @CurrentUser() user: { id: number },
@@ -44,7 +44,7 @@ export class RequestsController {
     return this.service.update(user.id, Number(id), dto);
   }
 
-  /** 删除请求（仅发布者，通知全部申请人） */
+  /** 删除活动（仅发布者，通知全部申请人） */
   @Delete(':id')
   async remove(@CurrentUser() user: { id: number }, @Param('id') id: number) {
     return this.service.remove(user.id, Number(id));

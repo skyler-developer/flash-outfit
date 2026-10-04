@@ -23,7 +23,7 @@ export default defineAppConfig({
   /** 定位隐私接口声明（微信基础库要求，未声明 getLocation 会直接 fail） */
   permission: {
     "scope.userLocation": {
-      desc: "用于按距离为你推荐附近的搭子请求",
+      desc: "用于按距离为你推荐附近的搭子活动",
     },
   },
   requiredPrivateInfos: ["getLocation"],

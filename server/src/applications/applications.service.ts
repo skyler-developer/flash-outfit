@@ -31,9 +31,9 @@ export class ApplicationsService {
     if (!user || !request) throw new NotFoundException();
 
     // 1. 重新校验活动状态及发布者；过期、偏好和名额不限制提交。
-    if (request.status !== 'recruiting') throw err(ErrorCode.NOT_APPLICABLE, '该请求已结束');
-    if (request.reviewStatus !== 'pass') throw err(ErrorCode.NOT_APPLICABLE, '该请求尚未通过审核');
-    if (request.publisherId === userId) throw err(ErrorCode.NOT_APPLICABLE, '不能申请自己发布的请求');
+    if (request.status !== 'recruiting') throw err(ErrorCode.NOT_APPLICABLE, '该活动已结束');
+    if (request.reviewStatus !== 'pass') throw err(ErrorCode.NOT_APPLICABLE, '该活动尚未通过审核');
+    if (request.publisherId === userId) throw err(ErrorCode.NOT_APPLICABLE, '不能申请自己发布的活动');
     // 2. 未重复申请
     const mine = await this.appsRepo.findOne({
       where: { requestId, applicantId: userId },
@@ -63,7 +63,7 @@ export class ApplicationsService {
     return { id: app.id, status: app.status, createdAt: app.createdAt };
   }
 
-  /** 某请求的申请列表（仅发布者） */
+  /** 某活动的申请列表（仅发布者） */
   async listByRequest(publisherId: number, requestId: number, status?: string, page = 1, pageSize = 10) {
     const request = await this.requestsRepo.findOneBy({ id: requestId });
     if (!request) throw new NotFoundException();
@@ -139,7 +139,7 @@ export class ApplicationsService {
         handledAt: new Date().toISOString(),
       });
 
-      // autoCloseOnGrouped：首个 approve 后请求自动 grouped
+      // autoCloseOnGrouped：首个 approve 后活动自动 grouped
       if (request.autoCloseOnGrouped && request.status === 'recruiting') {
         await em.update(ActivityRequest, request.id, { status: 'grouped' });
       }

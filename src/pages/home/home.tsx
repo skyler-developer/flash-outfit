@@ -262,7 +262,7 @@ export default function Home() {
           </View>
         )}
 
-        {/* 请求流 */}
+        {/* 活动流 */}
         <View className={styles.feed}>
           {list.map((item) => (
             <RequestCard key={item.id} item={item} onClick={goToDetail} />
@@ -270,7 +270,7 @@ export default function Home() {
           {!loading && list.length === 0 && locMode !== 'none' && (
             <View className={styles.empty}>
               <Text className={styles.emptyIcon}>🧭</Text>
-              <Text className={styles.emptyText}>暂无符合条件的请求，换个筛选试试</Text>
+              <Text className={styles.emptyText}>暂无符合条件的活动，换个筛选试试</Text>
             </View>
           )}
           {loading && !refreshing && (

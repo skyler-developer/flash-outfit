@@ -1,4 +1,4 @@
-/** Haversine 距离（km）——请求流距离排序/展示用 */
+/** Haversine 距离（km）——活动流距离排序/展示用 */
 export function haversineKm(
   lat1: number,
   lng1: number,

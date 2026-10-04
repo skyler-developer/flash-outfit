@@ -7,7 +7,7 @@ import { CurrentUser } from '../common/jwt-auth';
 export class MyRequestsController {
   constructor(private readonly service: RequestsService) {}
 
-  /** 我发布的请求列表（含 pendingCount 角标统计） */
+  /** 我发布的活动列表（含 pendingCount 角标统计） */
   @Get()
   async myPublished(@CurrentUser() user: { id: number }, @Query() q: PaginationDto) {
     return this.service.myPublished(user.id, q.page, q.pageSize);

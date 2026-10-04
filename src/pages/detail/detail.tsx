@@ -113,7 +113,7 @@ export default function Detail() {
     return (
       <PageLayout>
         <View className={styles.loadingPage}>
-          <Text className={styles.loadingText}>请求不存在或已被删除</Text>
+          <Text className={styles.loadingText}>活动不存在或已被删除</Text>
         </View>
       </PageLayout>
     );
@@ -242,7 +242,7 @@ export default function Detail() {
       <View className={styles.actionBar}>
         {detail.isPublisher ? (
           <Button className={styles.primaryBtn} onClick={goToManage}>
-            <Text className={styles.primaryBtnText}>管理我的请求</Text>
+            <Text className={styles.primaryBtnText}>管理我的活动</Text>
           </Button>
         ) : canShowApply ? (
           <Button
@@ -261,7 +261,7 @@ export default function Detail() {
         ) : (
           <View className={styles.approvedBar}>
             <Text className={styles.approvedText}>
-              {detail.status !== 'recruiting' ? '该请求已结束' : '该请求尚未通过审核'}
+              {detail.status !== 'recruiting' ? '该活动已结束' : '该活动尚未通过审核'}
             </Text>
           </View>
         )}

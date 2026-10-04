@@ -160,7 +160,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
       return;
     }
 
-    // 新发布请求需要微信号；修改既有请求不应被该校验阻断。
+    // 新发布活动需要微信号；修改既有活动不应被该校验阻断。
     if (!editDetail && !user?.wechatId) {
       Taro.showModal({
         title: '需要微信号',
@@ -203,7 +203,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
       };
 
       if (editDetail) {
-        // 原图未变化时不重复送审，避免已展示请求无故回到审核中。
+        // 原图未变化时不重复送审，避免已展示活动无故回到审核中。
         const patch: Partial<CreateRequestParams> = { ...params };
         if (originalLocalTime === localTime) delete patch.activityTime;
         if (images.length === editDetail.photos.length && images.every((url, i) => url === editDetail.photos[i])) {
@@ -254,7 +254,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
   return (
     <View className={styles.page}>
       {/* 标题栏 */}
-      <HeaderBar title={editDetail ? '修改请求' : '发布请求'} showBack showHelp={false} onBack={editDetail ? onCancel : undefined} />
+      <HeaderBar title={editDetail ? '修改活动' : '发布活动'} showBack showHelp={false} onBack={editDetail ? onCancel : undefined} />
 
       {/* 表单内容 */}
       <View className={styles.content}>
@@ -366,9 +366,9 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
             onClick={handleSubmit}
           >
             <View className={`iconfont icon-flash-outfitLittleRocket ${styles.submitBtnIcon}`}></View>
-            <Text className={styles.submitBtnText}>{editDetail ? '保存修改' : '发布请求'}</Text>
+            <Text className={styles.submitBtnText}>{editDetail ? '保存修改' : '发布活动'}</Text>
           </Button>
-          {!editDetail && <Text className={styles.submitTip}>发布请求即代表您已同意社区公约</Text>}
+          {!editDetail && <Text className={styles.submitTip}>发布活动即代表您已同意社区公约</Text>}
         </View>
       </View>
     </View>

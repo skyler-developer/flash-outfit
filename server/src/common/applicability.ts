@@ -15,13 +15,13 @@ export function checkPreference(
 ): { applicable: boolean; reason: string | null } {
   if (!viewer) return { applicable: false, reason: '未登录' };
   if (request.status !== 'recruiting') {
-    return { applicable: false, reason: '该请求已结束' };
+    return { applicable: false, reason: '该活动已结束' };
   }
   if (request.reviewStatus !== 'pass') {
-    return { applicable: false, reason: '该请求尚未通过审核' };
+    return { applicable: false, reason: '该活动尚未通过审核' };
   }
   if (request.publisherId === viewer.id) {
-    return { applicable: false, reason: '不能申请自己发布的请求' };
+    return { applicable: false, reason: '不能申请自己发布的活动' };
   }
   return { applicable: true, reason: null };
 }

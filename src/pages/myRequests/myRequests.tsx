@@ -47,7 +47,7 @@ export default function MyRequests() {
       <View className={styles.page}>
         <View className={styles.header}>
           <BackButton onClick={() => Taro.navigateBack()} />
-          <Text className={styles.headerTitle}>我发布的请求</Text>
+          <Text className={styles.headerTitle}>我发布的活动</Text>
         </View>
 
         <ScrollView scrollY className={styles.list}>
@@ -103,7 +103,7 @@ export default function MyRequests() {
           ))}
           {!loading && list.length === 0 && (
             <View className={styles.empty}>
-              <Text className={styles.emptyText}>还没有发布过请求，去发布一个吧</Text>
+              <Text className={styles.emptyText}>还没有发布过活动，去发布一个吧</Text>
             </View>
           )}
         </ScrollView>

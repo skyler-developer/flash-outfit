@@ -244,7 +244,7 @@ export default function ProfileEdit() {
               className={styles.wechatInput}
               value={wechatId}
               onInput={(e) => setWechatId(e.detail.value)}
-              placeholder='选填；发布请求前必须填写，成组后互相可见'
+              placeholder='选填；发布活动前必须填写，成组后互相可见'
               placeholderClass={styles.placeholder}
               maxlength={30}
             />

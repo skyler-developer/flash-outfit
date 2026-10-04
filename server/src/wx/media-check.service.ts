@@ -38,7 +38,7 @@ export class MediaCheckService {
   }
 
   /**
-   * 兜底 sweep：checking 超过 10 分钟仍未收到微信回调的图片自动置 pass 并重算请求状态。
+   * 兜底 sweep：checking 超过 10 分钟仍未收到微信回调的图片自动置 pass 并重算活动状态。
    * 场景：回调丢失（消息推送未配置/推送失败/服务重启错过）、本地开发无公网回调地址。
    * 与文档的 fail-open 策略一致：审核服务不可用时不阻断业务内容展示。
    */
@@ -57,9 +57,9 @@ export class MediaCheckService {
   }
 
   /**
-   * 发布/修改请求时：为尚未送审过的图片发起异步审核（同一 URL 只送审一次），
-   * 完成后重算受影响请求的 reviewStatus。
-   * 未配置微信（开发 mock 模式）直接落 pass 记录 → 请求立即可见，保持本地开发体验。
+   * 发布/修改活动时：为尚未送审过的图片发起异步审核（同一 URL 只送审一次），
+   * 完成后重算受影响活动的 reviewStatus。
+   * 未配置微信（开发 mock 模式）直接落 pass 记录 → 活动立即可见，保持本地开发体验。
    */
   async submitForPhotos(photos: string[], openid: string): Promise<void> {
     if (!photos?.length) return;
@@ -121,11 +121,11 @@ export class MediaCheckService {
   }
 
   /**
-   * 重算包含任一 URL 的请求的 reviewStatus：
+   * 重算包含任一 URL 的活动的 reviewStatus：
    * - 任一当前图片记录 risky → rejected（通知发布者）
    * - 存在 checking 记录 → checking
    * - 其余（全部 pass / 无记录的存量图片）→ pass，首页恢复展示
-   * 只按请求当前 photos 数组计算：移除违规图后重算即可恢复 pass。
+   * 只按活动当前 photos 数组计算：移除违规图后重算即可恢复 pass。
    */
   async recomputeRequestsByUrls(urls: string[]): Promise<void> {
     if (!urls?.length) return;

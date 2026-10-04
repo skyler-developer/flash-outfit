@@ -28,7 +28,7 @@ export interface PublishFormValues {
   autoCloseOnGrouped: boolean;
 }
 
-/** 从当前发布草稿中提取表单字段，编辑现有请求时用于恢复草稿。 */
+/** 从当前发布草稿中提取表单字段，编辑现有活动时用于恢复草稿。 */
 export function getPublishFormValues(state: PublishStore): PublishFormValues {
   const { activityType, selectedTime, currentLocation, destination, destinationRegion,
     gender, ageRange, description, images, maxMembers, autoCloseOnGrouped } = state;
@@ -57,7 +57,7 @@ export interface PublishStore extends PublishFormValues {
   // 表单验证（field 用于定位到不满足条件的表单区域）
   validateForm: () => { valid: boolean; field?: 'activityType' | 'activityTime' | 'destination' | 'description' | 'images'; message?: string };
 
-  // 编辑请求时回填，退出编辑后恢复原发布草稿
+  // 编辑活动时回填，退出编辑后恢复原发布草稿
   setFormValues: (values: PublishFormValues) => void;
   fillFromRequest: (detail: RequestDetail) => void;
 
@@ -154,7 +154,7 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
         longitude: detail.location.lng ?? undefined,
       },
       destination: detail.destination,
-      // 历史请求仅保存了目的地文本，没有完整的省/市/区三级数组。
+      // 历史活动仅保存了目的地文本，没有完整的省/市/区三级数组。
       destinationRegion: null,
       gender: detail.genderPreference,
       ageRange: detail.ageRange,

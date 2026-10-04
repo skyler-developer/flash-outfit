@@ -125,7 +125,7 @@ export default function Mine() {
           <View className={styles.menuDivider} />
           <View className={styles.menuItem} onClick={goToMyRequests}>
             <Text className={`iconfont icon-flash-outfitpublish ${styles.menuIcon}`} />
-            <Text className={styles.menuLabel}>我发布的请求</Text>
+            <Text className={styles.menuLabel}>我发布的活动</Text>
             <Text className={styles.menuArrow}>›</Text>
           </View>
           <View className={styles.menuDivider} />

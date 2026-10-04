@@ -17,7 +17,7 @@ export class ApplicationsController {
     return this.service.apply(user.id, Number(requestId), dto);
   }
 
-  /** 某请求的申请列表（仅发布者） */
+  /** 某活动的申请列表（仅发布者） */
   @Get('requests/:id/applications')
   async listByRequest(
     @CurrentUser() user: { id: number },

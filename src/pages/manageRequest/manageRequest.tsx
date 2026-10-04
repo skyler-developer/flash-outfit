@@ -108,7 +108,7 @@ export default function ManageRequest() {
   const handleFinish = () => {
     Taro.showModal({
       title: '结束招募',
-      content: '结束后该请求将不再展示，确定结束吗？',
+      content: '结束后该活动将不再展示，确定结束吗？',
       success: async (res) => {
         if (res.confirm && detail?.status === 'recruiting') {
           try {
@@ -126,7 +126,7 @@ export default function ManageRequest() {
 
   const handleDelete = () => {
     Taro.showModal({
-      title: '删除请求',
+      title: '删除活动',
       content: '删除后将通知所有申请人，且无法恢复，确定删除吗？',
       confirmColor: '#dc2626',
       success: async (res) => {
@@ -162,7 +162,7 @@ export default function ManageRequest() {
     return (
       <PageLayout>
         <View className={styles.loadingPage}>
-          <Text className={styles.muted}>请求不存在或已被删除</Text>
+          <Text className={styles.muted}>活动不存在或已被删除</Text>
         </View>
       </PageLayout>
     );
@@ -175,11 +175,11 @@ export default function ManageRequest() {
       <View className={styles.page}>
         <View className={styles.header}>
           <BackButton onClick={() => Taro.navigateBack()} />
-          <Text className={styles.headerTitle}>请求管理</Text>
+          <Text className={styles.headerTitle}>活动管理</Text>
         </View>
 
         <ScrollView scrollY className={styles.body}>
-          {/* 请求概要 */}
+          {/* 活动概要 */}
           <View className={styles.summaryCard}>
             <Text className={styles.dest}>{detail.destination}</Text>
             <View className={styles.summaryMeta}>

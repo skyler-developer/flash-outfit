@@ -72,7 +72,7 @@ export default function MyApplications() {
                 )}
                 <View className={styles.info}>
                   <View className={styles.infoTop}>
-                    <Text className={styles.dest}>{req ? req.destination : '请求已被发布者删除'}</Text>
+                    <Text className={styles.dest}>{req ? req.destination : '活动已被发布者删除'}</Text>
                     <View className={`${styles.statusChip} ${styles[st.cls]}`}>
                       <Text className={styles.statusText}>{st.label}</Text>
                     </View>

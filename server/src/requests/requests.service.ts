@@ -26,7 +26,7 @@ export class RequestsService {
     private mediaChecks: MediaCheckService,
   ) {}
 
-  /** 请求流：招募中且审核通过；未过期优先，过期活动在默认列表末尾展示 */
+  /** 活动流：招募中且审核通过；未过期优先，过期活动在默认列表末尾展示 */
   async list(viewerId: number, q: ListRequestsDto) {
     const page = q.page ?? 1;
     const pageSize = q.pageSize ?? 10;
@@ -34,7 +34,7 @@ export class RequestsService {
 
     const now = Date.now();
 
-    // 1. 取招募中且审核通过的请求（粗筛，页码放大以支撑距离排序后分页）
+    // 1. 取招募中且审核通过的活动（粗筛，页码放大以支撑距离排序后分页）
     const fetchSize = 200;
     const [items] = await this.requestsRepo.findAndCount({
       where: { status: 'recruiting', reviewStatus: 'pass' },
@@ -72,7 +72,7 @@ export class RequestsService {
       list = list.filter((r) => r.city === q.city);
     }
 
-    // 5. 首页筛选只排除本人发布的请求；招募状态与审核状态已在查询中限制。
+    // 5. 首页筛选只排除本人发布的活动；招募状态与审核状态已在查询中限制。
     if (onlyApplicable) {
       list = list.filter((r) => r.publisherId !== viewerId);
     }
@@ -166,7 +166,7 @@ export class RequestsService {
     };
   }
 
-  /** 请求详情：审核未通过的请求仅发布者本人可见 */
+  /** 活动详情：审核未通过的活动仅发布者本人可见 */
   async detail(viewerId: number, id: number) {
     const request = await this.requestsRepo.findOneBy({ id });
     if (!request) throw new NotFoundException();
@@ -235,7 +235,7 @@ export class RequestsService {
     };
   }
 
-  /** 发布请求 */
+  /** 发布活动 */
   async create(userId: number, dto: CreateRequestDto) {
     const user = await this.usersRepo.findOneBy({ id: userId });
     if (!user) throw new NotFoundException();
@@ -279,7 +279,7 @@ export class RequestsService {
     return this.detail(userId, entity.id);
   }
 
-  /** 修改请求（仅发布者） */
+  /** 修改活动（仅发布者） */
   async update(userId: number, id: number, dto: UpdateRequestDto) {
     const request = await this.requestsRepo.findOneBy({ id });
     if (!request) throw new NotFoundException();
@@ -337,7 +337,7 @@ export class RequestsService {
     return this.detail(userId, id);
   }
 
-  /** 删除请求：通知全部申请人（含已成组），终止微信号交换关系 */
+  /** 删除活动：通知全部申请人（含已成组），终止微信号交换关系 */
   async remove(userId: number, id: number) {
     const request = await this.requestsRepo.findOneBy({ id });
     if (!request) throw new NotFoundException();
@@ -350,7 +350,7 @@ export class RequestsService {
         app.applicantId,
         'requestClosed',
         id,
-        `「${truncate(request.destination, 10)}」的发布者已删除该请求`,
+        `「${truncate(request.destination, 10)}」的发布者已删除该活动`,
       );
     }
 
@@ -358,7 +358,7 @@ export class RequestsService {
     return null;
   }
 
-  /** 我发布的请求列表（含统计） */
+  /** 我发布的活动列表（含统计） */
   async myPublished(userId: number, page = 1, pageSize = 10) {
     const [items, total] = await this.requestsRepo.findAndCount({
       where: { publisherId: userId },

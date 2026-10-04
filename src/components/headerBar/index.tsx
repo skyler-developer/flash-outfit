@@ -65,7 +65,7 @@ export default function HeaderBar({
         } else {
             Taro.showModal({
                 title: '帮助',
-                content: '发布活动请求后，系统会为您匹配合适的伙伴。请确保信息真实有效。',
+                content: '发布活动后，系统会为您匹配合适的伙伴。请确保信息真实有效。',
                 showCancel: false,
             });
         }

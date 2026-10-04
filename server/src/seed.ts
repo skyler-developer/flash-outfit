@@ -9,7 +9,7 @@ import { User } from './entities/user.entity';
 import { ActivityRequest } from './entities/request.entity';
 
 /**
- * 开发种子数据：3 个用户 + 8 条覆盖新旧类型的招募中请求。
+ * 开发种子数据：3 个用户 + 8 条覆盖新旧类型的招募中活动。
  * 直接跑：npm run seed（需先 npm run build）
  */
 async function seed() {
