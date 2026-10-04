@@ -121,17 +121,61 @@
 }
 
 .wechatProfileCard {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   background: #fff;
   border-radius: 24px;
   margin-top: 24px;
   padding: 24px;
 }
 
+.wechatProfileTitle {
+  flex: 1;
+  font-size: 30px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .wechatProfileHint {
+  order: 3;
+  width: 100%;
   display: block;
   font-size: 24px;
   color: #64748b;
-  margin-bottom: 20px;
+  margin-top: 12px;
+}
+
+.wechatProfileMask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: flex-end;
+}
+
+.wechatProfileSheet {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 36px 32px calc(36px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-radius: 32px 32px 0 0;
+}
+
+.sheetTitle {
+  display: block;
+  font-size: 34px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sheetHint {
+  display: block;
+  margin: 12px 0 24px;
+  font-size: 24px;
+  color: #64748b;
+  line-height: 1.5;
 }
 
 .wechatAvatarButton {
@@ -147,37 +191,106 @@
   }
 }
 
-.nicknameRow {
+.wxAvatarPreview {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.nicknameLabel {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.nicknameFocusGuide {
+  margin-bottom: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff1d6;
+  border: 2px solid #f49d25;
+}
+
+.nicknameFocusTitle {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #a95300;
+}
+
+.nicknameFocusDetail {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+  line-height: 1.5;
+  color: #92400e;
+}
+
+.nicknameField {
   display: flex;
   align-items: center;
-  gap: 16px;
+  padding: 0 20px;
+  background: #fdf1de;
+  border: 2px solid #f49d25;
+  border-radius: 16px;
 }
 
 .nicknameInput {
   flex: 1;
   min-width: 0;
-  height: 72px;
-  padding: 0 16px;
-  font-size: 26px;
-  background: #f7f8f5;
-  border-radius: 12px;
+  height: 88px;
+  font-size: 28px;
+  color: #0f172a;
 }
 
+.nicknameArrow {
+  margin-left: 12px;
+  font-size: 38px;
+  font-weight: 600;
+  color: #d97706;
+}
+
+.nicknameHint {
+  display: block;
+  margin-top: 12px;
+  font-size: 23px;
+  color: #b45309;
+  line-height: 1.5;
+}
+
+.sheetActions {
+  display: flex;
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.cancelButton,
 .nicknameSave {
-  flex-shrink: 0;
+  flex: 1;
   margin: 0;
-  padding: 0 24px;
-  height: 72px;
-  line-height: 72px;
+  padding: 0 12px;
+  height: 80px;
+  line-height: 80px;
   font-size: 26px;
-  color: #fff;
-  background: #f49d25;
-  border-radius: 12px;
+  border-radius: 40px;
   border: none;
 
   &::after {
     border: none;
   }
+}
+
+.cancelButton {
+  background: #f4f4f5;
+  color: #64748b;
+}
+
+.nicknameSave {
+  color: #fff;
+  background: #f49d25;
 }
 
 .menuCard {

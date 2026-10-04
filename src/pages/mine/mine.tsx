@@ -20,7 +20,10 @@ export default function Mine() {
   const refreshUser = useUserStore((s) => s.refreshUser);
   const [loggingIn, setLoggingIn] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [showWechatProfile, setShowWechatProfile] = useState(false);
+  const [wxAvatar, setWxAvatar] = useState('');
   const [wxNickname, setWxNickname] = useState('');
+  const [nicknameFocused, setNicknameFocused] = useState(false);
   const logout = useUserStore((s) => s.logout);
   const unreadCount = useUnreadStore((s) => s.count);
   const refreshUnread = useUnreadStore((s) => s.refreshUnread);
@@ -43,47 +46,32 @@ export default function Mine() {
     Taro.navigateTo({ url: '/pages/profileEdit/profileEdit' });
   };
 
-  // 微信登录只返回身份，不包含头像昵称；旧版用户资料授权可用时自动保存，
-  // 否则使用微信官方 chooseAvatar / nickname 输入能力让用户主动选择。
+  const openWechatProfile = () => {
+    setWxAvatar('');
+    setWxNickname(useUserStore.getState().user?.nickname || '');
+    setNicknameFocused(false);
+    setShowWechatProfile(true);
+  };
+
+  const closeWechatProfile = () => {
+    if (savingProfile) return;
+    setShowWechatProfile(false);
+    setNicknameFocused(false);
+    setWxAvatar('');
+  };
+
+  // wx.login 仅用于身份认证；微信头像和昵称由用户在同一流程中确认。
   const handleProfileClick = async () => {
-    if (isLoggedIn && user?.avatar && user?.nickname) {
+    if (isLoggedIn) {
       goToEdit();
       return;
     }
     if (loggingIn) return;
     setLoggingIn(true);
     try {
-      let wxProfile: { nickName: string; avatarUrl: string } | null = null;
-      try {
-        const result = await Taro.getUserProfile({ desc: '用于填写活动头像和昵称' });
-        if (result.userInfo?.nickName && result.userInfo.nickName !== '微信用户') {
-          wxProfile = result.userInfo;
-        }
-      } catch {
-        // 新版微信不再提供头像昵称授权，登录后展示官方头像/昵称填写入口。
-      }
-      const current = isLoggedIn && user ? user : await loginWithWechat();
-      if (wxProfile) {
-        const changes: { nickname?: string; avatar?: string } = {};
-        if (!current.nickname) changes.nickname = wxProfile.nickName.slice(0, 20);
-        if (!current.avatar && wxProfile.avatarUrl) {
-          try {
-            const file = await Taro.downloadFile({ url: wxProfile.avatarUrl });
-            changes.avatar = await uploadImage(file.tempFilePath);
-          } catch {
-            // 头像下载失败仍可使用下方“选择微信头像”单独完成。
-          }
-        }
-        if (Object.keys(changes).length) {
-          try {
-            await patchUser(changes);
-          } catch {
-            // 登录已完成，资料更新失败不阻断；下方仍可分别填写头像和昵称。
-          }
-        }
-      }
-      Taro.showToast({ title: isLoggedIn ? '可继续完善资料' : '登录成功', icon: isLoggedIn ? 'none' : 'success' });
+      await loginWithWechat();
       refreshUnread();
+      openWechatProfile();
     } catch (e) {
       const error = e as { message?: string };
       Taro.showToast({ title: error.message || '登录失败，请重试', icon: 'none' });
@@ -92,31 +80,31 @@ export default function Mine() {
     }
   };
 
-  const handleChooseWxAvatar = async (e: { detail: { avatarUrl: string } }) => {
-    if (!e.detail.avatarUrl || savingProfile) return;
-    setSavingProfile(true);
-    try {
-      const avatar = await uploadImage(e.detail.avatarUrl);
-      await patchUser({ avatar });
-      Taro.showToast({ title: '头像已保存', icon: 'success' });
-    } catch (e) {
-      const error = e as { message?: string };
-      Taro.showToast({ title: error.message || '头像保存失败', icon: 'none' });
-    } finally {
-      setSavingProfile(false);
-    }
+  const handleChooseWxAvatar = (e: { detail: { avatarUrl: string } }) => {
+    if (e.detail.avatarUrl) setWxAvatar(e.detail.avatarUrl);
   };
 
-  const handleSaveNickname = async () => {
+  const handleSaveWechatProfile = async () => {
     const nickname = wxNickname.trim();
-    if (!nickname || savingProfile || nickname === user?.nickname) return;
+    if (!wxAvatar && !user?.avatar) {
+      Taro.showToast({ title: '请先选择微信头像', icon: 'none' });
+      return;
+    }
+    if (!nickname) {
+      Taro.showToast({ title: '请填写微信昵称', icon: 'none' });
+      return;
+    }
+    if (savingProfile) return;
     setSavingProfile(true);
     try {
-      await patchUser({ nickname });
-      Taro.showToast({ title: '昵称已保存', icon: 'success' });
+      const avatar = wxAvatar ? await uploadImage(wxAvatar) : user?.avatar;
+      await patchUser({ avatar, nickname });
+      setShowWechatProfile(false);
+      setWxAvatar('');
+      Taro.showToast({ title: '微信资料已保存', icon: 'success' });
     } catch (e) {
       const error = e as { message?: string };
-      Taro.showToast({ title: error.message || '昵称保存失败', icon: 'none' });
+      Taro.showToast({ title: error.message || '保存失败，请重试', icon: 'none' });
     } finally {
       setSavingProfile(false);
     }
@@ -148,6 +136,9 @@ export default function Mine() {
           logout();
           Taro.showToast({ title: '已退出', icon: 'none' });
           useUnreadStore.getState().clearUnread();
+          setShowWechatProfile(false);
+          setNicknameFocused(false);
+          setWxAvatar('');
           setWxNickname('');
         }
       },
@@ -174,7 +165,7 @@ export default function Mine() {
           )}
           <View className={styles.profileInfo}>
             <View className={styles.nameRow}>
-              <Text className={styles.name}>{!isLoggedIn ? '点击头像微信登录' : user?.nickname || '点击头像完善微信资料'}</Text>
+              <Text className={styles.name}>{!isLoggedIn ? '点击头像微信登录' : user?.nickname || '未设置昵称'}</Text>
               {!isLoggedIn ? null : user?.profileCompleted ? (
                 <View className={styles.completeChip}>
                   <Text className={styles.completeChipText}>资料完整</Text>
@@ -201,26 +192,10 @@ export default function Mine() {
         </View>
 
         {isLoggedIn && (!user?.avatar || !user?.nickname) && (
-          <View className={styles.wechatProfileCard}>
-            <Text className={styles.wechatProfileHint}>选择微信头像和昵称，其他资料可稍后手动完善</Text>
-            {!user?.avatar && (
-              <Button className={styles.wechatAvatarButton} openType='chooseAvatar' onChooseAvatar={handleChooseWxAvatar}>
-                选择微信头像
-              </Button>
-            )}
-            {!user?.nickname && (
-              <View className={styles.nicknameRow}>
-                <Input
-                  className={styles.nicknameInput}
-                  type='nickname'
-                  value={wxNickname}
-                  maxlength={20}
-                  placeholder='点击填入微信昵称'
-                  onInput={(e) => setWxNickname(e.detail.value)}
-                />
-                <Button className={styles.nicknameSave} disabled={!wxNickname.trim() || savingProfile} onClick={handleSaveNickname}>保存</Button>
-              </View>
-            )}
+          <View className={styles.wechatProfileCard} onClick={openWechatProfile}>
+            <Text className={styles.wechatProfileTitle}>完善微信资料</Text>
+            <Text className={styles.wechatProfileHint}>选择头像和昵称后统一保存，其他资料可稍后填写</Text>
+            <Text className={styles.menuArrow}>›</Text>
           </View>
         )}
 
@@ -266,6 +241,59 @@ export default function Mine() {
         </View>}
 
         <CustomTabBar />
+
+        {showWechatProfile && isLoggedIn && (
+          <View className={styles.wechatProfileMask} onClick={closeWechatProfile}>
+            <View className={styles.wechatProfileSheet} onClick={(e) => e.stopPropagation()}>
+              <Text className={styles.sheetTitle}>完善微信资料</Text>
+              {!nicknameFocused && (
+                <View>
+                  <Text className={styles.sheetHint}>选择微信头像与昵称，完成后一次保存</Text>
+                  <Button className={styles.wechatAvatarButton} openType='chooseAvatar' onChooseAvatar={handleChooseWxAvatar}>
+                    {wxAvatar ? '重新选择微信头像' : user?.avatar ? '更换微信头像' : '选择微信头像'}
+                  </Button>
+                  {(wxAvatar || user?.avatar) && (
+                    <SmartImage key={wxAvatar || user?.avatar} className={styles.wxAvatarPreview} src={wxAvatar || user?.avatar || ''} mode='aspectFill' />
+                  )}
+                </View>
+              )}
+              <Text className={styles.nicknameLabel}>微信昵称</Text>
+              {nicknameFocused && (
+                <View className={styles.nicknameFocusGuide}>
+                  <Text className={styles.nicknameFocusTitle}>
+                    {wxNickname.trim() ? '昵称已填入' : '在屏幕最下方点「用微信昵称」'}
+                  </Text>
+                  <Text className={styles.nicknameFocusDetail}>
+                    {wxNickname.trim() ? '收起键盘后，点击保存微信资料' : '这是微信弹出的候选项，点击即可自动填入昵称 ↓'}
+                  </Text>
+                </View>
+              )}
+              <View className={styles.nicknameField}>
+                <Input
+                  className={styles.nicknameInput}
+                  type='nickname'
+                  value={wxNickname}
+                  maxlength={20}
+                  placeholder='点击后在底部选「用微信昵称」'
+                  onFocus={() => setNicknameFocused(true)}
+                  onBlur={() => setNicknameFocused(false)}
+                  onInput={(e) => setWxNickname(e.detail.value)}
+                />
+                <Text className={styles.nicknameArrow}>›</Text>
+              </View>
+              {!nicknameFocused && (
+                <View>
+                  <Text className={styles.nicknameHint}>点击输入框后，在屏幕底部选择「用微信昵称」；也可以手动输入</Text>
+                  <View className={styles.sheetActions}>
+                    <Button className={styles.cancelButton} disabled={savingProfile} onClick={closeWechatProfile}>稍后再说</Button>
+                    <Button className={styles.nicknameSave} loading={savingProfile} disabled={savingProfile} onClick={handleSaveWechatProfile}>保存微信资料</Button>
+                  </View>
+                  <Text className={styles.sheetHint}>性别、出生年份等信息可在“编辑资料”中手动填写</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
       </View>
     </PageLayout>
   );
