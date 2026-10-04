@@ -63,7 +63,7 @@ export async function request<T = unknown>(options: RequestOptions): Promise<T> 
     }
     if (body.code === 0) return body.data;
 
-    if (body.code === 4010 && !options._retried) {
+    if (body.code === 4010 && !options._retried && !Taro.getStorageSync('manualLogout')) {
       const newToken = await silentRelogin();
       if (newToken) {
         return request<T>({ ...options, _retried: true });
