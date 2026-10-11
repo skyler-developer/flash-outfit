@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 5131044 */
-  src: url('iconfont.woff2?t=1772902545466') format('woff2'),
-       url('iconfont.woff?t=1772902545466') format('woff'),
-       url('iconfont.ttf?t=1772902545466') format('truetype'),
-       url('iconfont.svg?t=1772902545466#iconfont') format('svg');
+  src: url('iconfont.woff2?t=1791721681063') format('woff2'),
+       url('iconfont.woff?t=1791721681063') format('woff'),
+       url('iconfont.ttf?t=1791721681063') format('truetype'),
+       url('iconfont.svg?t=1791721681063#iconfont') format('svg');
 }
 
 .iconfont {
@@ -12,6 +12,38 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-flash-outfithuwai:before {
+  content: "\e614";
+}
+
+.icon-flash-outfitguanying:before {
+  content: "\e615";
+}
+
+.icon-flash-outfitmeishi:before {
+  content: "\e616";
+}
+
+.icon-flash-outfitqita:before {
+  content: "\e617";
+}
+
+.icon-flash-outfityouxi:before {
+  content: "\e618";
+}
+
+.icon-flash-outfitxuexi:before {
+  content: "\e619";
+}
+
+.icon-flash-outfitlvhang:before {
+  content: "\e61a";
+}
+
+.icon-flash-outfityundong:before {
+  content: "\e61b";
 }
 
 .icon-flash-outfitPartnerPreference:before {

@@ -21,7 +21,7 @@ export default function ActivityTypeSelector({
           onClick={() => onChange(item.type)}
         >
           <View className={styles.iconWrap}>
-            <Text className={styles.iconText}>{item.icon}</Text>
+            <Text className={`iconfont ${item.icon} ${styles.iconText}`} />
           </View>
           <Text className={styles.label}>{item.label}</Text>
         </View>

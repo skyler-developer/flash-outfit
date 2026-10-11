@@ -13,19 +13,19 @@ export type ActivityType =
 export interface ActivityTypeOption {
   type: ActivityType;
   label: string;
-  icon: string; // 占位符，后续替换为实际图标类名
+  icon: string; // iconfont 图标类名
 }
 
 export const ACTIVITY_TYPES: ActivityTypeOption[] = [
-  { type: 'travel', label: '旅行', icon: '旅' },
-  { type: 'photography', label: '摄影', icon: '摄' },
-  { type: 'sports', label: '运动', icon: '动' },
-  { type: 'food', label: '美食', icon: '美' },
-  { type: 'show', label: '观影', icon: '观' },
-  { type: 'game', label: '游戏', icon: '戏' },
-  { type: 'study', label: '学习', icon: '学' },
-  { type: 'outdoor', label: '户外', icon: '野' },
-  { type: 'other', label: '其他', icon: '其' },
+  { type: 'travel', label: '旅行', icon: 'icon-flash-outfitlvhang' },
+  { type: 'photography', label: '摄影', icon: 'icon-flash-outfitphotography' },
+  { type: 'sports', label: '运动', icon: 'icon-flash-outfityundong' },
+  { type: 'food', label: '美食', icon: 'icon-flash-outfitmeishi' },
+  { type: 'show', label: '观影', icon: 'icon-flash-outfitguanying' },
+  { type: 'game', label: '游戏', icon: 'icon-flash-outfityouxi' },
+  { type: 'study', label: '学习', icon: 'icon-flash-outfitxuexi' },
+  { type: 'outdoor', label: '户外', icon: 'icon-flash-outfithuwai' },
+  { type: 'other', label: '其他', icon: 'icon-flash-outfitqita' },
 ];
 
 /** 兴趣标签可选项（个人兴趣不含"其他"，对齐需求 §4.9） */
