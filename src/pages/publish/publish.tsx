@@ -231,11 +231,15 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
         return;
       }
 
-      await createRequest(params);
+      const result = await createRequest(params);
 
-      // 先审后展：图片异步审核通过后才会进首页流，统一提示待审核
+      // 无照片无需等待图片审核，按服务端返回的状态提示。
       Taro.showToast({
-        title: '发布成功，待通过审核后展示',
+        title: result.reviewStatus === 'pass'
+          ? '发布成功'
+          : result.reviewStatus === 'rejected'
+            ? '发布成功，照片未通过审核'
+            : '发布成功，待通过审核后展示',
         icon: 'none',
         duration: 2500,
       });
@@ -267,7 +271,6 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
     currentLocation?.city &&
     destination.trim() &&
     descriptionLength >= 10 &&
-    images.length > 0 &&
     !isSubmitting;
 
   return (
@@ -387,7 +390,7 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
 
         {/* 活动照片 */}
         <View id='section-photos'>
-          <FormSection title={FORM_LABELS.activityPhotos} icon='icon-flash-outfitUploadPhoto' required>
+          <FormSection title={FORM_LABELS.activityPhotos} icon='icon-flash-outfitUploadPhoto'>
             <ImageUploader images={images} onAdd={handleAddImages} onRemove={removeImage} />
           </FormSection>
         </View>

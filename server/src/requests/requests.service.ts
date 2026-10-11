@@ -245,8 +245,9 @@ export class RequestsService {
     // 契约校验：发布者必须已填微信号
     if (!user.wechatId) throw err(ErrorCode.NO_WECHAT_ID);
     if (new Date(dto.activityTime).getTime() <= Date.now()) throw err(ErrorCode.TIME_PAST);
-    if (!Array.isArray(dto.photos) || dto.photos.length < 1 || dto.photos.length > 6) {
-      throw err(ErrorCode.PHOTO_INVALID, '需上传 1~6 张照片');
+    const photos = dto.photos === undefined ? [] : dto.photos;
+    if (!Array.isArray(photos) || photos.length > 6) {
+      throw err(ErrorCode.PHOTO_INVALID, '活动照片最多上传6张');
     }
     if (!dto.title.trim() || !dto.location.name.trim() || containsSensitive(dto.title) || containsSensitive(dto.description)) {
       throw err(ErrorCode.CONTENT_RISK);
@@ -272,16 +273,16 @@ export class RequestsService {
         ageMin,
         ageMax,
         description: dto.description,
-        photos: dto.photos,
+        photos,
         maxMembers: dto.maxMembers ?? 1,
         autoCloseOnGrouped: dto.autoCloseOnGrouped ?? false,
         status: 'recruiting',
-        // 图片异步审核中（开发 mock 模式下 submitForPhotos 重算后会立即置 pass）
-        reviewStatus: 'checking',
+        // 文字已同步审核通过；无照片直接展示，有照片继续异步审核。
+        reviewStatus: photos.length ? 'checking' : 'pass',
       }),
     );
     // 先送审重算状态（决定首页可见性），再返回详情
-    await this.mediaChecks.submitForPhotos(dto.photos, user.openid);
+    if (photos.length) await this.mediaChecks.submitForPhotos(photos, user.openid);
     return this.detail(userId, entity.id);
   }
 
@@ -326,11 +327,13 @@ export class RequestsService {
       patch.ageMax = dto.ageRange[1];
     }
     if (dto.description) patch.description = dto.description;
-    if (dto.photos) {
-      if (dto.photos.length < 1 || dto.photos.length > 6) {
-        throw err(ErrorCode.PHOTO_INVALID, '需上传 1~6 张照片');
+    if (dto.photos !== undefined) {
+      if (!Array.isArray(dto.photos) || dto.photos.length > 6) {
+        throw err(ErrorCode.PHOTO_INVALID, '活动照片最多上传6张');
       }
       patch.photos = dto.photos;
+      // 删除全部照片后无需图片审核，不能残留 checking/rejected 状态。
+      if (dto.photos.length === 0) patch.reviewStatus = 'pass';
     }
     if (dto.maxMembers !== undefined) patch.maxMembers = dto.maxMembers;
     if (dto.autoCloseOnGrouped !== undefined) patch.autoCloseOnGrouped = dto.autoCloseOnGrouped;
@@ -340,7 +343,7 @@ export class RequestsService {
 
     // 图片变更：新图送审并按当前 photos 重算 reviewStatus
     // （移除违规图 → 重算可恢复 pass；新增图片 → 回到 checking 待回调）
-    if (dto.photos) {
+    if (dto.photos?.length) {
       const user = await this.usersRepo.findOneBy({ id: userId });
       if (user) await this.mediaChecks.submitForPhotos(dto.photos, user.openid);
     }

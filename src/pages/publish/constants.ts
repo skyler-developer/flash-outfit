@@ -91,7 +91,7 @@ export const FORM_LABELS = {
   activityLocation: '活动地点',
   partnerPreference: '伙伴偏好',
   activityDescription: '活动描述',
-  activityPhotos: '活动照片',
+  activityPhotos: '活动照片（选填）',
 };
 
 // 表单验证消息
@@ -102,5 +102,5 @@ export const VALIDATION_MESSAGES = {
   timeMustBeFuture: '请选择未来的活动时间',
   destinationRequired: '请输入目的地',
   descriptionMinLength: '活动描述至少10个字符',
-  imageRequired: '请至少上传1张活动照片',
+  imageMaxCount: `活动照片最多上传${IMAGE_UPLOAD.maxCount}张`,
 };

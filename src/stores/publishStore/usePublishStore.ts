@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { ActivityType, GenderType, TimeSelection } from '@/pages/publish/constants';
 import type { RequestDetail } from '@/api/requestApi';
-import { AGE_RANGE, TITLE_LENGTH, VALIDATION_MESSAGES } from '@/pages/publish/constants';
+import { AGE_RANGE, IMAGE_UPLOAD, TITLE_LENGTH, VALIDATION_MESSAGES } from '@/pages/publish/constants';
 
 export type { TimeSelection };
 
@@ -140,8 +140,8 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
     if (state.description.trim().length < 10) {
       return { valid: false, field: 'description', message: VALIDATION_MESSAGES.descriptionMinLength };
     }
-    if (state.images.length === 0) {
-      return { valid: false, field: 'images', message: VALIDATION_MESSAGES.imageRequired };
+    if (state.images.length > IMAGE_UPLOAD.maxCount) {
+      return { valid: false, field: 'images', message: VALIDATION_MESSAGES.imageMaxCount };
     }
 
     return { valid: true };

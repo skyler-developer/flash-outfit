@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsIn,
@@ -69,8 +70,9 @@ export class CreateRequestDto {
   description: string;
 
   @IsArray()
+  @ArrayMaxSize(6)
   @IsString({ each: true })
-  photos: string[];
+  photos: string[] = [];
 
   @IsOptional()
   @Type(() => Number)
@@ -126,6 +128,7 @@ export class UpdateRequestDto {
 
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(6)
   @IsString({ each: true })
   photos?: string[];
 

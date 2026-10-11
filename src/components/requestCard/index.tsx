@@ -23,32 +23,30 @@ export interface RequestCardProps {
 
 export default function RequestCard({ item, onClick }: RequestCardProps) {
   const typeInfo = ACTIVITY_TYPE_MAP[item.type];
+  const tags = (
+    <View className={`${styles.tagRow} ${!item.coverImage ? styles.inlineTags : ''}`}>
+      <View className={`${styles.typeTag} ${styles[`tag_${item.type}`] || ''}`}>
+        <Text className={styles.typeTagText}>{typeInfo?.label || item.type}</Text>
+      </View>
+      {item.expired && (
+        <View className={styles.expiredTag}>
+          <Text className={styles.typeTagText}>已过期</Text>
+        </View>
+      )}
+    </View>
+  );
 
   return (
     <View className={styles.card} onClick={() => onClick?.(item.id)}>
-      <View className={styles.coverWrap}>
-        {item.coverImage ? (
+      {item.coverImage && (
+        <View className={styles.coverWrap}>
           <SmartImage className={styles.cover} src={item.coverImage} mode='aspectFill' lazyLoad />
-        ) : (
-          <View className={`${styles.cover} ${styles.coverFallback}`}>
-            <Text className={`iconfont ${typeInfo?.iconClass || ''} ${styles.coverIcon}`}>
-              {typeInfo && !typeInfo.iconClass ? typeInfo.icon : ''}
-            </Text>
-          </View>
-        )}
-        <View className={styles.tagRow}>
-          <View className={`${styles.typeTag} ${styles[`tag_${item.type}`] || ''}`}>
-            <Text className={styles.typeTagText}>{typeInfo?.label || item.type}</Text>
-          </View>
-          {item.expired && (
-            <View className={styles.expiredTag}>
-              <Text className={styles.typeTagText}>已过期</Text>
-            </View>
-          )}
+          {tags}
         </View>
-      </View>
+      )}
 
       <View className={styles.body}>
+        {!item.coverImage && tags}
         <View className={styles.titleRow}>
           <Text className={styles.title}>{item.title}</Text>
           {item.myApplicationStatus && (
