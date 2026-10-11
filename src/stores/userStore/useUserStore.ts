@@ -4,6 +4,8 @@ import { login, getMe, updateMe, UserInfo, UpdateMeParams } from '@/api/auth';
 
 let loginPromise: Promise<UserInfo> | null = null;
 let authVersion = 0;
+let profileVersion = 0;
+let refreshRequestId = 0;
 
 interface UserStore {
   user: UserInfo | null;
@@ -72,15 +74,23 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   refreshUser: async () => {
     const version = authVersion;
+    const profile = profileVersion;
+    const requestId = ++refreshRequestId;
     const user = await getMe();
-    if (version === authVersion && !Taro.getStorageSync('manualLogout')) {
+    // 保存资料前发出的旧请求、乱序返回的刷新结果不得覆盖最新资料。
+    if (version === authVersion && profile === profileVersion &&
+      requestId === refreshRequestId && !Taro.getStorageSync('manualLogout')) {
       set({ user, isLoggedIn: true });
     }
   },
 
   patchUser: async (params) => {
+    const version = authVersion;
     const user = await updateMe(params);
-    set({ user });
+    if (version === authVersion && !Taro.getStorageSync('manualLogout')) {
+      profileVersion += 1;
+      set({ user, isLoggedIn: true });
+    }
     return user;
   },
 

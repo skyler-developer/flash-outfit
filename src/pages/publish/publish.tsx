@@ -56,7 +56,6 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
     setIsSubmitting,
   } = usePublishStore();
 
-  const user = useUserStore((s) => s.user);
   const refreshUser = useUserStore((s) => s.refreshUser);
   // 手动选择地区后使进行中的自动定位失效，防止旧坐标覆盖用户选择。
   const locationRequestId = useRef(0);
@@ -64,6 +63,12 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
   useDidShow(() => {
     if (editDetail) return;
     setSelectedTab(1);
+    // 从资料编辑页返回时同步微信号，不依赖页面保留的旧资料。
+    if (Taro.getStorageSync('token') && !Taro.getStorageSync('manualLogout')) {
+      refreshUser().catch(() => {
+        // 页面刷新失败不误报微信号缺失；提交时会再次确认。
+      });
+    }
     if (!usePublishStore.getState().selectedTime) {
       // 选择器精度为分钟，向上取整到最接近此刻的可发布时刻。
       const now = new Date();
@@ -163,23 +168,29 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
       return;
     }
 
-    // 新发布活动需要微信号；修改既有活动不应被该校验阻断。
-    if (!editDetail && !user?.wechatId) {
-      Taro.showModal({
-        title: '需要微信号',
-        content: '搭子成组后需要互加微信联系，发布前请先填写你的微信号',
-        confirmText: '去填写',
-        success: (res) => {
-          if (res.confirm) {
-            Taro.navigateTo({ url: '/pages/profileEdit/profileEdit?from=publish' });
-          }
-        },
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     try {
+      // 点击时读取最新 store；本地缺少微信号时先向服务端确认，避免旧缓存误拦截。
+      // 修改既有活动不应被该校验阻断。
+      if (!editDetail) {
+        if (!useUserStore.getState().user?.wechatId?.trim()) {
+          await refreshUser();
+        }
+        if (!useUserStore.getState().user?.wechatId?.trim()) {
+          Taro.showModal({
+            title: '需要微信号',
+            content: '搭子成组后需要互加微信联系，发布前请先填写并保存你的微信号',
+            confirmText: '去填写',
+            success: (res) => {
+              if (res.confirm) {
+                Taro.navigateTo({ url: '/pages/profileEdit/profileEdit?from=publish' });
+              }
+            },
+          });
+          return;
+        }
+      }
+
       const localTime = `${selectedTime!.date}T${selectedTime!.time}:00`;
       const originalLocalTime = editDetail
         ? new Date(new Date(editDetail.activityTime).getTime() + 8 * 3600_000).toISOString().slice(0, 19)
@@ -234,9 +245,9 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
       }, 2000);
     } catch (e) {
       const err = e as { message?: string };
-      // 微信号校验兜底（token 内用户资料可能过期）
+      // 服务端校验兜底：同步本地资料，刷新失败也不能产生未处理的拒绝。
       if ((e as { code?: number }).code === 4100) {
-        refreshUser();
+        await refreshUser().catch(() => {});
         Taro.showToast({ title: '请先在“我的”中填写微信号', icon: 'none' });
       } else {
         Taro.showToast({ title: err.message || (editDetail ? '修改失败，请重试' : '发布失败，请重试'), icon: 'none' });
