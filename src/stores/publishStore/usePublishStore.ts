@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { ActivityType, GenderType, TimeSelection } from '@/pages/publish/constants';
 import type { RequestDetail } from '@/api/requestApi';
-import { AGE_RANGE, VALIDATION_MESSAGES } from '@/pages/publish/constants';
+import { AGE_RANGE, TITLE_LENGTH, VALIDATION_MESSAGES } from '@/pages/publish/constants';
 
 export type { TimeSelection };
 
@@ -117,7 +117,8 @@ export const usePublishStore = create<PublishStore>((set, get) => ({
   validateForm: () => {
     const state = get();
 
-    if (!state.title.trim() || state.title.trim().length > 50) {
+    const titleLength = state.title.trim().length;
+    if (titleLength < TITLE_LENGTH.min || titleLength > TITLE_LENGTH.max) {
       return { valid: false, field: 'title', message: VALIDATION_MESSAGES.titleRequired };
     }
     if (!state.activityType) {

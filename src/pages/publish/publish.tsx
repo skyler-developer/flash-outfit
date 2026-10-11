@@ -14,7 +14,7 @@ import ImageUploader from '@/components/imageUploader';
 import { createRequest, updateRequest } from '@/api/requestApi';
 import type { RequestDetail, CreateRequestParams } from '@/api/requestApi';
 import { uploadImage, reverseGeo } from '@/api/upload';
-import { FORM_LABELS } from './constants';
+import { FORM_LABELS, TITLE_LENGTH } from './constants';
 import styles from './publish.module.scss';
 
 interface PublishProps {
@@ -246,9 +246,11 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
     }
   };
 
+  const titleLength = title.trim().length;
   const descriptionLength = description.trim().length;
   const canSubmit =
-    title.trim() &&
+    titleLength >= TITLE_LENGTH.min &&
+    titleLength <= TITLE_LENGTH.max &&
     activityType &&
     selectedTime &&
     currentLocation?.city &&
@@ -269,11 +271,11 @@ export default function Publish({ editDetail, onSaved, onCancel }: PublishProps)
           <FormSection title={FORM_LABELS.title} icon='icon-flash-outfitdescription' required>
             <Input
               className={styles.titleInput}
-              placeholder='给活动起个吸引人的标题（最多50字）'
+              placeholder={`活动标题（${TITLE_LENGTH.min}–${TITLE_LENGTH.max}字）`}
               placeholderClass={styles.placeholder}
               value={title}
               onInput={(e) => setTitle(e.detail.value)}
-              maxlength={50}
+              maxlength={TITLE_LENGTH.max}
             />
           </FormSection>
         </View>

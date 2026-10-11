@@ -46,6 +46,9 @@ export const ACTIVITY_TYPE_MAP: Record<ActivityType, { label: string; icon: stri
   other: { label: '其他', icon: '其', iconClass: '' },
 };
 
+/** 活动标题长度限制（发布与修改共用） */
+export const TITLE_LENGTH = { min: 2, max: 8 };
+
 /** 完整时间选择（发布表单使用） */
 export interface TimeSelection {
   date: string; // YYYY-MM-DD
@@ -93,7 +96,7 @@ export const FORM_LABELS = {
 
 // 表单验证消息
 export const VALIDATION_MESSAGES = {
-  titleRequired: '请输入活动标题（最多50字）',
+  titleRequired: `活动标题最少${TITLE_LENGTH.min}字，最多${TITLE_LENGTH.max}字`,
   activityTypeRequired: '请选择活动类型',
   timeRequired: '请选择活动时间',
   timeMustBeFuture: '请选择未来的活动时间',

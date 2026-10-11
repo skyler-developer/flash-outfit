@@ -14,7 +14,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { PaginationDto } from '../common/dto';
 
 export class LocationDto {
@@ -37,8 +37,9 @@ export class LocationDto {
 }
 
 export class CreateRequestDto {
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
   @IsString()
-  @Length(1, 50)
+  @Length(2, 8, { message: '活动标题最少2字，最多8字' })
   title: string;
 
   @IsIn(['travel', 'photography', 'sports', 'food', 'show', 'game', 'study', 'outdoor', 'other'])
@@ -85,8 +86,9 @@ export class CreateRequestDto {
 
 export class UpdateRequestDto {
   @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
   @IsString()
-  @Length(1, 50)
+  @Length(2, 8, { message: '活动标题最少2字，最多8字' })
   title?: string;
 
   @IsOptional()
